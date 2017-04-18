@@ -54,8 +54,6 @@ public class SignIn extends javax.swing.JPanel {
 
         jLabel2.setText("Password:");
 
-        jPasswordField1.setText("jPasswordField1");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
