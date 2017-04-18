@@ -94,18 +94,18 @@ public class SignIn extends javax.swing.JPanel {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
-public static void main(String[] args) {
-        javax.swing.SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            JMenuBar menuBar = new MainMenu().createMainMenu();
-            frame.setJMenuBar(menuBar);
-            frame.add(new ToolBar().createToolBar(), BorderLayout.PAGE_START);
-            frame.add(new SignIn());
-            frame.pack();
-            frame.setVisible(true);
-        });
-    }
+//public static void main(String[] args) {
+//        javax.swing.SwingUtilities.invokeLater(() -> {
+//            JFrame frame = new JFrame("");
+//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//            JMenuBar menuBar = new MainMenu().createMainMenu();
+//            frame.setJMenuBar(menuBar);
+//            frame.add(new ToolBar().createToolBar(), BorderLayout.PAGE_START);
+//            frame.add(new SignIn());
+//            frame.pack();
+//            frame.setVisible(true);
+//        });
+//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;

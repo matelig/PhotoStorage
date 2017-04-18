@@ -28,7 +28,7 @@ public class DeleteDevice extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        devicesComboBox = new javax.swing.JComboBox<>();
+        devicesComboBox = new javax.swing.JComboBox<String>();
         cancelButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
 
@@ -39,7 +39,7 @@ public class DeleteDevice extends javax.swing.JFrame {
 
         jLabel1.setText("Choose device which you want to delete:");
 
-        devicesComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        devicesComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         cancelButton.setText("Cancel");
 

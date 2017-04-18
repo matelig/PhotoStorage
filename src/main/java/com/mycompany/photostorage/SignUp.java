@@ -103,15 +103,15 @@ public class SignUp extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    public static void main(String[] args) {
-        javax.swing.SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("");
-            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.add(new SignUp());
-            frame.setSize(600, 600);
-            frame.setVisible(true);
-        });
-    }
+//    public static void main(String[] args) {
+//        javax.swing.SwingUtilities.invokeLater(() -> {
+//            JFrame frame = new JFrame("");
+//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//            frame.add(new SignUp());
+//            frame.setSize(600, 600);
+//            frame.setVisible(true);
+//        });
+//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
