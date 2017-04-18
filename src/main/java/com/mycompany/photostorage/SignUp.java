@@ -56,8 +56,6 @@ public class SignUp extends javax.swing.JPanel {
 
         jLabel3.setText("Confirm Password:");
 
-        jPasswordField1.setText("jPasswordField1");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
