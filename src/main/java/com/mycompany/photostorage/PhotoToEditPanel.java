@@ -5,6 +5,13 @@
  */
 package com.mycompany.photostorage;
 
+import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
@@ -14,17 +21,33 @@ import javax.swing.JLabel;
  */
 public class PhotoToEditPanel extends javax.swing.JPanel {
 
+    private BufferedImage image;
     /**
      * Creates new form PhotoToEditPanel
      */
     public PhotoToEditPanel() {
         initComponents();
-   
+        
+        setImageMiniature();
          setVisible(true);
+         
       
        
     }
 
+    private void setImageMiniature() {
+        try {
+            image = ImageIO.read(new File("src/wojtek.jpg"));
+            ImageIcon icon = new ImageIcon();
+            icon.setImage(image);
+            Image image = icon.getImage();
+            image = image.getScaledInstance(114, 104, Image.SCALE_SMOOTH);
+            icon = new ImageIcon(image);
+            labelPhoto.setIcon(icon);
+        } catch (IOException ex) {
+           
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -42,8 +65,6 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
         jCheckBox2 = new javax.swing.JCheckBox();
         jLabel3 = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
-
-        labelPhoto.setText("miniatura");
 
         jLabel1.setText("Description");
 
