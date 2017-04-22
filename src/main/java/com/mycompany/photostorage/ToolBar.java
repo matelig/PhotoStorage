@@ -17,8 +17,10 @@ import javax.swing.JToolBar;
 public class ToolBar implements ActionListener{
     JToolBar toolBar;
     JButton button;
+    MainProgramFrame frame;
     
-    public JToolBar createToolBar(){
+    public JToolBar createToolBar(MainProgramFrame parentFrame){
+        frame = parentFrame;
         toolBar = new JToolBar();
         toolBar.setFloatable(false);
         
@@ -67,6 +69,43 @@ public class ToolBar implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        switch(e.getActionCommand()){
+            //nie ma buttonów/opcji dla tych panelów
+            //addDevice
+            //archivePhotos
+            //changeCategory
+            //closeDevice
+            //deleteDevice
+            //mainForm - to JFrame
+            //photoViewPanel
+            case "Add photos":
+                frame.setPanel(new AddPhotoPanel());
+                break;
+            case "Edit photos":
+                frame.setPanel(new EditPhotoPanel());
+                break;  
+            case "Delete photos"://nie ma jpanelu
+                frame.setPanel(new EditPhotoPanel());
+                break;  
+            case "Move photos"://niemaJPanelu
+                frame.setPanel(new EditPhotoPanel());
+                break;
+            case "Add category":
+                frame.setPanel(new AddCategoryPanel());
+                break;
+            case "Search":
+                frame.setPanel(new PhotoViewPanel());
+                break;
+            case "Generate report":
+                frame.setPanel(new GenerateReportPanel());
+                break;
+            case "Log out":
+                frame.hideMenu();
+                frame.setPanel(new SignIn(frame));
+                break;
+            default:
+                break;
+                
+        }
     }
 }

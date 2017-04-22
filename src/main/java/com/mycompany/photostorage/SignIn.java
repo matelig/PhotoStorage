@@ -5,20 +5,18 @@
  */
 package com.mycompany.photostorage;
 
-import java.awt.BorderLayout;
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
 
 /**
  *
  * @author Jakub
  */
 public class SignIn extends javax.swing.JPanel {
-
+    MainProgramFrame frame;
     /**
      * Creates new form SignIn
      */
-    public SignIn() {
+    public SignIn(MainProgramFrame parentFrame) {
+        frame = parentFrame;
         initComponents();
     }
 
@@ -36,6 +34,7 @@ public class SignIn extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jPasswordField1 = new javax.swing.JPasswordField();
+        jButton2 = new javax.swing.JButton();
 
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -54,6 +53,13 @@ public class SignIn extends javax.swing.JPanel {
 
         jLabel2.setText("Password:");
 
+        jButton2.setText("Register");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -65,9 +71,12 @@ public class SignIn extends javax.swing.JPanel {
                     .addComponent(jLabel2))
                 .addGap(69, 69, 69)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jButton1)
                     .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
-                    .addComponent(jPasswordField1))
+                    .addComponent(jPasswordField1)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jButton2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1)))
                 .addGap(71, 71, 71))
         );
         layout.setVerticalGroup(
@@ -81,34 +90,30 @@ public class SignIn extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
                     .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(56, 56, 56)
-                .addComponent(jButton1)
-                .addContainerGap(93, Short.MAX_VALUE))
+                .addGap(37, 37, 37)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jButton2))
+                .addContainerGap(112, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
-        // TODO add your handling code here:
+ 
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        frame.displayMenu();
+        frame.setPanel(new PhotoViewPanel());
     }//GEN-LAST:event_jButton1ActionPerformed
-//public static void main(String[] args) {
-//        javax.swing.SwingUtilities.invokeLater(() -> {
-//            JFrame frame = new JFrame("");
-//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//            JMenuBar menuBar = new MainMenu().createMainMenu();
-//            frame.setJMenuBar(menuBar);
-//            frame.add(new ToolBar().createToolBar(), BorderLayout.PAGE_START);
-//            frame.add(new SignIn());
-//            frame.pack();
-//            frame.setVisible(true);
-//        });
-//    }
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        frame.setPanel(new SignUp(frame));
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPasswordField jPasswordField1;
