@@ -76,8 +76,7 @@ public class ToolBar implements ActionListener{
             //changeCategory
             //closeDevice
             //deleteDevice
-            //mainForm - to JFrame
-            //photoViewPanel
+            
             case "Add photos":
                 frame.setPanel(new AddPhotoPanel());
                 break;
@@ -87,7 +86,7 @@ public class ToolBar implements ActionListener{
             case "Delete photos"://nie ma jpanelu
                 frame.setPanel(new EditPhotoPanel());
                 break;  
-            case "Move photos"://niemaJPanelu
+            case "Move photos"://niema JPanelu
                 frame.setPanel(new EditPhotoPanel());
                 break;
             case "Add category":
