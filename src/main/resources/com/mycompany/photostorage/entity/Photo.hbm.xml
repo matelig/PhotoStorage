@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2017-04-25 22:04:09 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="com.mycompany.photostorage.entity.Photo" table="photo" catalog="photokeeper" optimistic-lock="version">
+        <id name="idp" type="java.lang.Integer">
+            <column name="idp" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="category" class="com.mycompany.photostorage.entity.Category" fetch="select">
+            <column name="Category_idc" />
+        </many-to-one>
+        <many-to-one name="user" class="com.mycompany.photostorage.entity.User" fetch="select">
+            <column name="User_idu" not-null="true" />
+        </many-to-one>
+        <property name="date" type="date">
+            <column name="date" length="10" not-null="true" />
+        </property>
+        <property name="size" type="int">
+            <column name="size" not-null="true" />
+        </property>
+        <property name="format" type="string">
+            <column name="format" length="50" not-null="true" />
+        </property>
+        <property name="resolution" type="string">
+            <column name="resolution" length="45" not-null="true" />
+        </property>
+        <property name="description" type="string">
+            <column name="description" length="500" />
+        </property>
+        <property name="miniature" type="binary">
+            <column name="miniature" not-null="true" />
+        </property>
+        <property name="isArchivised" type="byte">
+            <column name="isArchivised" not-null="true" />
+        </property>
+        <property name="path" type="string">
+            <column name="path" length="45" not-null="true" />
+        </property>
+        <set name="devices" table="device_has_photo" inverse="false" lazy="true" fetch="select">
+            <key>
+                <column name="Photo_idp" not-null="true" />
+            </key>
+            <many-to-many entity-name="com.mycompany.photostorage.entity.Device">
+                <column name="Device_idd" not-null="true" />
+            </many-to-many>
+        </set>
+        <set name="tags" table="tag" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Photo_idp" not-null="true" />
+            </key>
+            <one-to-many class="com.mycompany.photostorage.entity.Tag" />
+        </set>
+    </class>
+</hibernate-mapping>
