@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2017-04-27 12:42:40 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="com.mycompany.photostorage.entity.Device" table="device" catalog="photokeeper" optimistic-lock="version">
+        <id name="idd" type="java.lang.Integer">
+            <column name="idd" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="typeofdevice" class="com.mycompany.photostorage.entity.Typeofdevice" update="false" insert="false" fetch="select">
+            <column name="TypeOfDevice_idtod" not-null="true" />
+        </many-to-one>
+        <property name="name" type="string">
+            <column name="name" length="45" not-null="true" unique="true" />
+        </property>
+        <property name="capacity" type="string">
+            <column name="capacity" length="50" not-null="true" />
+        </property>
+        <property name="freeSpace" type="string">
+            <column name="freeSpace" length="50" not-null="true" />
+        </property>
+        <property name="isStoring" type="byte">
+            <column name="isStoring" not-null="true" />
+        </property>
+        <set name="photos" table="device_has_photo" inverse="false" lazy="true" fetch="select">
+            <key>
+                <column name="Device_idd" not-null="true" />
+            </key>
+            <many-to-many entity-name="com.mycompany.photostorage.entity.Photo">
+                <column name="Photo_idp" not-null="true" />
+            </many-to-many>
+        </set>
+    </class>
+</hibernate-mapping>

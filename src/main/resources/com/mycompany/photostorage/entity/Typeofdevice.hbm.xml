@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2017-04-27 12:42:40 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="com.mycompany.photostorage.entity.Typeofdevice" table="typeofdevice" catalog="photokeeper" optimistic-lock="version">
+        <id name="idtod" type="java.lang.Integer">
+            <column name="idtod" />
+            <generator class="identity" />
+        </id>
+        <property name="description" type="string">
+            <column name="description" length="45" not-null="true" />
+        </property>
+        <property name="singleSave" type="string">
+            <column name="singleSave" length="45" />
+        </property>
+        <set name="devices" table="device" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="TypeOfDevice_idtod" not-null="true" />
+            </key>
+            <one-to-many class="com.mycompany.photostorage.entity.Device" />
+        </set>
+    </class>
+</hibernate-mapping>

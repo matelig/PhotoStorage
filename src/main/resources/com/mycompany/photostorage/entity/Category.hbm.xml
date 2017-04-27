@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2017-04-27 12:42:40 by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="com.mycompany.photostorage.entity.Category" table="category" catalog="photokeeper" optimistic-lock="version">
+        <id name="idc" type="java.lang.Integer">
+            <column name="idc" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="category" class="com.mycompany.photostorage.entity.Category" fetch="select">
+            <column name="Category_idc" />
+        </many-to-one>
+        <many-to-one name="user" class="com.mycompany.photostorage.entity.User" fetch="select">
+            <column name="User_idu" not-null="true" />
+        </many-to-one>
+        <property name="name" type="string">
+            <column name="name" length="45" not-null="true" />
+        </property>
+        <set name="photos" table="photo" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Category_idc" />
+            </key>
+            <one-to-many class="com.mycompany.photostorage.entity.Photo" />
+        </set>
+        <set name="categories" table="category" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="Category_idc" />
+            </key>
+            <one-to-many class="com.mycompany.photostorage.entity.Category" />
+        </set>
+    </class>
+</hibernate-mapping>

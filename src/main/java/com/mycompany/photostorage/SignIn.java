@@ -5,6 +5,15 @@
  */
 package com.mycompany.photostorage;
 
+import com.mycompany.photostorage.entity.User;
+import com.mycompany.photostorage.model.CurrentUser;
+import com.mycompany.photostorage.util.HibernateUtil;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import org.hibernate.Session;
+
 
 /**
  *
@@ -103,14 +112,48 @@ public class SignIn extends javax.swing.JPanel {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        frame.displayMenu();
-        frame.setPanel(new PhotoViewPanel());
+        try {
+            CurrentUser currentUser = getDatabaseUser();
+            frame.displayMenu();   //now just need to push user forward
+            frame.setPanel(new PhotoViewPanel());
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, ex, "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+        
+        
+        
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         frame.setPanel(new SignUp(frame));
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private CurrentUser getDatabaseUser() throws Exception{
+        if (jTextField1.getText().isEmpty()||jPasswordField1.getPassword().length==0) {
+            throw new Exception("All information fields must be filled out before you can click OK. ");
+        }
+        
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        List<User> users = session.createCriteria(User.class).list();
+        //Arrays.equals(jPasswordField1.getPassword(), jPasswordField2.getPassword()
+        for (User user : users) {
+            if ((user.getNickname().equals(jTextField1.getText()))
+                    &&(user.getPassword().equals(new String(jPasswordField1.getPassword())))) {
+                CurrentUser cu = new CurrentUser(user.getIdu(),user.getNickname());
+                session.getTransaction().rollback();
+                session.close();
+                return cu;
+            }
+        }
+        session.getTransaction().rollback();
+        session.close();
+        throw new Exception ("No user in database");
+    }
+    
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;

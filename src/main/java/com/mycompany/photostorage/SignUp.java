@@ -12,14 +12,14 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import org.hibernate.Session;
 
-
-
 /**
  *
  * @author Jakub
  */
 public class SignUp extends javax.swing.JPanel {
-MainProgramFrame frame;
+
+    MainProgramFrame frame;
+
     /**
      * Creates new form SingUp
      */
@@ -123,22 +123,22 @@ MainProgramFrame frame;
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         //frame.displayMenu();
         //frame.setPanel(new PhotoViewPanel());
-    try {
-        if (isDataCorrect()) {
-            insertUser();
-            JOptionPane.showMessageDialog(this, 
-                    "User registered",
-                    "Information",
-                    JOptionPane.INFORMATION_MESSAGE);
-            frame.displayMenu();
-            frame.setPanel(new SignIn(frame));
-        }
-    } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this,
+        try {
+            if (isDataCorrect()) {
+                insertUser();
+                JOptionPane.showMessageDialog(this,
+                        "User registered",
+                        "Information",
+                        JOptionPane.INFORMATION_MESSAGE);
+                frame.displayMenu();
+                frame.setPanel(new SignIn(frame));
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this,
                     ex.getMessage(),
                     "Warning",
                     JOptionPane.WARNING_MESSAGE);
-    }
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -154,34 +154,35 @@ MainProgramFrame frame;
 //            frame.setVisible(true);
 //        });
 //    }
-    
-    private Boolean isDataCorrect() throws Exception{
+    private Boolean isDataCorrect() throws Exception {
         if (!Arrays.equals(jPasswordField1.getPassword(), jPasswordField2.getPassword())) {
             throw new Exception("Passwords must be equals");
         }
         if (jTextField1.getText().isEmpty()
-                ||jPasswordField1.getPassword().length==0
-                ||jPasswordField2.getPassword().length==0) {
+                || jPasswordField1.getPassword().length == 0
+                || jPasswordField2.getPassword().length == 0) {
             throw new Exception("There cant be empty fields");
         }
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
         List<User> users = session.createCriteria(User.class).list();
         for (User user : users) {
-            if (user.getNickname().equals(jTextField1.getText()))
+            if (user.getNickname().equals(jTextField1.getText())) {
                 session.getTransaction().rollback();
                 throw new Exception("User already exists in database");
+            }
+            
         }
-       
-       session.getTransaction().commit();
-       session.close();        
-       return true;
+
+        session.getTransaction().commit();
+        session.close();
+        return true;
     }
-    
+
     private void insertUser() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
-        User user = new User(jTextField1.getText(),jPasswordField1.getPassword().toString());
+        User user = new User(jTextField1.getText(), new String(jPasswordField1.getPassword()));
         session.save(user);
         session.getTransaction().commit();
         session.close();
