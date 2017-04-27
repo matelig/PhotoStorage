@@ -41,11 +41,11 @@ Contributor(s):
 -->
 <hibernate-reverse-engineering>
   <schema-selection match-catalog="photokeeper"/>
-  <table-filter match-name="typeofdevice"/>
-  <table-filter match-name="tag"/>
-  <table-filter match-name="device"/>
-  <table-filter match-name="device_has_photo"/>
-  <table-filter match-name="category"/>
-  <table-filter match-name="user"/>
   <table-filter match-name="photo"/>
+  <table-filter match-name="tag"/>
+  <table-filter match-name="user"/>
+  <table-filter match-name="device_has_photo"/>
+  <table-filter match-name="typeofdevice"/>
+  <table-filter match-name="category"/>
+  <table-filter match-name="device"/>
 </hibernate-reverse-engineering>
