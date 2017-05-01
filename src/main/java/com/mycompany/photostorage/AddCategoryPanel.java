@@ -5,7 +5,19 @@
  */
 package com.mycompany.photostorage;
 
+import com.mycompany.photostorage.entity.Category;
+import com.mycompany.photostorage.entity.User;
+import com.mycompany.photostorage.model.CurrentUser;
+import com.mycompany.photostorage.util.HibernateUtil;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import org.hibernate.Query;
+import org.hibernate.Session;
 
 /**
  *
@@ -16,7 +28,8 @@ public class AddCategoryPanel extends javax.swing.JPanel {
     /**
      * Creates new form AddCategoryPanel
      */
-    public AddCategoryPanel() {
+    public AddCategoryPanel(CurrentUser currentUser) {
+        this.currentUser = currentUser;
         initComponents();
         setVisible(true);
     }
@@ -95,14 +108,38 @@ public class AddCategoryPanel extends javax.swing.JPanel {
         }
         else
         {
-             JOptionPane.showMessageDialog(this,
-                    "What a nice category!",
-                    "Added category",
-                    JOptionPane.INFORMATION_MESSAGE);
+            try {
+                addNewCategory();
+                JOptionPane.showMessageDialog(this, "Category added","Info",JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(),"Warning",JOptionPane.WARNING_MESSAGE);
+            }
         }
     }//GEN-LAST:event_btnAddCategoryActionPerformed
 
+    private void addNewCategory() throws Exception{
+        String QUERY_CATEGORY = "from Category c where c.User_idu = ";
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        Query query = session.createQuery("from User u where u.idu = " + currentUser.getUserID());
+        User dbUser = (User) query.list().get(0);
+        Set<Category> categories = dbUser.getCategories();
+        for (Category cat : categories) {
+            if (cat.getName().equalsIgnoreCase(txtFieldCategory.getText())) {
+                throw new Exception ("Category already exists");
+            }
+        }
+        Category category = new Category();
+        category.setName(txtFieldCategory.getText());
+        User user = (User) session.createQuery("from User u where u.id=" + currentUser.getUserID()).uniqueResult();
+        category.setUser(user);
+        session.save(category);
+        session.getTransaction().commit();
+        session.close();
+        
+    }
 
+    CurrentUser currentUser;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddCategory;
     private javax.swing.JLabel jLabel1;

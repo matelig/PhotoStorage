@@ -49,6 +49,11 @@ public class ToolBar implements ActionListener{
         button.addActionListener(this);
         toolBar.add(button);
         
+        button  = new JButton("Add device");
+        button.setActionCommand("Add device");
+        button.addActionListener(this);
+        toolBar.add(button);
+        
         button  = new JButton("Search");
         button.setActionCommand("Search");
         button.addActionListener(this);
@@ -71,7 +76,7 @@ public class ToolBar implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         switch(e.getActionCommand()){
             //nie ma buttonów/opcji dla tych panelów
-            //addDevice
+            
             //archivePhotos
             //changeCategory
             //closeDevice
@@ -79,6 +84,9 @@ public class ToolBar implements ActionListener{
             
             case "Add photos":
                 frame.setPanel(new AddPhotoPanel());
+                break;
+            case "Add device":
+                frame.setPanel(new AddDevicePanel());
                 break;
             case "Edit photos":
                 frame.setPanel(new EditPhotoPanel());
@@ -90,7 +98,7 @@ public class ToolBar implements ActionListener{
                 frame.setPanel(new EditPhotoPanel());
                 break;
             case "Add category":
-                frame.setPanel(new AddCategoryPanel());
+                frame.setPanel(new AddCategoryPanel(frame.getCurrentUser()));
                 break;
             case "Search":
                 frame.setPanel(new PhotoViewPanel());

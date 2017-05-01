@@ -7,22 +7,23 @@ package com.mycompany.photostorage;
 
 import com.mycompany.photostorage.entity.Typeofdevice;
 import com.mycompany.photostorage.util.HibernateUtil;
+import java.util.ArrayList;
 import java.util.Set;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
 /**
  *
- * @author Rafał Swoboda
+ * @author m_lig
  */
-public class AddDevice extends javax.swing.JFrame {
+public class AddDevicePanel extends javax.swing.JPanel {
 
     /**
-     * Creates new form AddDevice
+     * Creates new form AddDevicePanel
      */
-    public AddDevice() {
+    public AddDevicePanel() {
         initComponents();
-   
+        setItemModelSelect();
     }
 
     /**
@@ -41,10 +42,6 @@ public class AddDevice extends javax.swing.JFrame {
         devicesComboBox = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Add device");
-        setResizable(false);
-
         deviceNameTextField.setToolTipText("");
         deviceNameTextField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -60,8 +57,8 @@ public class AddDevice extends javax.swing.JFrame {
 
         jLabel2.setText("Choose one of existing devivces:");
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
@@ -94,20 +91,12 @@ public class AddDevice extends javax.swing.JFrame {
                     .addComponent(addButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
-
-        deviceNameTextField.getAccessibleContext().setAccessibleName("deviceNameTextField");
-        jLabel1.getAccessibleContext().setAccessibleName("deviceNameLabel");
-        cancelButton.getAccessibleContext().setAccessibleName("cancelButton");
-        addButton.getAccessibleContext().setAccessibleName("addButton");
-        devicesComboBox.getAccessibleContext().setAccessibleName("devicesComboBox");
-
-        pack();
-        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void deviceNameTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deviceNameTextFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_deviceNameTextFieldActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
@@ -118,5 +107,20 @@ public class AddDevice extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     // End of variables declaration//GEN-END:variables
 
+private void setItemModelSelect() {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        Query query = session.createQuery("from Typeofdevice");
+        ArrayList<Typeofdevice> tod = (ArrayList<Typeofdevice>) query.list();
+        for (Typeofdevice device : tod) {
+            devicesComboBox.addItem(device.getDescription());
+        }
+        session.getTransaction().commit();
+        session.close();
+    }
+
+private void addDevice() {
     
+}
+
 }

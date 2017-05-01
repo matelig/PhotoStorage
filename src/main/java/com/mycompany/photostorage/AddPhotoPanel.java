@@ -5,8 +5,13 @@
  */
 package com.mycompany.photostorage;
 
+import com.mycompany.photostorage.model.NewPhoto;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import javax.activation.MimetypesFileTypeMap;
 import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 
 /**
  *
@@ -65,6 +70,20 @@ public class AddPhotoPanel extends javax.swing.JPanel {
         fileChooser.setMultiSelectionEnabled(true);
         if (fileChooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
             photos = fileChooser.getSelectedFiles();
+        }
+        List<File> imageFile = new ArrayList<>();
+        for (int i = photos.length-1;i>=0;i--) {
+            String mimeType;
+            mimeType = new MimetypesFileTypeMap().getContentType( photos[i] );
+            String fileType = mimeType.split("/")[0];
+            if (fileType.equalsIgnoreCase("image")) {
+                imageFile.add(photos[i]);
+            }
+        }
+        
+        List<NewPhoto> newPhotos = new ArrayList<>(); //placeholder - i just need to remember what to do ^.^
+        for (File file : imageFile) {
+            newPhotos.add(new NewPhoto());
         }
     }//GEN-LAST:event_selectPhotoButtonActionPerformed
 
