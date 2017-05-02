@@ -170,10 +170,8 @@ public class SignUp extends javax.swing.JPanel {
             if (user.getNickname().equals(jTextField1.getText())) {
                 session.getTransaction().rollback();
                 throw new Exception("User already exists in database");
-            }
-            
+            }            
         }
-
         session.getTransaction().commit();
         session.close();
         return true;

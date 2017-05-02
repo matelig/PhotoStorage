@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.activation.MimetypesFileTypeMap;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 /**
@@ -20,11 +21,14 @@ import javax.swing.JPanel;
 public class AddPhotoPanel extends javax.swing.JPanel {
 
     private File[] photos;
+    private MainProgramFrame parentFrame;
+
     /**
      * Creates new form AddPhotoPanel
      */
-    public AddPhotoPanel() {
+    public AddPhotoPanel(MainProgramFrame frame) {
         initComponents();
+        parentFrame = frame;
         setVisible(true);
     }
 
@@ -72,19 +76,26 @@ public class AddPhotoPanel extends javax.swing.JPanel {
             photos = fileChooser.getSelectedFiles();
         }
         List<File> imageFile = new ArrayList<>();
-        for (int i = photos.length-1;i>=0;i--) {
-            String mimeType;
-            mimeType = new MimetypesFileTypeMap().getContentType( photos[i] );
-            String fileType = mimeType.split("/")[0];
+        for (int i = photos.length - 1; i >= 0; i--) {
+
+            MimetypesFileTypeMap mimeType;
+            mimeType = new MimetypesFileTypeMap();
+            mimeType.addMimeTypes("image png jpg jpeg");
+            String fileType = mimeType.getContentType(photos[i]).split("/")[0];
             if (fileType.equalsIgnoreCase("image")) {
                 imageFile.add(photos[i]);
             }
         }
-        
+
         List<NewPhoto> newPhotos = new ArrayList<>(); //placeholder - i just need to remember what to do ^.^
         for (File file : imageFile) {
-            newPhotos.add(new NewPhoto());
+            NewPhoto photo = new NewPhoto();
+            photo.setPath(file.getPath());
+            newPhotos.add(photo);
         }
+
+        parentFrame.setPanel(new AddPhotoEdition(newPhotos));
+
     }//GEN-LAST:event_selectPhotoButtonActionPerformed
 
 

@@ -26,26 +26,27 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
      * Creates new form PhotoToEditPanel
      */
     public PhotoToEditPanel() {
-        initComponents();
-        
-        setImageMiniature();
-         setVisible(true);
-         
-      
-       
+        initComponents();        
+        setImageMiniature("src/wojtek.jpg");
+        setVisible(true);              
+    }
+    
+    public PhotoToEditPanel(String filePath) {
+        initComponents();        
+        setImageMiniature(filePath);
+        setVisible(true);              
     }
 
-    private void setImageMiniature() {
+    private void setImageMiniature(String filePath) {
         try {
-            image = ImageIO.read(new File("src/wojtek.jpg"));
+            image = ImageIO.read(new File(filePath));
             ImageIcon icon = new ImageIcon();
             icon.setImage(image);
             Image image = icon.getImage();
             image = image.getScaledInstance(114, 104, Image.SCALE_SMOOTH);
             icon = new ImageIcon(image);
             labelPhoto.setIcon(icon);
-        } catch (IOException ex) {
-           
+        } catch (IOException ex) {           
         }
     }
     /**

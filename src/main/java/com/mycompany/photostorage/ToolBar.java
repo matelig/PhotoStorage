@@ -83,7 +83,7 @@ public class ToolBar implements ActionListener{
             //deleteDevice
             
             case "Add photos":
-                frame.setPanel(new AddPhotoPanel());
+                frame.setPanel(new AddPhotoPanel(frame));
                 break;
             case "Add device":
                 frame.setPanel(new AddDevicePanel());
