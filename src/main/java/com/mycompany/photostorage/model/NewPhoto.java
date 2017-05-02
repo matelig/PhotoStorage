@@ -5,6 +5,8 @@
  */
 package com.mycompany.photostorage.model;
 
+import java.util.Date;
+
 /**
  *
  * @author m_lig
@@ -15,7 +17,9 @@ public class NewPhoto {   //not implemented - will be done soon
     private String format;
     private String description;
     private String resolution;
-
+    private Date date;
+    
+    
     /**
      * @return the path
      */

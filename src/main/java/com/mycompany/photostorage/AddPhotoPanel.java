@@ -6,13 +6,19 @@
 package com.mycompany.photostorage;
 
 import com.mycompany.photostorage.model.NewPhoto;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.activation.MimetypesFileTypeMap;
+import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  *
@@ -76,12 +82,12 @@ public class AddPhotoPanel extends javax.swing.JPanel {
             photos = fileChooser.getSelectedFiles();
         }
         List<File> imageFile = new ArrayList<>();
+        MimetypesFileTypeMap mimeType;
+        mimeType = new MimetypesFileTypeMap();
+        mimeType.addMimeTypes("image png jpg jpeg");
         for (int i = photos.length - 1; i >= 0; i--) {
-
-            MimetypesFileTypeMap mimeType;
-            mimeType = new MimetypesFileTypeMap();
-            mimeType.addMimeTypes("image png jpg jpeg");
             String fileType = mimeType.getContentType(photos[i]).split("/")[0];
+            String[] test = mimeType.getContentType(photos[i]).split("/");
             if (fileType.equalsIgnoreCase("image")) {
                 imageFile.add(photos[i]);
             }
@@ -89,13 +95,24 @@ public class AddPhotoPanel extends javax.swing.JPanel {
 
         List<NewPhoto> newPhotos = new ArrayList<>(); //placeholder - i just need to remember what to do ^.^
         for (File file : imageFile) {
-            NewPhoto photo = new NewPhoto();
-            photo.setPath(file.getPath());
-            newPhotos.add(photo);
+            try {
+                BufferedImage bi;
+                bi = ImageIO.read(file);      
+                
+//                String[] filePart = file.getPath().split(".");
+                String resolution = bi.getWidth()+"x"+bi.getHeight();
+                NewPhoto photo = new NewPhoto();
+                photo.setPath(file.getPath());
+                photo.setFormat(FilenameUtils.getExtension(file.getPath()));
+                photo.setResolution(resolution);
+                photo.setSize(Long.toString(file.length())+"B");
+                
+                newPhotos.add(photo);
+            } catch (IOException ex) {
+
+            }
         }
-
         parentFrame.setPanel(new AddPhotoEdition(newPhotos));
-
     }//GEN-LAST:event_selectPhotoButtonActionPerformed
 
 
