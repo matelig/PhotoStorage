@@ -14,6 +14,7 @@ import com.mycompany.photostorage.util.HibernateUtil;
 import com.mysql.jdbc.Blob;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -38,7 +39,7 @@ import org.hibernate.Session;
  *
  * @author m_lig
  */
-public class AddPhotoEdition extends JPanel { 
+public class AddPhotoEdition extends JPanel {
 
     private JButton insertPhotoButton;
     private List<NewPhoto> newPhoto = new ArrayList<>();
@@ -73,7 +74,7 @@ public class AddPhotoEdition extends JPanel {
         session.getTransaction().commit();
         session.close();
         for (NewPhoto photo : newPhoto) {
-            PhotoToEditPanel ptep = new PhotoToEditPanel(photo.getPath(),categoriesAL);
+            PhotoToEditPanel ptep = new PhotoToEditPanel(photo.getPath(), categoriesAL);
             container.add(ptep);
         }
 
@@ -90,8 +91,8 @@ public class AddPhotoEdition extends JPanel {
     private void insertPhotoButtonActionPerformed() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
-        
-        Query queryUser = session.createQuery("from User where idu="+currentUser.getUserID());
+
+        Query queryUser = session.createQuery("from User where idu=" + currentUser.getUserID());
         User user = (User) queryUser.list().get(0);
         Set<Category> categories = user.getCategories();
         for (int i = 0; i < newPhoto.size(); i++) {
@@ -104,31 +105,34 @@ public class AddPhotoEdition extends JPanel {
             photo.setIsArchivised((byte) 0);
             Icon image = ptep.getMiniature();
             BufferedImage bi = new BufferedImage(image.getIconWidth(), image.getIconHeight(), BufferedImage.TYPE_INT_RGB);
+            Graphics g = bi.createGraphics();
+            image.paintIcon(null, g, 0, 0);
             ByteArrayOutputStream baos = null;
             try {
                 baos = new ByteArrayOutputStream();//TODO: BLOB NEED TO BE FIXED - something's wrong
-                ImageIO.write(bi, "png", baos);                  
-                photo.setMiniature(baos.toByteArray());
-            } 
-            catch( IOException e) {
+                ImageIO.write(bi, "png", baos);
+
+                byte[] imageInByte = baos.toByteArray();
+                photo.setMiniature(imageInByte);
+            } catch (IOException e) {
             } finally {
                 try {
                     baos.close();
                 } catch (Exception e) {
                 }
-            }          
-            
+            }
+
             photo.setPath(newPhoto.get(i).getPath());
             photo.setResolution(newPhoto.get(i).getResolution());
             photo.setSize(Integer.parseInt(newPhoto.get(i).getSize()));
-            photo.setUser(user);            
+            photo.setUser(user);
             for (Category c : categories) {
                 if (c.getName().equals(ptep.getCategory())) {
                     photo.setCategory(c);
                     break;
                 }
             }
-            session.save(photo);            
+            session.save(photo);
         }
         session.getTransaction().commit();
         session.close();
