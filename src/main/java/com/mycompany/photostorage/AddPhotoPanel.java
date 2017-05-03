@@ -5,6 +5,7 @@
  */
 package com.mycompany.photostorage;
 
+import com.mycompany.photostorage.model.CurrentUser;
 import com.mycompany.photostorage.model.NewPhoto;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -28,13 +29,14 @@ public class AddPhotoPanel extends javax.swing.JPanel {
 
     private File[] photos;
     private MainProgramFrame parentFrame;
-
+    private CurrentUser currentUser;
     /**
      * Creates new form AddPhotoPanel
      */
-    public AddPhotoPanel(MainProgramFrame frame) {
+    public AddPhotoPanel(MainProgramFrame frame,CurrentUser currentUser) {
         initComponents();
         parentFrame = frame;
+        this.currentUser = currentUser;
         setVisible(true);
     }
 
@@ -105,14 +107,14 @@ public class AddPhotoPanel extends javax.swing.JPanel {
                 photo.setPath(file.getPath());
                 photo.setFormat(FilenameUtils.getExtension(file.getPath()));
                 photo.setResolution(resolution);
-                photo.setSize(Long.toString(file.length())+"B");
+                photo.setSize(Long.toString(file.length()));
                 
                 newPhotos.add(photo);
             } catch (IOException ex) {
 
             }
         }
-        parentFrame.setPanel(new AddPhotoEdition(newPhotos));
+        parentFrame.setPanel(new AddPhotoEdition(newPhotos,currentUser));
     }//GEN-LAST:event_selectPhotoButtonActionPerformed
 
 

@@ -36,7 +36,7 @@
             <column name="isArchivised" not-null="true" />
         </property>
         <property name="path" type="string">
-            <column name="path" length="45" not-null="true" />
+            <column name="path" length="500" not-null="true" />
         </property>
         <set name="devices" table="device_has_photo" inverse="false" lazy="true" fetch="select" cascade="all">
             <key>

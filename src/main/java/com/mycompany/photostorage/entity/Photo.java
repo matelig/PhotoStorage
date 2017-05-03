@@ -176,7 +176,7 @@ public class Photo  implements java.io.Serializable {
     }
 
     
-    @Column(name="path", nullable=false, length=45)
+    @Column(name="path", nullable=false, length=500)
     public String getPath() {
         return this.path;
     }
