@@ -21,6 +21,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -77,7 +80,6 @@ public class AddPhotoEdition extends JPanel {
             PhotoToEditPanel ptep = new PhotoToEditPanel(photo.getPath(), categoriesAL);
             container.add(ptep);
         }
-
         this.insertPhotoButton = new JButton("Save");
         this.insertPhotoButton.setSize(new Dimension(40, 20));
         this.insertPhotoButton.addActionListener(new ActionListener() {
@@ -91,15 +93,13 @@ public class AddPhotoEdition extends JPanel {
     private void insertPhotoButtonActionPerformed() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
-
+        
         Query queryUser = session.createQuery("from User where idu=" + currentUser.getUserID());
         User user = (User) queryUser.list().get(0);
         Set<Category> categories = user.getCategories();
         for (int i = 0; i < newPhoto.size(); i++) {
-            PhotoToEditPanel ptep = (PhotoToEditPanel) container.getComponent(i);
-
-            Photo photo = new Photo();
-            photo.setDate(new Date());
+            PhotoToEditPanel ptep = (PhotoToEditPanel) container.getComponent(i);            
+            Photo photo = new Photo();            
             photo.setDescription(ptep.getDescription());
             photo.setFormat(newPhoto.get(i).getFormat());
             photo.setIsArchivised((byte) 0);
@@ -111,9 +111,11 @@ public class AddPhotoEdition extends JPanel {
             try {
                 baos = new ByteArrayOutputStream();//TODO: BLOB NEED TO BE FIXED - something's wrong
                 ImageIO.write(bi, "png", baos);
-
                 byte[] imageInByte = baos.toByteArray();
                 photo.setMiniature(imageInByte);
+                BasicFileAttributes attr = Files.readAttributes(Paths.get(newPhoto.get(i).getPath()), BasicFileAttributes.class);
+                long date = attr.creationTime().toMillis();                
+                photo.setDate(new Date(date));
             } catch (IOException e) {
             } finally {
                 try {
@@ -121,15 +123,16 @@ public class AddPhotoEdition extends JPanel {
                 } catch (Exception e) {
                 }
             }
-
             photo.setPath(newPhoto.get(i).getPath());
             photo.setResolution(newPhoto.get(i).getResolution());
             photo.setSize(Integer.parseInt(newPhoto.get(i).getSize()));
             photo.setUser(user);
-            for (Category c : categories) {
-                if (c.getName().equals(ptep.getCategory())) {
-                    photo.setCategory(c);
-                    break;
+            if (!ptep.getCategory().equalsIgnoreCase("none")) {
+                for (Category c : categories) {
+                    if (c.getName().equals(ptep.getCategory())) {
+                        photo.setCategory(c);
+                        break;
+                    }
                 }
             }
             session.save(photo);

@@ -101,7 +101,7 @@ public class ToolBar implements ActionListener{
                 frame.setPanel(new AddCategoryPanel(frame.getCurrentUser()));
                 break;
             case "Search":
-                frame.setPanel(new PhotoViewPanel());
+                frame.setPanel(new PhotoViewPanel(frame.getCurrentUser()));
                 break;
             case "Generate report":
                 frame.setPanel(new GenerateReportPanel());

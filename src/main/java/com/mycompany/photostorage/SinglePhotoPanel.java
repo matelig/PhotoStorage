@@ -7,8 +7,10 @@ package com.mycompany.photostorage;
 
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
@@ -27,10 +29,30 @@ public class SinglePhotoPanel extends javax.swing.JPanel {
         setImageMiniature();
         photoNameLabel.setText("Wódz wspaniały");
     }
+    public SinglePhotoPanel(byte[] photo,String description) {
+        initComponents();
+        setImageMiniature(photo);
+        photoNameLabel.setText(description);
+    }
 
     private void setImageMiniature() {
         try {
             image = ImageIO.read(new File("src/Photo.png"));
+            ImageIcon icon = new ImageIcon();
+            icon.setImage(image);
+            Image image = icon.getImage();
+            image = image.getScaledInstance(90, 90, Image.SCALE_SMOOTH);
+            icon = new ImageIcon(image);
+            photoImage.setIcon(icon);
+        } catch (IOException ex) {
+           
+        }
+    }
+    
+    private void setImageMiniature(byte[] photo) {
+        try {
+            InputStream in = new ByteArrayInputStream(photo);
+            image = ImageIO.read(in);
             ImageIcon icon = new ImageIcon();
             icon.setImage(image);
             Image image = icon.getImage();
@@ -55,12 +77,17 @@ public class SinglePhotoPanel extends javax.swing.JPanel {
         photoNameLabel = new javax.swing.JLabel();
 
         photoNameLabel.setText("Name");
+        photoNameLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                photoNameLabelMouseEntered(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(photoNameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+            .addComponent(photoNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
             .addComponent(photoImage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
@@ -71,6 +98,10 @@ public class SinglePhotoPanel extends javax.swing.JPanel {
                 .addComponent(photoNameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void photoNameLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_photoNameLabelMouseEntered
+       photoNameLabel.setToolTipText(photoNameLabel.getText());
+    }//GEN-LAST:event_photoNameLabelMouseEntered
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

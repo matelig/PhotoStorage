@@ -159,7 +159,8 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
     private javax.swing.JTextField txtFieldDescription;
     // End of variables declaration//GEN-END:variables
 
-    private void setComboBoxCategories() {       
+    private void setComboBoxCategories() {  
+        categoryComboBox.addItem("None");
         for (Category c : categories) {
             categoryComboBox.addItem(c.getName());
         }        

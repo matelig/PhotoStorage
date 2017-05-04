@@ -5,18 +5,40 @@
  */
 package com.mycompany.photostorage;
 
+import com.mycompany.photostorage.entity.Photo;
+import com.mycompany.photostorage.entity.User;
+import com.mycompany.photostorage.model.CurrentUser;
+import com.mycompany.photostorage.model.WrapLayout;
+import com.mycompany.photostorage.util.HibernateUtil;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.util.Set;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 /**
  *
  * @author Wojtek
  */
 public class PhotoViewPanel extends javax.swing.JPanel {
-
+    private CurrentUser currentUser;
     /**
      * Creates new form PhotoViewPanel
      */
-    public PhotoViewPanel() {
+    
+    public PhotoViewPanel() {  
         initComponents();
     }
+    
+    public PhotoViewPanel(CurrentUser currentUser) {
+        this.currentUser = currentUser;
+        initComponents();
+        photosPanel.setLayout(new WrapLayout());
+        fillView();
+        photosPanel.revalidate();
+    }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -30,11 +52,8 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         jSplitPane1 = new javax.swing.JSplitPane();
         jScrollPane1 = new javax.swing.JScrollPane();
         categoryTree = new javax.swing.JTree();
+        photosScrillPanel = new javax.swing.JScrollPane();
         photosPanel = new javax.swing.JPanel();
-        singlePhotoPanel1 = new com.mycompany.photostorage.SinglePhotoPanel();
-        singlePhotoPanel2 = new com.mycompany.photostorage.SinglePhotoPanel();
-        singlePhotoPanel3 = new com.mycompany.photostorage.SinglePhotoPanel();
-        singlePhotoPanel4 = new com.mycompany.photostorage.SinglePhotoPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -42,38 +61,28 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         jScrollPane2 = new javax.swing.JScrollPane();
         tagsTextField = new javax.swing.JTextArea();
 
+        jSplitPane1.setDividerLocation(150);
+
         jScrollPane1.setViewportView(categoryTree);
 
         jSplitPane1.setLeftComponent(jScrollPane1);
+
+        photosScrillPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         javax.swing.GroupLayout photosPanelLayout = new javax.swing.GroupLayout(photosPanel);
         photosPanel.setLayout(photosPanelLayout);
         photosPanelLayout.setHorizontalGroup(
             photosPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(photosPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(singlePhotoPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(singlePhotoPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(singlePhotoPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(singlePhotoPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(120, Short.MAX_VALUE))
+            .addGap(0, 552, Short.MAX_VALUE)
         );
         photosPanelLayout.setVerticalGroup(
             photosPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(photosPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(photosPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(singlePhotoPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(singlePhotoPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(singlePhotoPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(singlePhotoPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(247, Short.MAX_VALUE))
+            .addGap(0, 365, Short.MAX_VALUE)
         );
 
-        jSplitPane1.setRightComponent(photosPanel);
+        photosScrillPanel.setViewportView(photosPanel);
+
+        jSplitPane1.setRightComponent(photosScrillPanel);
 
         jLabel1.setText("Start date");
 
@@ -99,7 +108,7 @@ public class PhotoViewPanel extends javax.swing.JPanel {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addContainerGap())
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 246, Short.MAX_VALUE)))
+                    .addComponent(jScrollPane2)))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -131,7 +140,7 @@ public class PhotoViewPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jSplitPane1)
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 367, Short.MAX_VALUE)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -147,10 +156,21 @@ public class PhotoViewPanel extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JPanel photosPanel;
-    private com.mycompany.photostorage.SinglePhotoPanel singlePhotoPanel1;
-    private com.mycompany.photostorage.SinglePhotoPanel singlePhotoPanel2;
-    private com.mycompany.photostorage.SinglePhotoPanel singlePhotoPanel3;
-    private com.mycompany.photostorage.SinglePhotoPanel singlePhotoPanel4;
+    private javax.swing.JScrollPane photosScrillPanel;
     private javax.swing.JTextArea tagsTextField;
     // End of variables declaration//GEN-END:variables
+
+    private void fillView() {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        Query query = session.createQuery("from User where idu="+currentUser.getUserID());
+        User dbUser = (User) query.list().get(0);
+        Set<Photo> photos = dbUser.getPhotos();
+        for (Photo p : photos) {
+            SinglePhotoPanel photoPanel = new SinglePhotoPanel(p.getMiniature(),p.getDescription());
+            photosPanel.add(photoPanel);
+        }
+        session.getTransaction().commit();
+        session.close();
+    }
 }

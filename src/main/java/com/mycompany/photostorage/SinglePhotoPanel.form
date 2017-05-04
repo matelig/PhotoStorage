@@ -16,7 +16,7 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Component id="photoNameLabel" alignment="0" pref="90" max="32767" attributes="0"/>
+          <Component id="photoNameLabel" alignment="0" min="-2" pref="90" max="-2" attributes="0"/>
           <Component id="photoImage" alignment="0" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
@@ -37,6 +37,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Name"/>
       </Properties>
+      <Events>
+        <EventHandler event="mouseEntered" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="photoNameLabelMouseEntered"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>
