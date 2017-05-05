@@ -5,6 +5,7 @@
  */
 package com.mycompany.photostorage;
 
+import com.mycompany.photostorage.entity.Category;
 import com.mycompany.photostorage.entity.Photo;
 import com.mycompany.photostorage.entity.User;
 import com.mycompany.photostorage.model.CurrentUser;
@@ -13,7 +14,16 @@ import com.mycompany.photostorage.util.HibernateUtil;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Set;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -22,23 +32,123 @@ import org.hibernate.Session;
  * @author Wojtek
  */
 public class PhotoViewPanel extends javax.swing.JPanel {
+
     private CurrentUser currentUser;
+    private List<String> categoriesNames;
+    private List<Photo> selectedPhotos = new ArrayList<>();
+
     /**
      * Creates new form PhotoViewPanel
      */
-    
-    public PhotoViewPanel() {  
+    public PhotoViewPanel() {
         initComponents();
     }
-    
+
     public PhotoViewPanel(CurrentUser currentUser) {
         this.currentUser = currentUser;
         initComponents();
+        categoriesNames = new ArrayList<>();
+        photosScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         photosPanel.setLayout(new WrapLayout());
         fillView();
+        prepareCreation();
         photosPanel.revalidate();
     }
-    
+
+    private void createCategoriesTree(List<Category> categoriesAL, DefaultMutableTreeNode supCategory) {
+        DefaultMutableTreeNode category = null;
+        if (!categoriesAL.isEmpty()) {
+            for (int i = categoriesAL.size() - 1; i >= 0; i--) {
+                Category cat = categoriesAL.get(i);
+                if (cat.getCategory() != null && cat.getCategory().getName().equals(supCategory.getUserObject())) {
+                    category = new DefaultMutableTreeNode(cat.getName());
+                    supCategory.add(category);
+                    categoriesAL.remove(i);
+                    createCategoriesTree(categoriesAL, category);
+                }
+            }
+        }
+    }
+
+    private void prepareCreation() {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        Query queryUser = session.createQuery("from User where idu=" + currentUser.getUserID());
+        User user = (User) queryUser.list().get(0);
+        Set<Category> categories = user.getCategories();
+        List<Category> categoriesAL = new ArrayList<>();
+        categoriesAL.addAll(categories);
+        Collections.sort(categoriesAL, (Category a, Category b) -> {
+            return a.getIdc().compareTo(b.getIdc());
+        });
+        DefaultMutableTreeNode root = null;
+        DefaultMutableTreeNode category = null;
+        root = new DefaultMutableTreeNode("Categories");
+        for (int i = categoriesAL.size() - 1; i >= 0; i--) {
+            Category cat = categoriesAL.get(i);
+            if (cat.getCategory() == null) {
+                category = new DefaultMutableTreeNode(cat.getName());
+                root.add(category);
+                categoriesAL.remove(i);
+                createCategoriesTree(categoriesAL, category);
+            }
+        }
+        categoryTree.setModel(new DefaultTreeModel(root));
+        categoryTree.addTreeSelectionListener(new TreeSelectionListener() {
+            @Override
+            public void valueChanged(TreeSelectionEvent e) {
+                categoriesNames = new ArrayList<>();
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) categoryTree.getLastSelectedPathComponent();
+                photosPanel.removeAll();
+                if (node.isRoot()) {
+                    fillView();
+                } else {
+                    getNodePhotos(node);
+                    updatePhotoView();
+                }
+                photosPanel.revalidate();
+                photosPanel.repaint();
+            }
+        });
+        session.getTransaction().commit();
+        session.close();
+    }
+
+    private void updatePhotoView() {
+        selectedPhotos = new ArrayList<>();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        Query queryUser = session.createQuery("from User where idu=" + currentUser.getUserID());
+        User user = (User) queryUser.list().get(0);
+        Set<Category> categories = user.getCategories();
+        List<Category> categoriesAL = new ArrayList<>();
+        categoriesAL.addAll(categories);
+        for (int i = categoriesAL.size() - 1; i >= 0; i--) {
+            if (!categoriesNames.contains(categoriesAL.get(i).getName())) {
+                categoriesAL.remove(i);
+            }
+        }
+        for (Category cat : categoriesAL) {
+            Set<Photo> photos = cat.getPhotos();
+            selectedPhotos.addAll(photos);
+        }
+        for (Photo p : selectedPhotos) {
+            SinglePhotoPanel photoPanel = new SinglePhotoPanel(p.getMiniature(), p.getDescription());
+            photosPanel.add(photoPanel);
+        }
+        session.getTransaction().commit();
+        session.close();
+    }
+
+    private void getNodePhotos(DefaultMutableTreeNode node) {
+        categoriesNames.add((String) node.getUserObject());
+        if (node.isLeaf()) {
+            return;
+        }
+        for (int i = 0; i < node.getChildCount(); i++) {
+            getNodePhotos((DefaultMutableTreeNode) node.getChildAt(i));
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -52,7 +162,7 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         jSplitPane1 = new javax.swing.JSplitPane();
         jScrollPane1 = new javax.swing.JScrollPane();
         categoryTree = new javax.swing.JTree();
-        photosScrillPanel = new javax.swing.JScrollPane();
+        photosScrollPane = new javax.swing.JScrollPane();
         photosPanel = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -63,11 +173,13 @@ public class PhotoViewPanel extends javax.swing.JPanel {
 
         jSplitPane1.setDividerLocation(150);
 
+        javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("Categories");
+        categoryTree.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
         jScrollPane1.setViewportView(categoryTree);
 
         jSplitPane1.setLeftComponent(jScrollPane1);
 
-        photosScrillPanel.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        photosScrollPane.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         javax.swing.GroupLayout photosPanelLayout = new javax.swing.GroupLayout(photosPanel);
         photosPanel.setLayout(photosPanelLayout);
@@ -80,9 +192,9 @@ public class PhotoViewPanel extends javax.swing.JPanel {
             .addGap(0, 365, Short.MAX_VALUE)
         );
 
-        photosScrillPanel.setViewportView(photosPanel);
+        photosScrollPane.setViewportView(photosPanel);
 
-        jSplitPane1.setRightComponent(photosScrillPanel);
+        jSplitPane1.setRightComponent(photosScrollPane);
 
         jLabel1.setText("Start date");
 
@@ -156,18 +268,18 @@ public class PhotoViewPanel extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
     private javax.swing.JPanel photosPanel;
-    private javax.swing.JScrollPane photosScrillPanel;
+    private javax.swing.JScrollPane photosScrollPane;
     private javax.swing.JTextArea tagsTextField;
     // End of variables declaration//GEN-END:variables
 
     private void fillView() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
-        Query query = session.createQuery("from User where idu="+currentUser.getUserID());
+        Query query = session.createQuery("from User where idu=" + currentUser.getUserID());
         User dbUser = (User) query.list().get(0);
         Set<Photo> photos = dbUser.getPhotos();
         for (Photo p : photos) {
-            SinglePhotoPanel photoPanel = new SinglePhotoPanel(p.getMiniature(),p.getDescription());
+            SinglePhotoPanel photoPanel = new SinglePhotoPanel(p.getMiniature(), p.getDescription());
             photosPanel.add(photoPanel);
         }
         session.getTransaction().commit();

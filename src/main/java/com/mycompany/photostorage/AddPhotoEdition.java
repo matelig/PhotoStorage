@@ -59,6 +59,7 @@ public class AddPhotoEdition extends JPanel {
         scrollPane = new JScrollPane(container);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setPreferredSize(new Dimension(480, 360));
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
         this.add(scrollPane, BorderLayout.CENTER);
         this.add(insertPhotoButton, BorderLayout.SOUTH);

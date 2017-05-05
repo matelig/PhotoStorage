@@ -16,6 +16,7 @@ public class EditPhotoPanel extends javax.swing.JPanel {
      */
     public EditPhotoPanel() {
         initComponents();
+        jScrollPane1.getVerticalScrollBar().setUnitIncrement(16);
         setVisible(true);
     }
 
