@@ -39,6 +39,7 @@ public class PhotoViewPanel extends javax.swing.JPanel {
     private List<SinglePhotoPanel> photoPanels = new ArrayList<>();
     private MainProgramFrame frame;
     private List<Category> allCategories = new ArrayList<>();
+
     /**
      * Creates new form PhotoViewPanel
      */
@@ -46,7 +47,7 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         initComponents();
     }
 
-    public PhotoViewPanel(MainProgramFrame frame,CurrentUser currentUser) {
+    public PhotoViewPanel(MainProgramFrame frame, CurrentUser currentUser) {
         this.frame = frame;
         this.currentUser = currentUser;
         initComponents();
@@ -133,7 +134,7 @@ public class PhotoViewPanel extends javax.swing.JPanel {
                 categoriesAL.remove(i);
             }
         }
-        
+
         for (Category cat : categoriesAL) {
             Set<Photo> photos = cat.getPhotos();
             selectedPhotos.addAll(photos);
@@ -253,6 +254,11 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         );
 
         deletePhotoButton.setText("Delete");
+        deletePhotoButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deletePhotoButtonActionPerformed(evt);
+            }
+        });
 
         movePhotoButton.setText("Move");
         movePhotoButton.setPreferredSize(new java.awt.Dimension(66, 32));
@@ -303,13 +309,33 @@ public class PhotoViewPanel extends javax.swing.JPanel {
 
     private void editPhotoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editPhotoButtonActionPerformed
         List<SinglePhotoPanel> selectedPhotos = new ArrayList<>();
-        for (SinglePhotoPanel p: photoPanels) {
+        for (SinglePhotoPanel p : photoPanels) {
             if (p.isChecked()) {
                 selectedPhotos.add(p);
             }
         }
         frame.setPanel(new PhotoPanelEdit(selectedPhotos, allCategories));
     }//GEN-LAST:event_editPhotoButtonActionPerformed
+
+    private void deletePhotoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deletePhotoButtonActionPerformed
+        Object[] options = {"Yes", "No"};
+        int x = JOptionPane.showOptionDialog(null,
+                "Do you really want to delete selected photos?",
+                "Delete",
+                JOptionPane.DEFAULT_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null, options, options[1]);
+        if (x == 0) {
+            List<SinglePhotoPanel> photosToDelete = new ArrayList<>();
+            for (SinglePhotoPanel p : photoPanels) {
+                if (p.isChecked()) {
+                    photosToDelete.add(p);
+                }
+            }
+            deletePhotoFromDatabase(photosToDelete);
+        }
+
+    }//GEN-LAST:event_deletePhotoButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -341,6 +367,18 @@ public class PhotoViewPanel extends javax.swing.JPanel {
             SinglePhotoPanel photoPanel = new SinglePhotoPanel(p.getMiniature(), p.getDescription(), p.getIdp());
             photoPanels.add(photoPanel);
             photosPanel.add(photoPanel);
+        }
+        session.getTransaction().commit();
+        session.close();
+    }
+
+    private void deletePhotoFromDatabase(List<SinglePhotoPanel> selectedPhotos) {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        for (SinglePhotoPanel p : selectedPhotos) {
+            Query query = session.createQuery("from Photo where idp=" + p.getPhotoID());
+            Photo dbPhoto = (Photo) query.list().get(0);
+            session.delete(dbPhoto);
         }
         session.getTransaction().commit();
         session.close();
