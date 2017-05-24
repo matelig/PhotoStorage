@@ -114,7 +114,7 @@ public class AddPhotoEdition extends JPanel {
             image.paintIcon(null, g, 0, 0);
             ByteArrayOutputStream baos = null;
             try {
-                baos = new ByteArrayOutputStream();//TODO: BLOB NEED TO BE FIXED - something's wrong
+                baos = new ByteArrayOutputStream();
                 ImageIO.write(bi, "png", baos);
                 byte[] imageInByte = baos.toByteArray();
                 photo.setMiniature(imageInByte);

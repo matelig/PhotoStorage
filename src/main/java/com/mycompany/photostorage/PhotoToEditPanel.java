@@ -37,6 +37,7 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
 
     private BufferedImage image;
     private List<Category> categories = new ArrayList<>();
+    private int photoID;
 
     /**
      * Creates new form PhotoToEditPanel
@@ -59,6 +60,7 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
 
     public PhotoToEditPanel(int photoID, List<Category> categories) {
         this.categories.addAll(categories);
+        this.photoID = photoID;
         initComponents();
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -133,6 +135,10 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
 
     public String[] getTags() {
         return null;
+    }
+    
+    public int getPhotoID() {
+        return this.photoID;
     }
 
     public Icon getMiniature() {
