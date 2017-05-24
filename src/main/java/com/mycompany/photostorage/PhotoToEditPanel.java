@@ -6,13 +6,16 @@
 package com.mycompany.photostorage;
 
 import com.mycompany.photostorage.entity.Category;
+import com.mycompany.photostorage.entity.Photo;
 import com.mycompany.photostorage.entity.User;
 import com.mycompany.photostorage.model.CurrentUser;
 import com.mycompany.photostorage.util.HibernateUtil;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +25,7 @@ import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import org.apache.commons.io.FilenameUtils;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -32,22 +36,77 @@ import org.hibernate.Session;
 public class PhotoToEditPanel extends javax.swing.JPanel {
 
     private BufferedImage image;
-    private List<Category> categories;
+    private List<Category> categories = new ArrayList<>();
+
     /**
      * Creates new form PhotoToEditPanel
      */
     public PhotoToEditPanel() {
-        initComponents();        
+        initComponents();
         setImageMiniature("src/wojtek.jpg");
-        setVisible(true);              
+        setVisible(true);
     }
-    
-    public PhotoToEditPanel(String filePath,List<Category> categories) {    
+
+    public PhotoToEditPanel(String filePath, List<Category> categories) {
         this.categories = categories;
-        initComponents();      
+        initComponents();
+        String pom = FilenameUtils.getExtension(filePath);
+        txtFieldDescription.setText(pom);
         setComboBoxCategories();
         setImageMiniature(filePath);
-        setVisible(true);              
+        setVisible(true);
+    }
+
+    public PhotoToEditPanel(int photoID, List<Category> categories) {
+        this.categories.addAll(categories);
+        initComponents();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        Query query = session.createQuery("from Photo p where p.idp = " + photoID);
+        Photo dbPhoto = (Photo) query.list().get(0);
+        txtFieldDescription.setText(dbPhoto.getDescription());
+        setComboBoxCategories();
+        if (dbPhoto.getCategory() != null) {
+            String categoryName = dbPhoto.getCategory().getName();
+            
+            for (int i = 0;i<categoryComboBox.getItemCount();i++) {
+                if (this.categoryComboBox.getItemAt(i).equals(categoryName)) {
+                    categoryComboBox.setSelectedIndex(i);
+                    break;
+                }
+            }
+            
+        }
+        setImageMiniature(dbPhoto.getMiniature());
+        session.getTransaction().commit();
+        session.close();
+        setVisible(true);
+
+    }
+
+    private void setImageMiniature(byte[] file) {
+        try {
+            InputStream in = new ByteArrayInputStream(file);
+            image = ImageIO.read(in);
+            ImageIcon icon = new ImageIcon();
+            icon.setImage(image);
+            Image image = icon.getImage();
+            image = image.getScaledInstance(114, 104, Image.SCALE_SMOOTH);
+            icon = new ImageIcon(image);
+            labelPhoto.setIcon(icon);
+            this.image = null;
+
+//               InputStream in = new ByteArrayInputStream(photo);
+//            image = ImageIO.read(in);
+//            ImageIcon icon = new ImageIcon();
+//            icon.setImage(image);
+//            Image image = icon.getImage();
+//            image = image.getScaledInstance(90, 90, Image.SCALE_SMOOTH);
+//            icon = new ImageIcon(image);
+//            photoImage.setIcon(icon);
+        } catch (IOException ex) {
+            System.out.println("sdgsdsss");
+        }
     }
 
     private void setImageMiniature(String filePath) {
@@ -59,25 +118,27 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
             image = image.getScaledInstance(114, 104, Image.SCALE_SMOOTH);
             icon = new ImageIcon(image);
             labelPhoto.setIcon(icon);
-        } catch (IOException ex) {           
+            this.image = null;
+        } catch (IOException ex) {
         }
     }
-    
+
     public String getDescription() {
         return txtFieldDescription.getText();
     }
-    
+
     public String getCategory() {
         return categoryComboBox.getSelectedItem().toString();
     }
-    
+
     public String[] getTags() {
         return null;
     }
-    
+
     public Icon getMiniature() {
         return labelPhoto.getIcon();
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -159,10 +220,10 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
     private javax.swing.JTextField txtFieldDescription;
     // End of variables declaration//GEN-END:variables
 
-    private void setComboBoxCategories() {  
+    private void setComboBoxCategories() {
         categoryComboBox.addItem("None");
         for (Category c : categories) {
             categoryComboBox.addItem(c.getName());
-        }        
+        }
     }
 }

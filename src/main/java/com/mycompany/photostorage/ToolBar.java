@@ -27,23 +27,8 @@ public class ToolBar implements ActionListener{
         button  = new JButton("Add photos");
         button.setActionCommand("Add photos");
         button.addActionListener(this);
-        toolBar.add(button);
-        
-        button  = new JButton("Edit photos");
-        button.setActionCommand("Edit photos");
-        button.addActionListener(this);
-        toolBar.add(button);
-        
-        button  = new JButton("Delete photos");
-        button.setActionCommand("Delete photos");
-        button.addActionListener(this);
-        toolBar.add(button);
-        
-        button  = new JButton("Move photos");
-        button.setActionCommand("Move photos");
-        button.addActionListener(this);
-        toolBar.add(button);
-        
+        toolBar.add(button);        
+          
         button  = new JButton("Add category");
         button.setActionCommand("Add category");
         button.addActionListener(this);
@@ -87,21 +72,12 @@ public class ToolBar implements ActionListener{
                 break;
             case "Add device":
                 frame.setPanel(new AddDevicePanel());
-                break;
-            case "Edit photos":
-                frame.setPanel(new EditPhotoPanel());
-                break;  
-            case "Delete photos"://nie ma jpanelu
-                frame.setPanel(new EditPhotoPanel());
-                break;  
-            case "Move photos"://niema JPanelu
-                frame.setPanel(new EditPhotoPanel());
-                break;
+                break;            
             case "Add category":
                 frame.setPanel(new AddCategoryPanel(frame.getCurrentUser()));
                 break;
             case "Search":
-                frame.setPanel(new PhotoViewPanel(frame.getCurrentUser()));
+                frame.setPanel(new PhotoViewPanel(frame,frame.getCurrentUser()));
                 break;
             case "Generate report":
                 frame.setPanel(new GenerateReportPanel());

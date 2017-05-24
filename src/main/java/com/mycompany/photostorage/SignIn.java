@@ -116,14 +116,10 @@ public class SignIn extends javax.swing.JPanel {
             CurrentUser currentUser = getDatabaseUser();
             frame.setCurrentUser(currentUser);
             frame.displayMenu();   //now just need to push user forward
-            frame.setPanel(new PhotoViewPanel(frame.getCurrentUser()));
+            frame.setPanel(new PhotoViewPanel(frame,frame.getCurrentUser()));
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, ex, "Warning", JOptionPane.WARNING_MESSAGE);
-        }
-        
-        
-        
-        
+        }       
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed

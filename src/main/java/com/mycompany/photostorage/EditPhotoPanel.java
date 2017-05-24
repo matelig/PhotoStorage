@@ -5,11 +5,31 @@
  */
 package com.mycompany.photostorage;
 
+import com.mycompany.photostorage.entity.Category;
+import com.mycompany.photostorage.entity.Photo;
+import com.mycompany.photostorage.entity.User;
+import com.mycompany.photostorage.model.NewPhoto;
+import com.mycompany.photostorage.util.HibernateUtil;
+import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import org.apache.commons.io.FilenameUtils;
+import org.hibernate.Query;
+import org.hibernate.Session;
+
 /**
  *
  * @author alachman
  */
 public class EditPhotoPanel extends javax.swing.JPanel {
+
+    private List<SinglePhotoPanel> selectedPhotos = new ArrayList<>();
+    private JPanel container = new JPanel();
+    private List<Category> categoriesAL = new ArrayList<>();
 
     /**
      * Creates new form EditPhotoPanel
@@ -18,6 +38,27 @@ public class EditPhotoPanel extends javax.swing.JPanel {
         initComponents();
         jScrollPane1.getVerticalScrollBar().setUnitIncrement(16);
         setVisible(true);
+    }
+
+    public EditPhotoPanel(List<SinglePhotoPanel> selectedPhotos, List<Category> categoriesAL) {
+        initComponents();
+        this.selectedPhotos.addAll(selectedPhotos);
+        this.categoriesAL.addAll(categoriesAL);
+        //container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+        fillContainer();
+        jScrollPane1.add(jPanel1);
+        jScrollPane1.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        jScrollPane1.setPreferredSize(new Dimension(480, 360));
+        jScrollPane1.getVerticalScrollBar().setUnitIncrement(16);
+        setVisible(true);
+        jScrollPane1.revalidate();
+    }
+
+    private void fillContainer() {
+        for (SinglePhotoPanel panel : selectedPhotos) {
+            PhotoToEditPanel ptep = new PhotoToEditPanel(panel.getPhotoID(), categoriesAL);
+            jPanel1.add(ptep);
+        }
     }
 
     /**
@@ -33,9 +74,6 @@ public class EditPhotoPanel extends javax.swing.JPanel {
         jSeparator1 = new javax.swing.JSeparator();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel1 = new javax.swing.JPanel();
-        photoToEditPanel3 = new com.mycompany.photostorage.PhotoToEditPanel();
-        photoToEditPanel4 = new com.mycompany.photostorage.PhotoToEditPanel();
-        photoToEditPanel1 = new com.mycompany.photostorage.PhotoToEditPanel();
         jButton1 = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
@@ -48,22 +86,11 @@ public class EditPhotoPanel extends javax.swing.JPanel {
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(photoToEditPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(photoToEditPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(photoToEditPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(0, 20, Short.MAX_VALUE))
+            .addGap(0, 417, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(photoToEditPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(photoToEditPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(photoToEditPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+            .addGap(0, 359, Short.MAX_VALUE)
         );
 
         jScrollPane1.setViewportView(jPanel1);
@@ -108,8 +135,5 @@ public class EditPhotoPanel extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
-    private com.mycompany.photostorage.PhotoToEditPanel photoToEditPanel1;
-    private com.mycompany.photostorage.PhotoToEditPanel photoToEditPanel3;
-    private com.mycompany.photostorage.PhotoToEditPanel photoToEditPanel4;
     // End of variables declaration//GEN-END:variables
 }

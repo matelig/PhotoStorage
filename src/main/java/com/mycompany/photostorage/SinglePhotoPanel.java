@@ -5,6 +5,7 @@
  */
 package com.mycompany.photostorage;
 
+import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -12,7 +13,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.border.Border;
 
 /**
  *
@@ -20,17 +23,24 @@ import javax.swing.ImageIcon;
  */
 public class SinglePhotoPanel extends javax.swing.JPanel {
     
+    private int photoID;
     private BufferedImage image;
+    private Border blackBorder = BorderFactory.createLineBorder(Color.BLACK,2);
+    private Boolean isChecked = false;
+    private Border emptyBorder = BorderFactory.createEmptyBorder(2,2,2,2);
     /**
      * Creates new form SinglePhotoPanel
      */
     public SinglePhotoPanel() {
         initComponents();
-        setImageMiniature();
+        setBorder(emptyBorder);
+        setImageMiniature();        
         photoNameLabel.setText("Wódz wspaniały");
     }
-    public SinglePhotoPanel(byte[] photo,String description) {
+    public SinglePhotoPanel(byte[] photo,String description, int id) {
         initComponents();
+        this.photoID = id;
+        setBorder(emptyBorder);
         setImageMiniature(photo);
         photoNameLabel.setText(description);
     }
@@ -63,6 +73,10 @@ public class SinglePhotoPanel extends javax.swing.JPanel {
            
         }
     }
+    
+    public boolean isChecked() {
+        return this.isChecked;
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -75,6 +89,12 @@ public class SinglePhotoPanel extends javax.swing.JPanel {
 
         photoImage = new javax.swing.JLabel();
         photoNameLabel = new javax.swing.JLabel();
+
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                formMouseReleased(evt);
+            }
+        });
 
         photoNameLabel.setText("Name");
         photoNameLabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -103,9 +123,26 @@ public class SinglePhotoPanel extends javax.swing.JPanel {
        photoNameLabel.setToolTipText(photoNameLabel.getText());
     }//GEN-LAST:event_photoNameLabelMouseEntered
 
+    private void formMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseReleased
+        // TODO add your handling code here:
+        if (!isChecked) {
+            setBorder(blackBorder);
+        } else {
+            setBorder(emptyBorder);
+        }
+        isChecked=!isChecked;
+    }//GEN-LAST:event_formMouseReleased
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel photoImage;
     private javax.swing.JLabel photoNameLabel;
     // End of variables declaration//GEN-END:variables
+
+    /**
+     * @return the photoID
+     */
+    public int getPhotoID() {
+        return photoID;
+    }
 }

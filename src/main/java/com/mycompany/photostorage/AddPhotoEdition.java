@@ -34,6 +34,7 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import org.apache.commons.io.FilenameUtils;
 import org.hibernate.Hibernate;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -78,9 +79,12 @@ public class AddPhotoEdition extends JPanel {
         session.getTransaction().commit();
         session.close();
         for (NewPhoto photo : newPhoto) {
+            if (!FilenameUtils.getExtension(photo.getPath()).equalsIgnoreCase("gif")) {
             PhotoToEditPanel ptep = new PhotoToEditPanel(photo.getPath(), categoriesAL);
             container.add(ptep);
+            }
         }
+        //newPhoto.clear();
         this.insertPhotoButton = new JButton("Save");
         this.insertPhotoButton.setSize(new Dimension(40, 20));
         this.insertPhotoButton.addActionListener(new ActionListener() {

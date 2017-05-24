@@ -36,7 +36,9 @@ public class PhotoViewPanel extends javax.swing.JPanel {
     private CurrentUser currentUser;
     private List<String> categoriesNames;
     private List<Photo> selectedPhotos = new ArrayList<>();
-
+    private List<SinglePhotoPanel> photoPanels = new ArrayList<>();
+    private MainProgramFrame frame;
+    private List<Category> allCategories = new ArrayList<>();
     /**
      * Creates new form PhotoViewPanel
      */
@@ -44,7 +46,8 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         initComponents();
     }
 
-    public PhotoViewPanel(CurrentUser currentUser) {
+    public PhotoViewPanel(MainProgramFrame frame,CurrentUser currentUser) {
+        this.frame = frame;
         this.currentUser = currentUser;
         initComponents();
         categoriesNames = new ArrayList<>();
@@ -81,6 +84,7 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         Collections.sort(categoriesAL, (Category a, Category b) -> {
             return a.getIdc().compareTo(b.getIdc());
         });
+        allCategories.addAll(categoriesAL);
         DefaultMutableTreeNode root = null;
         DefaultMutableTreeNode category = null;
         root = new DefaultMutableTreeNode("Categories");
@@ -115,6 +119,7 @@ public class PhotoViewPanel extends javax.swing.JPanel {
     }
 
     private void updatePhotoView() {
+        photoPanels.clear();
         selectedPhotos = new ArrayList<>();
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -128,12 +133,14 @@ public class PhotoViewPanel extends javax.swing.JPanel {
                 categoriesAL.remove(i);
             }
         }
+        
         for (Category cat : categoriesAL) {
             Set<Photo> photos = cat.getPhotos();
             selectedPhotos.addAll(photos);
         }
         for (Photo p : selectedPhotos) {
-            SinglePhotoPanel photoPanel = new SinglePhotoPanel(p.getMiniature(), p.getDescription());
+            SinglePhotoPanel photoPanel = new SinglePhotoPanel(p.getMiniature(), p.getDescription(), p.getIdp());
+            photoPanels.add(photoPanel);
             photosPanel.add(photoPanel);
         }
         session.getTransaction().commit();
@@ -170,6 +177,11 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         jLabel3 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tagsTextField = new javax.swing.JTextArea();
+        startDatePicker = new org.jdesktop.swingx.JXDatePicker();
+        endDatePicker = new org.jdesktop.swingx.JXDatePicker();
+        deletePhotoButton = new javax.swing.JButton();
+        movePhotoButton = new javax.swing.JButton();
+        editPhotoButton = new javax.swing.JButton();
 
         jSplitPane1.setDividerLocation(150);
 
@@ -210,17 +222,19 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addGap(107, 107, 107)
-                .addComponent(jLabel2)
-                .addGap(110, 110, 110)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addContainerGap())
-                    .addComponent(jScrollPane2)))
+                    .addComponent(startDatePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(endDatePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -231,8 +245,25 @@ public class PhotoViewPanel extends javax.swing.JPanel {
                     .addComponent(jLabel2)
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(startDatePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(endDatePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
+
+        deletePhotoButton.setText("Delete");
+
+        movePhotoButton.setText("Move");
+        movePhotoButton.setPreferredSize(new java.awt.Dimension(66, 32));
+
+        editPhotoButton.setText("Edit");
+        editPhotoButton.setPreferredSize(new java.awt.Dimension(66, 32));
+        editPhotoButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                editPhotoButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -245,6 +276,14 @@ public class PhotoViewPanel extends javax.swing.JPanel {
                         .addContainerGap()
                         .addComponent(jSplitPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(editPhotoButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(movePhotoButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(deletePhotoButton)
+                .addGap(36, 36, 36))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -252,14 +291,32 @@ public class PhotoViewPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 367, Short.MAX_VALUE)
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 332, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(deletePhotoButton)
+                    .addComponent(movePhotoButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(editPhotoButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void editPhotoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editPhotoButtonActionPerformed
+        List<SinglePhotoPanel> selectedPhotos = new ArrayList<>();
+        for (SinglePhotoPanel p: photoPanels) {
+            if (p.isChecked()) {
+                selectedPhotos.add(p);
+            }
+        }
+        frame.setPanel(new PhotoPanelEdit(selectedPhotos, allCategories));
+    }//GEN-LAST:event_editPhotoButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTree categoryTree;
+    private javax.swing.JButton deletePhotoButton;
+    private javax.swing.JButton editPhotoButton;
+    private org.jdesktop.swingx.JXDatePicker endDatePicker;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -267,8 +324,10 @@ public class PhotoViewPanel extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JSplitPane jSplitPane1;
+    private javax.swing.JButton movePhotoButton;
     private javax.swing.JPanel photosPanel;
     private javax.swing.JScrollPane photosScrollPane;
+    private org.jdesktop.swingx.JXDatePicker startDatePicker;
     private javax.swing.JTextArea tagsTextField;
     // End of variables declaration//GEN-END:variables
 
@@ -279,7 +338,8 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         User dbUser = (User) query.list().get(0);
         Set<Photo> photos = dbUser.getPhotos();
         for (Photo p : photos) {
-            SinglePhotoPanel photoPanel = new SinglePhotoPanel(p.getMiniature(), p.getDescription());
+            SinglePhotoPanel photoPanel = new SinglePhotoPanel(p.getMiniature(), p.getDescription(), p.getIdp());
+            photoPanels.add(photoPanel);
             photosPanel.add(photoPanel);
         }
         session.getTransaction().commit();

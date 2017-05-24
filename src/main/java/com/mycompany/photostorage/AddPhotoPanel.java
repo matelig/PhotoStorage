@@ -104,7 +104,7 @@ public class AddPhotoPanel extends javax.swing.JPanel {
                 photo.setFormat(FilenameUtils.getExtension(file.getPath()));
                 photo.setResolution(resolution);
                 photo.setSize(Long.toString(file.length()));
-                
+                photo.setDescription(file.getName());
                 newPhotos.add(photo);
             } catch (IOException ex) {
 
