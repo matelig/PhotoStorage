@@ -8,7 +8,6 @@ package com.mycompany.photostorage;
 import com.mycompany.photostorage.model.CurrentUser;
 import java.awt.BorderLayout;
 import javax.swing.JFrame;
-import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
 /**
@@ -20,10 +19,6 @@ public class MainProgramFrame {
     private JFrame frame;
     private CurrentUser currentUser;
 
-    public void displayMenu() {
-        JMenuBar menuBar = new MainMenu().createMainMenu();
-        frame.setJMenuBar(menuBar);
-    }
 
     public void CreateAndShowGUI() {
         frame = new JFrame("");
@@ -42,11 +37,7 @@ public class MainProgramFrame {
         frame.pack();
         frame.revalidate();
     }
-
-    public void hideMenu() {
-        frame.setJMenuBar(null);
-    }
-    
+  
     public void setCurrentUser(CurrentUser cu) {
         this.currentUser = cu;
     }

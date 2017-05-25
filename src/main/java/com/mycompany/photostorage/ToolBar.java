@@ -5,6 +5,7 @@
  */
 package com.mycompany.photostorage;
 
+import com.mycompany.photostorage.model.AddPhotoOption;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -68,7 +69,8 @@ public class ToolBar implements ActionListener{
             //deleteDevice
             
             case "Add photos":
-                frame.setPanel(new AddPhotoPanel(frame,frame.getCurrentUser()));
+                AddPhotoOption addPhoto = new AddPhotoOption(frame,frame.getCurrentUser());
+                addPhoto.showChoosePhotosDialog();
                 break;
             case "Add device":
                 frame.setPanel(new AddDevicePanel());
@@ -83,7 +85,6 @@ public class ToolBar implements ActionListener{
                 frame.setPanel(new GenerateReportPanel());
                 break;
             case "Log out":
-                frame.hideMenu();
                 frame.setPanel(new SignIn(frame));
                 break;
             default:

@@ -11,14 +11,13 @@ import com.mycompany.photostorage.entity.User;
 import com.mycompany.photostorage.model.CurrentUser;
 import com.mycompany.photostorage.model.WrapLayout;
 import com.mycompany.photostorage.util.HibernateUtil;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -26,6 +25,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.jdesktop.swingx.JXDatePicker;
 
 /**
  *
@@ -39,6 +39,8 @@ public class PhotoViewPanel extends javax.swing.JPanel {
     private List<SinglePhotoPanel> photoPanels = new ArrayList<>();
     private MainProgramFrame frame;
     private List<Category> allCategories = new ArrayList<>();
+    private Date startDate;
+    private Date endDate;
 
     /**
      * Creates new form PhotoViewPanel
@@ -56,7 +58,9 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         photosPanel.setLayout(new WrapLayout());
         fillView();
         prepareCreation();
+        addJDatePickerListener();
         photosPanel.revalidate();
+        categoryTree.setSelectionRow(0);
     }
 
     private void createCategoriesTree(List<Category> categoriesAL, DefaultMutableTreeNode supCategory) {
@@ -102,17 +106,7 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         categoryTree.addTreeSelectionListener(new TreeSelectionListener() {
             @Override
             public void valueChanged(TreeSelectionEvent e) {
-                categoriesNames = new ArrayList<>();
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) categoryTree.getLastSelectedPathComponent();
-                photosPanel.removeAll();
-                if (node.isRoot()) {
-                    fillView();
-                } else {
-                    getNodePhotos(node);
-                    updatePhotoView();
-                }
-                photosPanel.revalidate();
-                photosPanel.repaint();
+                updateMainView();
             }
         });
         session.getTransaction().commit();
@@ -139,6 +133,7 @@ public class PhotoViewPanel extends javax.swing.JPanel {
             Set<Photo> photos = cat.getPhotos();
             selectedPhotos.addAll(photos);
         }
+        checkPhotoDate(selectedPhotos);
         for (Photo p : selectedPhotos) {
             SinglePhotoPanel photoPanel = new SinglePhotoPanel(p.getMiniature(), p.getDescription(), p.getIdp());
             photoPanels.add(photoPanel);
@@ -180,6 +175,8 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         tagsTextField = new javax.swing.JTextArea();
         startDatePicker = new org.jdesktop.swingx.JXDatePicker();
         endDatePicker = new org.jdesktop.swingx.JXDatePicker();
+        jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
         deletePhotoButton = new javax.swing.JButton();
         movePhotoButton = new javax.swing.JButton();
         editPhotoButton = new javax.swing.JButton();
@@ -219,6 +216,21 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         tagsTextField.setRows(5);
         jScrollPane2.setViewportView(tagsTextField);
 
+        jButton1.setFont(new java.awt.Font("Dialog", 1, 8)); // NOI18N
+        jButton1.setText("x");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("jButton2");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -226,13 +238,20 @@ public class PhotoViewPanel extends javax.swing.JPanel {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(startDatePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addGap(18, 18, 18)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(3, 3, 3)
+                        .addComponent(startDatePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(3, 3, 3)))
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2)
-                    .addComponent(endDatePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
+                    .addComponent(endDatePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel3)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 254, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -247,10 +266,16 @@ public class PhotoViewPanel extends javax.swing.JPanel {
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(startDatePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(endDatePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(startDatePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(endDatePicker, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(1, 1, 1))))
         );
 
         deletePhotoButton.setText("Delete");
@@ -283,7 +308,7 @@ public class PhotoViewPanel extends javax.swing.JPanel {
                         .addComponent(jSplitPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addGap(0, 335, Short.MAX_VALUE)
                 .addComponent(editPhotoButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(movePhotoButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -334,8 +359,17 @@ public class PhotoViewPanel extends javax.swing.JPanel {
             }
             deletePhotoFromDatabase(photosToDelete);
         }
-
     }//GEN-LAST:event_deletePhotoButtonActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        startDatePicker.setDate(null);
+        updateMainView();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        endDatePicker.setDate(null);
+        updateMainView();
+    }//GEN-LAST:event_jButton2ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -343,6 +377,8 @@ public class PhotoViewPanel extends javax.swing.JPanel {
     private javax.swing.JButton deletePhotoButton;
     private javax.swing.JButton editPhotoButton;
     private org.jdesktop.swingx.JXDatePicker endDatePicker;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -363,7 +399,10 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         Query query = session.createQuery("from User where idu=" + currentUser.getUserID());
         User dbUser = (User) query.list().get(0);
         Set<Photo> photos = dbUser.getPhotos();
-        for (Photo p : photos) {
+        List<Photo> selectedPhotos = new ArrayList<>();
+        selectedPhotos.addAll(photos);
+        checkPhotoDate(selectedPhotos);
+        for (Photo p : selectedPhotos) {
             SinglePhotoPanel photoPanel = new SinglePhotoPanel(p.getMiniature(), p.getDescription(), p.getIdp());
             photoPanels.add(photoPanel);
             photosPanel.add(photoPanel);
@@ -382,5 +421,59 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         }
         session.getTransaction().commit();
         session.close();
+    }
+
+    private void addJDatePickerListener() {
+        ActionListener l = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                if (JXDatePicker.COMMIT_KEY.equals(ae.getActionCommand())) {
+                    startDate = startDatePicker.getDate();
+                    updateMainView();
+                }
+            }
+        };
+        startDatePicker.addActionListener(l);
+        ActionListener l1 = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                if (JXDatePicker.COMMIT_KEY.equals(ae.getActionCommand())) {
+                    endDate = endDatePicker.getDate();
+                    updateMainView();
+                }
+            }
+        };
+        endDatePicker.addActionListener(l1);
+    }
+    
+    private void updateMainView() {
+        categoriesNames = new ArrayList<>();
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) categoryTree.getLastSelectedPathComponent();
+                photosPanel.removeAll();
+                if (node.isRoot()) {
+                    fillView();
+                } else {
+                    getNodePhotos(node);
+                    updatePhotoView();
+                }                
+                photosPanel.revalidate();
+                photosPanel.repaint();
+    }
+
+    private void checkPhotoDate(List<Photo> selectedPhotos) {
+        for (int i = selectedPhotos.size()-1;i>=0;i--) {
+            if (startDate!=null) {
+                if (selectedPhotos.get(i).getDate().before(startDate)) {
+                    selectedPhotos.remove(i);
+                }
+            }
+        }
+        for (int i = selectedPhotos.size()-1;i>=0;i--) {
+            if (endDate!=null) {
+                if (selectedPhotos.get(i).getDate().after(endDate)) {
+                    selectedPhotos.remove(i);
+                }
+            }
+        }
     }
 }
