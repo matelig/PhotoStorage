@@ -130,7 +130,6 @@ public class SignUp extends javax.swing.JPanel {
                         "User registered",
                         "Information",
                         JOptionPane.INFORMATION_MESSAGE);
-                frame.displayMenu();
                 frame.setPanel(new SignIn(frame));
             }
         } catch (Exception ex) {

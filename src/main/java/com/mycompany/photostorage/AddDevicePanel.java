@@ -6,9 +6,16 @@
 package com.mycompany.photostorage;
 
 import com.mycompany.photostorage.entity.Typeofdevice;
+import com.mycompany.photostorage.model.USBLister;
 import com.mycompany.photostorage.util.HibernateUtil;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.usb.UsbException;
+import javax.usb.UsbHostManager;
+import javax.usb.UsbHub;
+import javax.usb.UsbServices;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -54,6 +61,11 @@ public class AddDevicePanel extends javax.swing.JPanel {
         cancelButton.setText("Cancel");
 
         addButton.setText("Add");
+        addButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addButtonActionPerformed(evt);
+            }
+        });
 
         jLabel2.setText("Choose one of existing devivces:");
 
@@ -97,6 +109,10 @@ public class AddDevicePanel extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_deviceNameTextFieldActionPerformed
 
+    private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
+       
+    }//GEN-LAST:event_addButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
@@ -107,7 +123,7 @@ public class AddDevicePanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel2;
     // End of variables declaration//GEN-END:variables
 
-private void setItemModelSelect() {
+    private void setItemModelSelect() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
         Query query = session.createQuery("from Typeofdevice");
@@ -119,8 +135,8 @@ private void setItemModelSelect() {
         session.close();
     }
 
-private void addDevice() {
-    
-}
+    private void addDevice() {
+
+    }
 
 }

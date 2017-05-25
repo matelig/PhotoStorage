@@ -32,6 +32,7 @@ import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import org.apache.commons.io.FilenameUtils;
@@ -50,8 +51,10 @@ public class AddPhotoEdition extends JPanel {
     private JPanel container = new JPanel();
     private JScrollPane scrollPane;
     private CurrentUser currentUser;
+    private MainProgramFrame mainFrame;
 
-    public AddPhotoEdition(List<NewPhoto> newPhoto, CurrentUser currentUser) {
+    public AddPhotoEdition(List<NewPhoto> newPhoto, CurrentUser currentUser,MainProgramFrame mainFrame) {
+        this.mainFrame = mainFrame;
         this.newPhoto.addAll(newPhoto);
         this.currentUser = currentUser;
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
@@ -144,5 +147,10 @@ public class AddPhotoEdition extends JPanel {
         }
         session.getTransaction().commit();
         session.close();
+        JOptionPane.showMessageDialog(this,
+                        "Photos have been inserted.",
+                        "Information",
+                        JOptionPane.INFORMATION_MESSAGE);
+        mainFrame.setPanel(new PhotoViewPanel(mainFrame,currentUser));
     }
 }

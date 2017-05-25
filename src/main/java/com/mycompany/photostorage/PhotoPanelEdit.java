@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import org.hibernate.Query;
@@ -88,5 +89,9 @@ public class PhotoPanelEdit extends JPanel {
         }
         session.getTransaction().commit();
         session.close();
+        JOptionPane.showMessageDialog(this,
+                        "Photos have been edited.",
+                        "Information",
+                        JOptionPane.INFORMATION_MESSAGE);       
     }
 }
