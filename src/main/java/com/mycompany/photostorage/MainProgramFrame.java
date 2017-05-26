@@ -23,6 +23,7 @@ public class MainProgramFrame {
     public void CreateAndShowGUI() {
         frame = new JFrame("");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        //setPanel(new TagPanel());
         setPanel(new SignIn(this));
         frame.pack();
         frame.setVisible(true);
