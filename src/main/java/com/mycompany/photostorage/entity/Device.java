@@ -73,7 +73,7 @@ public class Device  implements java.io.Serializable {
     }
 
 @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="TypeOfDevice_idtod", nullable=false, insertable=false, updatable=false)
+    @JoinColumn(name="TypeOfDevice_idtod", nullable=false, insertable=true, updatable=true)
     public Typeofdevice getTypeofdevice() {
         return this.typeofdevice;
     }

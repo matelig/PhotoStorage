@@ -205,10 +205,4 @@ public class Photo  implements java.io.Serializable {
     public void setTags(Set<Tag> tags) {
         this.tags = tags;
     }
-
-
-
-
 }
-
-

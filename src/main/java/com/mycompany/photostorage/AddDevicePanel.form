@@ -20,14 +20,14 @@
               <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="1" attributes="0">
                   <Component id="jLabel2" alignment="1" max="32767" attributes="0"/>
-                  <Component id="devicesComboBox" alignment="1" max="32767" attributes="0"/>
-                  <Component id="deviceNameTextField" alignment="1" max="32767" attributes="0"/>
+                  <Component id="typesComboBox" alignment="1" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="cancelButton" max="32767" attributes="0"/>
                       <EmptySpace min="-2" pref="204" max="-2" attributes="0"/>
                       <Component id="addButton" max="32767" attributes="0"/>
                   </Group>
                   <Component id="jLabel1" alignment="0" max="32767" attributes="0"/>
+                  <Component id="deviceNameComboBox" alignment="1" max="32767" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
           </Group>
@@ -38,12 +38,12 @@
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace min="-2" pref="14" max="-2" attributes="0"/>
               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Component id="deviceNameTextField" min="-2" max="-2" attributes="0"/>
-              <EmptySpace min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="deviceNameComboBox" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" max="-2" attributes="0"/>
-              <Component id="devicesComboBox" min="-2" max="-2" attributes="0"/>
+              <Component id="typesComboBox" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" min="-2" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="cancelButton" alignment="3" max="32767" attributes="0"/>
@@ -55,14 +55,6 @@
     </DimensionLayout>
   </Layout>
   <SubComponents>
-    <Component class="javax.swing.JTextField" name="deviceNameTextField">
-      <Properties>
-        <Property name="toolTipText" type="java.lang.String" value=""/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deviceNameTextFieldActionPerformed"/>
-      </Events>
-    </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">
       <Properties>
         <Property name="text" type="java.lang.String" value="Device&apos;s name:"/>
@@ -72,6 +64,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Cancel"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cancelButtonActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="addButton">
       <Properties>
@@ -81,7 +76,7 @@
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addButtonActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JComboBox" name="devicesComboBox">
+    <Component class="javax.swing.JComboBox" name="typesComboBox">
       <Properties>
         <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
           <StringArray count="0"/>
@@ -93,8 +88,24 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Choose one of existing devivces:"/>
+        <Property name="text" type="java.lang.String" value="Choose device&apos;s type:"/>
       </Properties>
+      <AccessibilityProperties>
+        <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>
+      </AccessibilityProperties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="deviceNameComboBox">
+      <Properties>
+        <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
+          <StringArray count="0"/>
+        </Property>
+      </Properties>
+      <AccessibilityProperties>
+        <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>
+      </AccessibilityProperties>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+      </AuxValues>
     </Component>
   </SubComponents>
 </Form>

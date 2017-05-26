@@ -8,7 +8,7 @@
             <column name="idd" />
             <generator class="identity" />
         </id>
-        <many-to-one name="typeofdevice" class="com.mycompany.photostorage.entity.Typeofdevice" update="false" insert="false" fetch="select">
+        <many-to-one name="typeofdevice" class="com.mycompany.photostorage.entity.Typeofdevice" update="true" insert="true" fetch="select">
             <column name="TypeOfDevice_idtod" not-null="true" />
         </many-to-one>
         <property name="name" type="string">
