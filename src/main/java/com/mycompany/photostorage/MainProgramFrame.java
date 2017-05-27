@@ -16,15 +16,15 @@ import javax.swing.JPanel;
  */
 public class MainProgramFrame {
 
-    private JFrame frame;
+    protected JFrame frame;
     private CurrentUser currentUser;
 
 
     public void CreateAndShowGUI() {
         frame = new JFrame("");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //setPanel(new TagPanel());
-        setPanel(new SignIn(this));
+        setPanel(new TagPanel());
+        //setPanel(new SignIn(this));
         frame.pack();
         frame.setVisible(true);
     }
