@@ -137,7 +137,7 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         sortPhotos(selectedPhotos);
         checkPhotoDate(selectedPhotos);
         for (Photo p : selectedPhotos) {
-            SinglePhotoPanel photoPanel = new SinglePhotoPanel(p.getMiniature(), p.getDescription(), p.getIdp());
+            SinglePhotoPanel photoPanel = new SinglePhotoPanel(p.getMiniature(), p.getDescription(), p.getIdp(),p.getIsArchivised(),p.getDevices());
             photoPanels.add(photoPanel);
             photosPanel.add(photoPanel);
         }
@@ -429,7 +429,7 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         checkPhotoDate(selectedPhotos);
         sortPhotos(selectedPhotos);
         for (Photo p : selectedPhotos) {
-            SinglePhotoPanel photoPanel = new SinglePhotoPanel(p.getMiniature(), p.getDescription(), p.getIdp());
+            SinglePhotoPanel photoPanel = new SinglePhotoPanel(p.getMiniature(), p.getDescription(), p.getIdp(),p.getIsArchivised(),p.getDevices());
             photoPanels.add(photoPanel);
             photosPanel.add(photoPanel);
         }

@@ -5,6 +5,7 @@
  */
 package com.mycompany.photostorage;
 
+import com.mycompany.photostorage.entity.Device;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -12,6 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -22,25 +24,38 @@ import javax.swing.border.Border;
  * @author Wojtek
  */
 public class SinglePhotoPanel extends javax.swing.JPanel {
-    
+
     private int photoID;
     private BufferedImage image;
-    private Border blackBorder = BorderFactory.createLineBorder(Color.BLACK,2);
+    private Border blackBorder = BorderFactory.createLineBorder(Color.BLACK, 2);
     private Boolean isChecked = false;
-    private Border emptyBorder = BorderFactory.createEmptyBorder(2,2,2,2);
+    private Border emptyBorder = BorderFactory.createEmptyBorder(2, 2, 2, 2);
+
     /**
      * Creates new form SinglePhotoPanel
      */
     public SinglePhotoPanel() {
         initComponents();
         setBorder(emptyBorder);
-        setImageMiniature();        
+        setImageMiniature();
         photoNameLabel.setText("Wódz wspaniały");
     }
-    public SinglePhotoPanel(byte[] photo,String description, int id) {
+
+    public SinglePhotoPanel(byte[] photo, String description, int id, byte isArchivised,Set<Device> photoOnDevice) {
         initComponents();
         this.photoID = id;
+        int devicesNumber = photoOnDevice.size();
         setBorder(emptyBorder);
+        if (isArchivised == 1 && devicesNumber!=0) {
+            jPanel1.setBackground(Color.green);
+            jLayeredPane1.moveToFront(jPanel1);
+        } else if (isArchivised == 1 && devicesNumber==0) {
+            jPanel1.setBackground(Color.red);
+            jLayeredPane1.moveToFront(jPanel1);
+        } else if (isArchivised==0) {
+            jPanel1.setBackground(Color.black);
+            jLayeredPane1.moveToBack(jPanel1);
+        }        
         setImageMiniature(photo);
         photoNameLabel.setText(description);
     }
@@ -55,10 +70,10 @@ public class SinglePhotoPanel extends javax.swing.JPanel {
             icon = new ImageIcon(image);
             photoImage.setIcon(icon);
         } catch (IOException ex) {
-           
+
         }
     }
-    
+
     private void setImageMiniature(byte[] photo) {
         try {
             InputStream in = new ByteArrayInputStream(photo);
@@ -70,10 +85,10 @@ public class SinglePhotoPanel extends javax.swing.JPanel {
             icon = new ImageIcon(image);
             photoImage.setIcon(icon);
         } catch (IOException ex) {
-           
+
         }
     }
-    
+
     public boolean isChecked() {
         return this.isChecked;
     }
@@ -87,14 +102,36 @@ public class SinglePhotoPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        photoImage = new javax.swing.JLabel();
+        jLayeredPane1 = new javax.swing.JLayeredPane();
+        jPanel1 = new javax.swing.JPanel();
         photoNameLabel = new javax.swing.JLabel();
+        photoImage = new javax.swing.JLabel();
 
         addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseReleased(java.awt.event.MouseEvent evt) {
                 formMouseReleased(evt);
             }
         });
+
+        jLayeredPane1.setBackground(new java.awt.Color(51, 255, 51));
+
+        jPanel1.setBackground(new java.awt.Color(0, 255, 102));
+        jPanel1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                jPanel1MouseEntered(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 14, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 14, Short.MAX_VALUE)
+        );
 
         photoNameLabel.setText("Name");
         photoNameLabel.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -103,24 +140,47 @@ public class SinglePhotoPanel extends javax.swing.JPanel {
             }
         });
 
+        jLayeredPane1.setLayer(jPanel1, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        jLayeredPane1.setLayer(photoNameLabel, javax.swing.JLayeredPane.DEFAULT_LAYER);
+        jLayeredPane1.setLayer(photoImage, javax.swing.JLayeredPane.DEFAULT_LAYER);
+
+        javax.swing.GroupLayout jLayeredPane1Layout = new javax.swing.GroupLayout(jLayeredPane1);
+        jLayeredPane1.setLayout(jLayeredPane1Layout);
+        jLayeredPane1Layout.setHorizontalGroup(
+            jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(photoNameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+            .addComponent(photoImage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jLayeredPane1Layout.createSequentialGroup()
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 76, Short.MAX_VALUE)))
+        );
+        jLayeredPane1Layout.setVerticalGroup(
+            jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jLayeredPane1Layout.createSequentialGroup()
+                .addComponent(photoImage, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(photoNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(jLayeredPane1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jLayeredPane1Layout.createSequentialGroup()
+                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 105, Short.MAX_VALUE)))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(photoNameLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-            .addComponent(photoImage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jLayeredPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(photoImage, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(photoNameLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addComponent(jLayeredPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void photoNameLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_photoNameLabelMouseEntered
-       photoNameLabel.setToolTipText(photoNameLabel.getText());
+        photoNameLabel.setToolTipText(photoNameLabel.getText());
     }//GEN-LAST:event_photoNameLabelMouseEntered
 
     private void formMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseReleased
@@ -130,11 +190,20 @@ public class SinglePhotoPanel extends javax.swing.JPanel {
         } else {
             setBorder(emptyBorder);
         }
-        isChecked=!isChecked;
+        isChecked = !isChecked;
     }//GEN-LAST:event_formMouseReleased
+
+    private void jPanel1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel1MouseEntered
+        if (jPanel1.getBackground()==Color.green) 
+            jPanel1.setToolTipText("This photo has been archivised.");
+        else if (jPanel1.getBackground()==Color.red) 
+            jPanel1.setToolTipText("Photo has been archivised, but device was deleted.");
+    }//GEN-LAST:event_jPanel1MouseEntered
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLayeredPane jLayeredPane1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel photoImage;
     private javax.swing.JLabel photoNameLabel;
     // End of variables declaration//GEN-END:variables

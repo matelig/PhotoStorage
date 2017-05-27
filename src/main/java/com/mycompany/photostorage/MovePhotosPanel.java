@@ -14,6 +14,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -121,10 +122,13 @@ public class MovePhotosPanel extends javax.swing.JPanel {
         File[] files = File.listRoots();
         String name;
         String destination = "";
+        String deviceName = devicesComboBox.getSelectedItem().toString();
+        List<Device> databaseDevices;
+        Device currentDevice = null;
         boolean found = false;
         for (int i = 0; i < files.length; i++) {
             name = FileSystemView.getFileSystemView().getSystemDisplayName(files[i]);
-            if (name.contains(devicesComboBox.getSelectedItem().toString().split(" ")[0])) {
+            if (name.contains(deviceName.split(" ")[0])) {
                 destination = files[i].getAbsolutePath();
                 found = true;
                 break;
@@ -133,24 +137,35 @@ public class MovePhotosPanel extends javax.swing.JPanel {
         if (found) {
             Session session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
+            Query query = session.createQuery("from Device");
+            databaseDevices = query.list();
+            for (Device device : databaseDevices) {
+                if (device.getName().equals(deviceName)) {
+                    currentDevice = device;
+                    break;
+                }
+            }
+            Set<Photo> photosOnDevice = currentDevice.getPhotos();
             for (Photo photo : photos) {
                 File file = new File(photo.getPath());
                 try {
                     Files.move(Paths.get(photo.getPath()), Paths.get(destination + file.getName()));
                     photo.setPath(destination + file.getName());
                     photo.setIsArchivised((byte) 1);
+                    photosOnDevice.add(photo);
                     session.update(photo);
                 } catch (IOException ex) {
                 }
             }
+            currentDevice.setPhotos(photosOnDevice);
+            session.save(currentDevice);
             session.getTransaction().commit();
             session.close();
-        }
-        else {
+        } else {
             JOptionPane.showMessageDialog(this,
-                        "Device have not been found. Try to plug it in.",
-                        "Warning!",
-                        JOptionPane.INFORMATION_MESSAGE);
+                    "Device have not been found. Try to plug it in.",
+                    "Warning!",
+                    JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_acceptButtonActionPerformed
 
