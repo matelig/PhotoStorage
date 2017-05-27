@@ -46,15 +46,13 @@ public class SinglePhotoPanel extends javax.swing.JPanel {
         this.photoID = id;
         int devicesNumber = photoOnDevice.size();
         setBorder(emptyBorder);
+        jLayeredPane1.moveToFront(jPanel1);
         if (isArchivised == 1 && devicesNumber!=0) {
             jPanel1.setBackground(Color.green);
-            jLayeredPane1.moveToFront(jPanel1);
         } else if (isArchivised == 1 && devicesNumber==0) {
             jPanel1.setBackground(Color.red);
-            jLayeredPane1.moveToFront(jPanel1);
         } else if (isArchivised==0) {
-            jPanel1.setBackground(Color.black);
-            jLayeredPane1.moveToBack(jPanel1);
+            jPanel1.setVisible(false);
         }        
         setImageMiniature(photo);
         photoNameLabel.setText(description);
