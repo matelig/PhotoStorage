@@ -51,8 +51,7 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
     public PhotoToEditPanel(String filePath, List<Category> categories) {
         this.categories = categories;
         initComponents();
-        String pom = FilenameUtils.getExtension(filePath);
-        txtFieldDescription.setText(pom);
+        txtFieldDescription.setText("Default");
         setComboBoxCategories();
         setImageMiniature(filePath);
         setVisible(true);
@@ -97,15 +96,6 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
             icon = new ImageIcon(image);
             labelPhoto.setIcon(icon);
             this.image = null;
-
-//               InputStream in = new ByteArrayInputStream(photo);
-//            image = ImageIO.read(in);
-//            ImageIcon icon = new ImageIcon();
-//            icon.setImage(image);
-//            Image image = icon.getImage();
-//            image = image.getScaledInstance(90, 90, Image.SCALE_SMOOTH);
-//            icon = new ImageIcon(image);
-//            photoImage.setIcon(icon);
         } catch (IOException ex) {
             System.out.println("sdgsdsss");
         }

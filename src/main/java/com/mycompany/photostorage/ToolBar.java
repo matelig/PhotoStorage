@@ -73,7 +73,7 @@ public class ToolBar implements ActionListener{
                 addPhoto.showChoosePhotosDialog();
                 break;
             case "Add device":
-                frame.setPanel(new AddDevicePanel());
+                frame.setPanel(new AddDevicePanel(frame));
                 break;            
             case "Add category":
                 frame.setPanel(new AddCategoryPanel(frame.getCurrentUser()));

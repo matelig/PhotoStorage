@@ -137,7 +137,7 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         sortPhotos(selectedPhotos);
         checkPhotoDate(selectedPhotos);
         for (Photo p : selectedPhotos) {
-            SinglePhotoPanel photoPanel = new SinglePhotoPanel(p.getMiniature(), p.getDescription(), p.getIdp());
+            SinglePhotoPanel photoPanel = new SinglePhotoPanel(p.getMiniature(), p.getDescription(), p.getIdp(),p.getIsArchivised(),p.getDevices());
             photoPanels.add(photoPanel);
             photosPanel.add(photoPanel);
         }
@@ -289,6 +289,11 @@ public class PhotoViewPanel extends javax.swing.JPanel {
 
         movePhotoButton.setText("Move");
         movePhotoButton.setPreferredSize(new java.awt.Dimension(66, 32));
+        movePhotoButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                movePhotoButtonActionPerformed(evt);
+            }
+        });
 
         editPhotoButton.setText("Edit");
         editPhotoButton.setPreferredSize(new java.awt.Dimension(66, 32));
@@ -354,9 +359,10 @@ public class PhotoViewPanel extends javax.swing.JPanel {
                 null, options, options[1]);
         if (x == 0) {
             List<SinglePhotoPanel> photosToDelete = new ArrayList<>();
-            for (SinglePhotoPanel p : photoPanels) {
-                if (p.isChecked()) {
-                    photosToDelete.add(p);
+            for(int i = photoPanels.size()-1; i >= 0 ; i--) {
+                if (photoPanels.get(i).isChecked()) {
+                    photosToDelete.add(photoPanels.get(i));
+                    photoPanels.remove(i);
                 }
             }
             deletePhotoFromDatabase(photosToDelete);
@@ -373,6 +379,22 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         endDatePicker.setDate(null);
         updateMainView();
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void movePhotoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_movePhotoButtonActionPerformed
+        List<Photo> selectedPhotos = new ArrayList<>();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        for (SinglePhotoPanel p : photoPanels) {
+            if (p.isChecked()) {
+                Query query = session.createQuery("from Photo where idp=" + p.getPhotoID());
+                Photo photo = (Photo) query.list().get(0);
+                selectedPhotos.add(photo);
+            }
+        }
+        session.getTransaction().commit();
+        session.close();
+        frame.setPanel(new MovePhotosPanel(frame, selectedPhotos));
+    }//GEN-LAST:event_movePhotoButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -407,7 +429,7 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         checkPhotoDate(selectedPhotos);
         sortPhotos(selectedPhotos);
         for (Photo p : selectedPhotos) {
-            SinglePhotoPanel photoPanel = new SinglePhotoPanel(p.getMiniature(), p.getDescription(), p.getIdp());
+            SinglePhotoPanel photoPanel = new SinglePhotoPanel(p.getMiniature(), p.getDescription(), p.getIdp(),p.getIsArchivised(),p.getDevices());
             photoPanels.add(photoPanel);
             photosPanel.add(photoPanel);
         }

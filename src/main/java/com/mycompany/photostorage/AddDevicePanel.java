@@ -5,17 +5,14 @@
  */
 package com.mycompany.photostorage;
 
+import com.mycompany.photostorage.entity.Device;
 import com.mycompany.photostorage.entity.Typeofdevice;
-import com.mycompany.photostorage.model.USBLister;
 import com.mycompany.photostorage.util.HibernateUtil;
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.usb.UsbException;
-import javax.usb.UsbHostManager;
-import javax.usb.UsbHub;
-import javax.usb.UsbServices;
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileSystemView;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -25,12 +22,18 @@ import org.hibernate.Session;
  */
 public class AddDevicePanel extends javax.swing.JPanel {
 
+    private MainProgramFrame frame;
+
     /**
      * Creates new form AddDevicePanel
+     *
+     * @param frame
      */
-    public AddDevicePanel() {
+    public AddDevicePanel(MainProgramFrame frame) {
+        this.frame = frame;
         initComponents();
         setItemModelSelect();
+        addDevices();
     }
 
     /**
@@ -42,23 +45,21 @@ public class AddDevicePanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        deviceNameTextField = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         cancelButton = new javax.swing.JButton();
         addButton = new javax.swing.JButton();
-        devicesComboBox = new javax.swing.JComboBox<>();
+        typesComboBox = new javax.swing.JComboBox<>();
         jLabel2 = new javax.swing.JLabel();
-
-        deviceNameTextField.setToolTipText("");
-        deviceNameTextField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                deviceNameTextFieldActionPerformed(evt);
-            }
-        });
+        deviceNameComboBox = new javax.swing.JComboBox<>();
 
         jLabel1.setText("Device's name:");
 
         cancelButton.setText("Cancel");
+        cancelButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelButtonActionPerformed(evt);
+            }
+        });
 
         addButton.setText("Add");
         addButton.addActionListener(new java.awt.event.ActionListener() {
@@ -67,7 +68,7 @@ public class AddDevicePanel extends javax.swing.JPanel {
             }
         });
 
-        jLabel2.setText("Choose one of existing devivces:");
+        jLabel2.setText("Choose device's type:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -77,13 +78,13 @@ public class AddDevicePanel extends javax.swing.JPanel {
                 .addGap(36, 36, 36)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(devicesComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(deviceNameTextField)
+                    .addComponent(typesComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(cancelButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(204, 204, 204)
                         .addComponent(addButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(deviceNameComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(36, 36, 36))
         );
         layout.setVerticalGroup(
@@ -92,35 +93,74 @@ public class AddDevicePanel extends javax.swing.JPanel {
                 .addGap(14, 14, 14)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(deviceNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(deviceNameComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(devicesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(typesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cancelButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(addButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
+
+        jLabel2.getAccessibleContext().setAccessibleName("");
+        deviceNameComboBox.getAccessibleContext().setAccessibleName("");
     }// </editor-fold>//GEN-END:initComponents
 
-    private void deviceNameTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deviceNameTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_deviceNameTextFieldActionPerformed
-
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
-       
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        Query query = session.createQuery("from Device");
+        List<Device> devices = new ArrayList<>();
+        devices = query.list();
+        for (Device device : devices) {
+            if (device.getName().equals(deviceNameComboBox.getSelectedItem().toString())) {
+                JOptionPane.showMessageDialog(this,
+                        "Device already exists",
+                        "Warning",
+                        JOptionPane.INFORMATION_MESSAGE);
+                session.getTransaction().commit();
+                session.close();
+                return;
+            }
+        }
+        Device dev = new Device();
+        dev.setName(deviceNameComboBox.getSelectedItem().toString().split(" ")[0]); //TODO dopracować!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*******************************************************************************************************
+        dev.setCapacity("1");
+        dev.setFreeSpace("1");
+        dev.setIsStoring((byte) 0);
+        query = session.createQuery("from Typeofdevice");
+        List<Typeofdevice> types = new ArrayList<>();
+        types = query.list();
+        for(Typeofdevice type : types) {
+            if(type.getDescription().equals(typesComboBox.getSelectedItem().toString())) {
+                dev.setTypeofdevice(type);
+                break;
+            }
+        }
+        session.save(dev);
+        session.getTransaction().commit();
+        session.close();
+        JOptionPane.showMessageDialog(this,
+                        "Device successfully added!",
+                        "Information",
+                        JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_addButtonActionPerformed
+
+    private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
+        frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
+    }//GEN-LAST:event_cancelButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
     private javax.swing.JButton cancelButton;
-    private javax.swing.JTextField deviceNameTextField;
-    private javax.swing.JComboBox<String> devicesComboBox;
+    private javax.swing.JComboBox<String> deviceNameComboBox;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JComboBox<String> typesComboBox;
     // End of variables declaration//GEN-END:variables
 
     private void setItemModelSelect() {
@@ -129,14 +169,19 @@ public class AddDevicePanel extends javax.swing.JPanel {
         Query query = session.createQuery("from Typeofdevice");
         ArrayList<Typeofdevice> tod = (ArrayList<Typeofdevice>) query.list();
         for (Typeofdevice device : tod) {
-            devicesComboBox.addItem(device.getDescription());
+            typesComboBox.addItem(device.getDescription());
         }
         session.getTransaction().commit();
         session.close();
     }
 
-    private void addDevice() {
-
+    private void addDevices() {
+        File[] files = File.listRoots();
+        String names;
+        for (File file : files) {
+            names = FileSystemView.getFileSystemView().getSystemDisplayName(file);
+            deviceNameComboBox.addItem(names);
+        }
     }
 
 }
