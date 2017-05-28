@@ -30,14 +30,15 @@ public class TagPanel extends JPanel{
         //this.setPreferredSize(new Dimension(400, 20));
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         tagPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        tagPanel.setPreferredSize(new Dimension(303, 40));
         tagTextField = new AutoCompleteTextField(this);
         tagTextField.addPossibility("AlaMaKota");
         this.add(tagTextField);
         this.add(tagPanel);
     }
     
-    public void addTagComponent(){
-        String tagText = tagTextField.getText();
+    public void addTagComponent(String tagText){
+        //String tagText = tagTextField.getText();
         TagComponent tagComponent = new TagComponent(tagText, tagPanel);
         tagPanel.add(tagComponent);
         tagTextField.setText("");

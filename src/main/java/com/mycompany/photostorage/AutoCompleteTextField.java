@@ -195,7 +195,7 @@ public class AutoCompleteTextField extends JTextField implements KeyListener,
     public void keyPressed(KeyEvent e) { 
         if (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_SPACE) {
             this.areGuessing = false;
-            tagpanel.addTagComponent();
+            tagpanel.addTagComponent(this.getText());
             //this.repaint();
             this.setText("");
         }
