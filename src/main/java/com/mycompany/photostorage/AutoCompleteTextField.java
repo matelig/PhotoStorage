@@ -13,6 +13,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.swing.JPanel;
 
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -201,9 +202,11 @@ public class AutoCompleteTextField extends JTextField implements KeyListener,
     public void keyPressed(KeyEvent e) { 
         if (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_SPACE) {
             this.areGuessing = false;
-            tagpanel.addTagComponent(this.getText());
-            //this.repaint();
-            this.setText("");
+            if(!this.getText().equals("")){
+                tagpanel.addTagComponent(this.getText(), (JPanel)tagpanel.getParent().getParent());
+                //this.repaint();
+                this.setText("");
+            }
         }
 
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
