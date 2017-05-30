@@ -63,7 +63,7 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
         txtFieldDescription.setText(dbPhoto.getDescription());
         Set<Tag> tags = dbPhoto.getTags();
         for (Tag tag : tags) {
-            tagPanel1.addTagComponent(tag.getValue());
+            tagPanel1.addTagComponent(tag.getValue(), this);
         }
         setComboBoxCategories();
         if (dbPhoto.getCategory() != null) {

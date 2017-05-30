@@ -19,10 +19,12 @@ import javax.swing.JPanel;
 public class TagComponent extends JPanel {
     private JPanel parentPanel;
     private String tagString;
+    private JPanel mainPanel;
 
-    public TagComponent(String text, JPanel parent) {
+    public TagComponent(String text, JPanel parent, JPanel mPanel) {
         parentPanel= parent;
         tagString = text;
+        mainPanel = mPanel;
         JLabel textlable = new JLabel(text);
         JLabel close = new JLabel("X");
         close.setOpaque(true);
@@ -34,6 +36,9 @@ public class TagComponent extends JPanel {
         close.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 parentPanel.remove(TagComponent.this);
+                if(mainPanel instanceof PhotoViewPanel){
+                    //tu wywołujesz wyszukiwanie
+                }
                 parentPanel.repaint();
                 parentPanel.revalidate();
             }
