@@ -7,8 +7,7 @@ package com.mycompany.photostorage;
 
 import com.mycompany.photostorage.entity.Category;
 import com.mycompany.photostorage.entity.Photo;
-import com.mycompany.photostorage.entity.User;
-import com.mycompany.photostorage.model.CurrentUser;
+import com.mycompany.photostorage.entity.Tag;
 import com.mycompany.photostorage.util.HibernateUtil;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -19,13 +18,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import org.apache.commons.io.FilenameUtils;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -66,6 +61,10 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
         Query query = session.createQuery("from Photo p where p.idp = " + photoID);
         Photo dbPhoto = (Photo) query.list().get(0);
         txtFieldDescription.setText(dbPhoto.getDescription());
+        Set<Tag> tags = dbPhoto.getTags();
+        for (Tag tag : tags) {
+            tagPanel1.addTagComponent(tag.getValue());
+        }
         setComboBoxCategories();
         if (dbPhoto.getCategory() != null) {
             String categoryName = dbPhoto.getCategory().getName();
@@ -123,8 +122,8 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
         return categoryComboBox.getSelectedItem().toString();
     }
 
-    public String[] getTags() {
-        return null;
+    public List<String> getTags() {
+        return tagPanel1.takeTags();
     }
     
     public int getPhotoID() {
@@ -186,7 +185,6 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(labelPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
@@ -198,7 +196,8 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3)
-                            .addComponent(tagPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(tagPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(labelPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(35, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents

@@ -7,6 +7,7 @@ package com.mycompany.photostorage;
 
 import com.mycompany.photostorage.entity.Category;
 import com.mycompany.photostorage.entity.Photo;
+import com.mycompany.photostorage.entity.Tag;
 import com.mycompany.photostorage.entity.User;
 import com.mycompany.photostorage.util.HibernateUtil;
 import java.awt.BorderLayout;
@@ -15,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -85,7 +87,29 @@ public class PhotoPanelEdit extends JPanel {
                 dbPhoto.setCategory(null);
             }
             dbPhoto.setDescription(ptep.getDescription());
+            Set<Tag> tagsFromDB = dbPhoto.getTags();
+            List<Tag> oldTags = new ArrayList<>();
+            for (Tag t : tagsFromDB) {
+                oldTags.add(t);
+            }
+            List<String> newTags = ptep.getTags();
+            for (int k = oldTags.size()-1;k>=0;k--) {
+                for (int j = newTags.size()-1;j>=0;j--) {
+                    if (oldTags.get(k).getValue().equals(newTags.get(j))) {
+                        oldTags.remove(k);
+                        newTags.remove(j);
+                    }
+                }
+            }
+            for (Tag tag : oldTags) {
+                session.delete(tag);
+            }
             session.update(dbPhoto);
+            for (String s : newTags) {
+                Tag tag = new Tag (dbPhoto,s);
+                session.save(tag);
+            }            
+            
         }
         session.getTransaction().commit();
         session.close();

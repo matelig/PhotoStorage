@@ -7,6 +7,7 @@ package com.mycompany.photostorage;
 
 import com.mycompany.photostorage.entity.Category;
 import com.mycompany.photostorage.entity.Photo;
+import com.mycompany.photostorage.entity.Tag;
 import com.mycompany.photostorage.entity.User;
 import com.mycompany.photostorage.model.CurrentUser;
 import com.mycompany.photostorage.model.NewPhoto;
@@ -26,6 +27,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.imageio.ImageIO;
@@ -111,6 +113,7 @@ public class AddPhotoEdition extends JPanel {
             photo.setDescription(ptep.getDescription());
             photo.setFormat(newPhoto.get(i).getFormat());
             photo.setIsArchivised((byte) 0);
+            
             Icon image = ptep.getMiniature();
             BufferedImage bi = new BufferedImage(image.getIconWidth(), image.getIconHeight(), BufferedImage.TYPE_INT_RGB);
             Graphics g = bi.createGraphics();
@@ -144,6 +147,11 @@ public class AddPhotoEdition extends JPanel {
                 }
             }
             session.save(photo);
+            List<String> tagList = ptep.getTags();            
+            for (String s : tagList) {
+                Tag tag = new Tag(photo,s);
+                session.save(tag);
+            }
         }
         session.getTransaction().commit();
         session.close();

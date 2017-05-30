@@ -12,6 +12,7 @@ import java.awt.event.KeyListener;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
@@ -88,6 +89,11 @@ public class AutoCompleteTextField extends JTextField implements KeyListener,
     public void addPossibility(String possibility) {
         this.possibilities.add(possibility);
         Collections.sort(possibilities);
+    }
+    
+    public void addAllPossibilities(List<String> possibilities) {
+        this.possibilities.addAll(possibilities);
+        Collections.sort(this.possibilities);
     }
 
     /** Removes a possibility from the list of possibilities.
@@ -198,6 +204,7 @@ public class AutoCompleteTextField extends JTextField implements KeyListener,
             tagpanel.addTagComponent(this.getText());
             //this.repaint();
             this.setText("");
+            
         }
 
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {

@@ -19,9 +19,11 @@ import org.jdesktop.swingx.*;
  */
 public class TagComponent extends JPanel {
     private JPanel parentPanel;
+    private String tagString;
 
     public TagComponent(String text, JPanel parent) {
         parentPanel= parent;
+        tagString = text;
         JLabel textlable = new JLabel(text);
         JLabel close = new JLabel("X");
         close.setOpaque(true);
@@ -39,6 +41,10 @@ public class TagComponent extends JPanel {
         });
         add(close, BorderLayout.EAST);
         add(textlable, BorderLayout.WEST);
+    }
+    
+    public String getTag() {
+        return this.tagString;
     }
 
 }
