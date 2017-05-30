@@ -8,7 +8,6 @@ package com.mycompany.photostorage;
 import com.mycompany.photostorage.entity.Category;
 import com.mycompany.photostorage.entity.Photo;
 import com.mycompany.photostorage.entity.Tag;
-import com.mycompany.photostorage.entity.User;
 import com.mycompany.photostorage.util.HibernateUtil;
 import java.awt.BorderLayout;
 import java.awt.Dimension;

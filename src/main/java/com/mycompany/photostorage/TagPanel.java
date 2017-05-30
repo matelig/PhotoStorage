@@ -17,17 +17,17 @@ import javax.swing.JPanel;
  *
  * @author Jakub
  */
-public class TagPanel extends JPanel{
+public class TagPanel extends JPanel {
     AutoCompleteTextField tagTextField;
     JPanel tagPanel;
+    
     public TagPanel(){
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         tagPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         tagPanel.setPreferredSize(new Dimension(303, 40));
         tagTextField = new AutoCompleteTextField(this);
-        tagTextField.addPossibility("AlaMaKota");
         this.add(tagTextField);
-        this.add(tagPanel);
+        this.add(tagPanel);;
     }
     
     public void addTagComponent(String tagText){
@@ -50,5 +50,5 @@ public class TagPanel extends JPanel{
     
     public void addPosibility(List<String> tagName) {
         tagTextField.addAllPossibilities(tagName);
-    }
+    }    
 }

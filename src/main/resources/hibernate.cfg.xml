@@ -44,6 +44,7 @@ Contributor(s):
     <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
     <property name="hibernate.connection.username">root</property>
     <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/photokeeper?zeroDateTimeBehavior=convertToNull</property>
+    <property name="hibernate.connection.password">root</property>
     <mapping resource="com/mycompany/photostorage/entity/Photo.hbm.xml"/>
     <mapping resource="com/mycompany/photostorage/entity/User.hbm.xml"/>
     <mapping resource="com/mycompany/photostorage/entity/Tag.hbm.xml"/>

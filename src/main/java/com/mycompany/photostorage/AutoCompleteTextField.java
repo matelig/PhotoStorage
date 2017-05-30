@@ -14,11 +14,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.plaf.basic.BasicComboBoxEditor;
 
 /**
  * A JTextField that will display a whole word as the user types a portion of
@@ -196,15 +194,16 @@ public class AutoCompleteTextField extends JTextField implements KeyListener,
         }
     }
 
+    @Override
     public void keyTyped(KeyEvent e) { }
 
+    @Override
     public void keyPressed(KeyEvent e) { 
         if (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_SPACE) {
             this.areGuessing = false;
             tagpanel.addTagComponent(this.getText());
             //this.repaint();
             this.setText("");
-            
         }
 
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
@@ -216,8 +215,10 @@ public class AutoCompleteTextField extends JTextField implements KeyListener,
         }
     }
     
+    @Override
     public void keyReleased(KeyEvent e) { }
 
+    @Override
     public void insertUpdate(DocumentEvent e) {
         String temp = this.getText();
 
@@ -229,6 +230,7 @@ public class AutoCompleteTextField extends JTextField implements KeyListener,
 
     }
 
+    @Override
     public void removeUpdate(DocumentEvent e) {
         String temp = this.getText();
 
@@ -242,5 +244,6 @@ public class AutoCompleteTextField extends JTextField implements KeyListener,
         }
     }
 
+    @Override
     public void changedUpdate(DocumentEvent e) { }
 }
