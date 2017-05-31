@@ -30,15 +30,16 @@ public class TagPanel extends JPanel {
         this.add(tagPanel);;
     }
     
-    public void addTagComponent(String tagText, JPanel mainPanel){
-        if(mainPanel instanceof PhotoViewPanel){
-            //tu wywołujesz wyszukiwanie
-        }
+    public void addTagComponent(String tagText, JPanel mainPanel){        
         TagComponent tagComponent = new TagComponent(tagText, tagPanel, mainPanel);
         tagPanel.add(tagComponent);        
         tagTextField.setText("");
         tagPanel.repaint();
         tagPanel.revalidate();
+        if(mainPanel instanceof PhotoViewPanel){
+            PhotoViewPanel viewPanel = (PhotoViewPanel) mainPanel;
+            viewPanel.updateMainView();
+        }
     }
     
     public List<String> takeTags() {

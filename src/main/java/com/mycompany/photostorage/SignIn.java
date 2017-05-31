@@ -10,6 +10,8 @@ import com.mycompany.photostorage.model.CurrentUser;
 import com.mycompany.photostorage.util.HibernateUtil;
 import java.util.List;
 import javax.swing.JOptionPane;
+import javax.swing.JRootPane;
+import javax.swing.SwingUtilities;
 import org.hibernate.Session;
 
 
@@ -25,6 +27,7 @@ public class SignIn extends javax.swing.JPanel {
     public SignIn(MainProgramFrame parentFrame) {
         frame = parentFrame;
         initComponents();
+        
     }
 
     /**
