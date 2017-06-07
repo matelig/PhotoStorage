@@ -387,13 +387,15 @@ public class PhotoViewPanel extends javax.swing.JPanel {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         if (startDatePicker.getDate() != null) {
             startDatePicker.setDate(null);
+            startDate = null;
             updateMainView();
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        if (startDatePicker.getDate() != null) {
+        if (endDatePicker.getDate() != null) {
             endDatePicker.setDate(null);
+            endDate = null;
             updateMainView();
         }
     }//GEN-LAST:event_jButton2ActionPerformed
