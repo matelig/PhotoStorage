@@ -37,7 +37,8 @@ public class TagComponent extends JPanel {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 parentPanel.remove(TagComponent.this);
                 if(mainPanel instanceof PhotoViewPanel){
-                    //tu wywołujesz wyszukiwanie
+                    PhotoViewPanel panel = (PhotoViewPanel) mainPanel;
+                    panel.updateMainView();
                 }
                 parentPanel.repaint();
                 parentPanel.revalidate();
