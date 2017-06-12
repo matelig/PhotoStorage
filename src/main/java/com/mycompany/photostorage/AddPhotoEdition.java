@@ -51,6 +51,12 @@ public class AddPhotoEdition extends JPanel {
     private CurrentUser currentUser;
     private MainProgramFrame mainFrame;
 
+    /**
+     * 
+     * @param newPhoto list of photos to add
+     * @param currentUser logged in user
+     * @param mainFrame parent JFrame
+     */
     public AddPhotoEdition(List<NewPhoto> newPhoto, CurrentUser currentUser,MainProgramFrame mainFrame) {
         this.mainFrame = mainFrame;
         this.newPhoto.addAll(newPhoto);

@@ -6,7 +6,7 @@
 package com.mycompany.photostorage;
 
 /**
- *
+ *JPanel allowing to choose device and archive photos there
  * @author Rafał Swoboda
  */
 public class ArchivePhotos extends javax.swing.JPanel {

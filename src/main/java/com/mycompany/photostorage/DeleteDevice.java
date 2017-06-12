@@ -6,7 +6,7 @@
 package com.mycompany.photostorage;
 
 /**
- *
+ * JPanel providing interface allowing to choose and delete device
  * @author Rafał Swoboda
  */
 public class DeleteDevice extends javax.swing.JFrame {

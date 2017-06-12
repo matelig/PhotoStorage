@@ -25,7 +25,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 /**
- *
+ * JPanel providing interface allowing to move photos to chosen device
  * @author alachman
  */
 public class PhotoToEditPanel extends javax.swing.JPanel {

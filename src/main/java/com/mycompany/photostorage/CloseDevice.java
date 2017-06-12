@@ -6,7 +6,7 @@
 package com.mycompany.photostorage;
 
 /**
- *
+ * panel providing interface allowing to select and close device
  * @author Rafał Swoboda
  */
 public class CloseDevice extends javax.swing.JFrame {

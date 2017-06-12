@@ -27,7 +27,7 @@ public class AddDevicePanel extends javax.swing.JPanel {
     /**
      * Creates new form AddDevicePanel
      *
-     * @param frame
+     * @param frame JFrame being parent swing component
      */
     public AddDevicePanel(MainProgramFrame frame) {
         this.frame = frame;
@@ -109,6 +109,10 @@ public class AddDevicePanel extends javax.swing.JPanel {
         deviceNameComboBox.getAccessibleContext().setAccessibleName("");
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Function fired when Add button is pressed, adds device to DB
+     * @param evt 
+     */
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -149,6 +153,10 @@ public class AddDevicePanel extends javax.swing.JPanel {
                         JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_addButtonActionPerformed
 
+    /**
+     * Function fired when Cancel button is pressed, goes to previous JPanel
+     * @param evt 
+     */
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
     }//GEN-LAST:event_cancelButtonActionPerformed

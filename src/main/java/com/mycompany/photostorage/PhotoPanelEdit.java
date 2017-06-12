@@ -25,7 +25,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 /**
- *
+ * JPanel providing interface allowing to edit photo parameters
  * @author m_lig
  */
 public class PhotoPanelEdit extends JPanel {
@@ -36,6 +36,11 @@ public class PhotoPanelEdit extends JPanel {
     private List<SinglePhotoPanel> selectedPhotos = new ArrayList<>();
     private List<Category> categoriesAL = new ArrayList<>();
 
+    /**
+     * constructor
+     * @param selectedPhotos list of photos to edit
+     * @param categoriesAL list of categories
+     */
     public PhotoPanelEdit(List<SinglePhotoPanel> selectedPhotos, List<Category> categoriesAL) {
         this.selectedPhotos.addAll(selectedPhotos);
         this.categoriesAL.addAll(categoriesAL);
@@ -53,6 +58,9 @@ public class PhotoPanelEdit extends JPanel {
 
     }
 
+    /**
+     * initialise JPanel components
+     */
     private void initComponent() {
         for (SinglePhotoPanel panel : selectedPhotos) {
             PhotoToEditPanel ptep = new PhotoToEditPanel(panel.getPhotoID(), categoriesAL);
@@ -68,6 +76,9 @@ public class PhotoPanelEdit extends JPanel {
         });
     }
 
+    /**
+     * Puts changes in DB 
+     */
     private void onEditButtonClick() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();

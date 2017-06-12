@@ -21,7 +21,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 /**
- *
+ * JPanel providing interface allowing to move photos to chosen device
  * @author Rafał Swoboda
  */
 public class MovePhotosPanel extends javax.swing.JPanel {
@@ -32,8 +32,8 @@ public class MovePhotosPanel extends javax.swing.JPanel {
     /**
      * Creates new form MovePhotosPanel
      *
-     * @param frame
-     * @param photos
+     * @param frame parent frame
+     * @param photos list of photos to move
      */
     public MovePhotosPanel(MainProgramFrame frame, List<Photo> photos) {
         this.frame = frame;
@@ -42,6 +42,9 @@ public class MovePhotosPanel extends javax.swing.JPanel {
         fillComboBox();
     }
 
+    /**
+     * creates list of available devices
+     */
     public final void fillComboBox() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -116,6 +119,10 @@ public class MovePhotosPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Moves given photos to selected device
+     * @param evt 
+     */
     private void acceptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptButtonActionPerformed
         File[] files = File.listRoots();
         String name;
@@ -167,6 +174,10 @@ public class MovePhotosPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_acceptButtonActionPerformed
 
+    /**
+     * Cancels operation and goes back to previous JPanel
+     * @param evt 
+     */
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
     }//GEN-LAST:event_cancelButtonActionPerformed

@@ -7,8 +7,6 @@ package com.mycompany.photostorage.model;
 
 import com.mycompany.photostorage.AddPhotoEdition;
 import com.mycompany.photostorage.MainProgramFrame;
-import com.mycompany.photostorage.model.CurrentUser;
-import com.mycompany.photostorage.model.NewPhoto;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;

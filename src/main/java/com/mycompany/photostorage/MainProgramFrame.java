@@ -11,7 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 /**
- *
+ * JFrame containing all used swing components
  * @author Jakub
  */
 public class MainProgramFrame {
@@ -20,6 +20,9 @@ public class MainProgramFrame {
     private CurrentUser currentUser;
 
 
+    /**
+     * Creates frame and assign default values
+     */
     public void CreateAndShowGUI() {
         frame = new JFrame("");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -28,6 +31,10 @@ public class MainProgramFrame {
         frame.setVisible(true);
     }
 
+    /**
+     * Sets displayed JPanel
+     * @param panel JPanel to be displayed
+     */
     public void setPanel(JPanel panel) {
         frame.getContentPane().removeAll();
         if(!(panel instanceof SignIn)&& !(panel instanceof SignUp)){
@@ -41,7 +48,7 @@ public class MainProgramFrame {
     public void setCurrentUser(CurrentUser cu) {
         this.currentUser = cu;
     }
-    
+  
     public CurrentUser getCurrentUser() {
         return this.currentUser;
     }

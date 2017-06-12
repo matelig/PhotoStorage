@@ -15,13 +15,14 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 /**
- *
+ * JPanel providing interface allowing user to add category
  * @author alachman
  */
 public class AddCategoryPanel extends javax.swing.JPanel {
 
     /**
      * Creates new form AddCategoryPanel
+     * @param currentUser logged user
      */
     public AddCategoryPanel(CurrentUser currentUser) {
         this.currentUser = currentUser;
@@ -125,6 +126,10 @@ public class AddCategoryPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnAddCategoryActionPerformed
 
+    /**
+     * Adds new category and assigns it to current user
+     * @throws Exception on adding already existing category
+     */
     private void addNewCategory() throws Exception {
         String QUERY_CATEGORY = "from Category c where c.User_idu = ";
         Session session = HibernateUtil.getSessionFactory().openSession();
@@ -166,6 +171,9 @@ public class AddCategoryPanel extends javax.swing.JPanel {
     private javax.swing.JTextField txtFieldCategory;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * Displays existing categories
+     */
     private void fillCategoryComboBox() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();

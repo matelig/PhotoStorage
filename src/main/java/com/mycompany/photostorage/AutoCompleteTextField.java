@@ -45,7 +45,8 @@ public class AutoCompleteTextField extends JTextField implements KeyListener,
 
     /**
      * Constructs a new AutoCompleteTextField with the 5 columns by default and
-     * no case sensitivity on comparisons of guesses to entered text.
+     * case sensitivity on comparisons of guesses to entered text.
+     * @param tp parent JPanel
      */
     public AutoCompleteTextField(TagPanel tp) {
         this(5, true);
@@ -90,6 +91,10 @@ public class AutoCompleteTextField extends JTextField implements KeyListener,
         Collections.sort(possibilities);
     }
     
+    /**
+     * add list of possibilities to collection
+     * @param possibilities list of possibilities
+     */
     public void addAllPossibilities(List<String> possibilities) {
         this.possibilities.addAll(possibilities);
         Collections.sort(this.possibilities);
