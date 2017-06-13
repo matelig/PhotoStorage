@@ -7,22 +7,23 @@ package com.mycompany.photostorage;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-
 
 /**
  *
  * @author Jakub
  */
 public class TagComponent extends JPanel {
+
     private JPanel parentPanel;
     private String tagString;
-    private JPanel mainPanel;
+    private Container mainPanel;
 
-    public TagComponent(String text, JPanel parent, JPanel mPanel) {
-        parentPanel= parent;
+    public TagComponent(String text, JPanel parent, Container mPanel) {
+        parentPanel = parent;
         tagString = text;
         mainPanel = mPanel;
         JLabel textlable = new JLabel(text);
@@ -36,9 +37,16 @@ public class TagComponent extends JPanel {
         close.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 parentPanel.remove(TagComponent.this);
-                if(mainPanel instanceof PhotoViewPanel){
+                if (mainPanel instanceof PhotoViewPanel) {
                     PhotoViewPanel panel = (PhotoViewPanel) mainPanel;
                     panel.updateMainView();
+                } else if (mainPanel instanceof PhotoToEditPanel) {
+                    ((PhotoToEditPanel) mainPanel).updatePanel();
+                } else if (mainPanel instanceof JPanel) {
+                    Component[] comps = mainPanel.getComponents();
+                    for (int i = 0; i < comps.length; i++) {
+                        ((PhotoToEditPanel) comps[i]).updatePanel();
+                    }
                 }
                 parentPanel.repaint();
                 parentPanel.revalidate();
@@ -47,7 +55,7 @@ public class TagComponent extends JPanel {
         add(close, BorderLayout.EAST);
         add(textlable, BorderLayout.WEST);
     }
-    
+
     public String getTag() {
         return this.tagString;
     }

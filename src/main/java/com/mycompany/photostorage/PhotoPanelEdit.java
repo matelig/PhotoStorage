@@ -28,26 +28,28 @@ import org.hibernate.Session;
  * JPanel providing interface allowing to edit photo parameters
  * @author m_lig
  */
-public class PhotoPanelEdit extends JPanel {
+public class PhotoPanelEdit extends JPanel{
 
     private JScrollPane scrollPane;
     private JButton editButton;
     private JPanel container = new JPanel();
     private List<SinglePhotoPanel> selectedPhotos = new ArrayList<>();
     private List<Category> categoriesAL = new ArrayList<>();
+    private List<String> tags = new ArrayList<>();
 
     /**
      * constructor
      * @param selectedPhotos list of photos to edit
      * @param categoriesAL list of categories
      */
-    public PhotoPanelEdit(List<SinglePhotoPanel> selectedPhotos, List<Category> categoriesAL) {
+    public PhotoPanelEdit(List<SinglePhotoPanel> selectedPhotos, List<Category> categoriesAL, List<String> tags) {
         this.selectedPhotos.addAll(selectedPhotos);
         this.categoriesAL.addAll(categoriesAL);
-        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+        this.tags.addAll(tags);
+        container.setLayout(new BoxLayout(getContainer(), BoxLayout.Y_AXIS));
         initComponent();
         this.setLayout(new BorderLayout());
-        scrollPane = new JScrollPane(container);
+        scrollPane = new JScrollPane(getContainer());
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setPreferredSize(new Dimension(480, 360));
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
@@ -55,7 +57,6 @@ public class PhotoPanelEdit extends JPanel {
         this.add(editButton, BorderLayout.SOUTH);
         setVisible(true);
         scrollPane.revalidate();
-
     }
 
     /**
@@ -63,8 +64,9 @@ public class PhotoPanelEdit extends JPanel {
      */
     private void initComponent() {
         for (SinglePhotoPanel panel : selectedPhotos) {
-            PhotoToEditPanel ptep = new PhotoToEditPanel(panel.getPhotoID(), categoriesAL);
-            container.add(ptep);
+            PhotoToEditPanel ptep = new PhotoToEditPanel(panel.getPhotoID(), categoriesAL, tags, this);
+            ptep.getTagPanel().addPosibility(tags);
+            getContainer().add(ptep);
         }
         this.editButton = new JButton("Edit");
         this.editButton.setSize(new Dimension(40, 20));
@@ -83,7 +85,7 @@ public class PhotoPanelEdit extends JPanel {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
         for (int i = 0; i < selectedPhotos.size(); i++) {
-            PhotoToEditPanel ptep = (PhotoToEditPanel) container.getComponent(i);
+            PhotoToEditPanel ptep = (PhotoToEditPanel) getContainer().getComponent(i);
             Query queryPhoto = session.createQuery("from Photo where idp=" + ptep.getPhotoID());
             Photo dbPhoto = (Photo) queryPhoto.list().get(0);
             if (!ptep.getCategory().equalsIgnoreCase("none")) {
@@ -127,5 +129,19 @@ public class PhotoPanelEdit extends JPanel {
                         "Photos have been edited.",
                         "Information",
                         JOptionPane.INFORMATION_MESSAGE);       
+    }
+
+    /**
+     * @return the container
+     */
+    public JPanel getContainer() {
+        return container;
+    }
+
+    /**
+     * @param container the container to set
+     */
+    public void setContainer(JPanel container) {
+        this.container = container;
     }
 }
