@@ -13,6 +13,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import javax.swing.JPanel;
 
 import javax.swing.JTextField;
@@ -98,6 +99,14 @@ public class AutoCompleteTextField extends JTextField implements KeyListener,
     public void addAllPossibilities(List<String> possibilities) {
         this.possibilities.addAll(possibilities);
         Collections.sort(this.possibilities);
+    }
+    /**
+     * sets list of possibilities to collection
+     * @param possibilities 
+     */
+    public void setAllPossibilities(Set<String> possibilities) {
+        this.possibilities.clear();
+        this.possibilities.addAll(possibilities);
     }
 
     /** Removes a possibility from the list of possibilities.
@@ -208,7 +217,7 @@ public class AutoCompleteTextField extends JTextField implements KeyListener,
         if (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_SPACE) {
             this.areGuessing = false;
             if(!this.getText().equals("")){
-                tagpanel.addTagComponent(this.getText(), (JPanel)tagpanel.getParent().getParent());
+                tagpanel.addTagComponent(this.getText(), tagpanel.getParent().getParent());
                 //this.repaint();
                 this.setText("");
             }

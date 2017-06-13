@@ -360,7 +360,7 @@ public class PhotoViewPanel extends javax.swing.JPanel {
                 selectedPhotos.add(p);
             }
         }
-        frame.setPanel(new PhotoPanelEdit(selectedPhotos, allCategories));
+        frame.setPanel(new PhotoPanelEdit(selectedPhotos, allCategories, tagNames));
     }//GEN-LAST:event_editPhotoButtonActionPerformed
 
     private void deletePhotoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deletePhotoButtonActionPerformed

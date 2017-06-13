@@ -24,7 +24,9 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.imageio.ImageIO;
@@ -61,10 +63,10 @@ public class AddPhotoEdition extends JPanel {
         this.mainFrame = mainFrame;
         this.newPhoto.addAll(newPhoto);
         this.currentUser = currentUser;
-        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+        container.setLayout(new BoxLayout(getContainer(), BoxLayout.Y_AXIS));
         initComponents();
         this.setLayout(new BorderLayout());
-        scrollPane = new JScrollPane(container);
+        scrollPane = new JScrollPane(getContainer());
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setPreferredSize(new Dimension(480, 360));
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
@@ -83,12 +85,24 @@ public class AddPhotoEdition extends JPanel {
         Set<Category> categories = dbUser.getCategories();
         List<Category> categoriesAL = new ArrayList<>();
         categoriesAL.addAll(categories);
+        Set<Photo> dbPhotos = dbUser.getPhotos();
+        Set<Tag> tags = new HashSet<>();
+        for(Photo p : dbPhotos) {
+            tags.addAll(p.getTags());
+        }
         session.getTransaction().commit();
         session.close();
+        Set<String> tagNames = new HashSet<>();
+        for(Tag t: tags) {
+            tagNames.add(t.getValue());
+        }
+        List<String> listedTags = new ArrayList<>();
+        listedTags.addAll(tagNames);
         for (NewPhoto photo : newPhoto) {
             if (!FilenameUtils.getExtension(photo.getPath()).equalsIgnoreCase("gif")) {
-            PhotoToEditPanel ptep = new PhotoToEditPanel(photo.getPath(), categoriesAL);
-            container.add(ptep);
+            PhotoToEditPanel ptep = new PhotoToEditPanel(photo.getPath(), categoriesAL, tagNames, this);
+            ptep.getTagPanel().addPosibility(listedTags);
+                getContainer().add(ptep);
             }
         }
         //newPhoto.clear();
@@ -110,7 +124,7 @@ public class AddPhotoEdition extends JPanel {
         User user = (User) queryUser.list().get(0);
         Set<Category> categories = user.getCategories();
         for (int i = 0; i < newPhoto.size(); i++) {
-            PhotoToEditPanel ptep = (PhotoToEditPanel) container.getComponent(i);            
+            PhotoToEditPanel ptep = (PhotoToEditPanel) getContainer().getComponent(i);            
             Photo photo = new Photo();            
             photo.setDescription(ptep.getDescription());
             photo.setFormat(newPhoto.get(i).getFormat());
@@ -162,5 +176,19 @@ public class AddPhotoEdition extends JPanel {
                         "Information",
                         JOptionPane.INFORMATION_MESSAGE);
         mainFrame.setPanel(new PhotoViewPanel(mainFrame,currentUser));
+    }
+
+    /**
+     * @return the container
+     */
+    public JPanel getContainer() {
+        return container;
+    }
+
+    /**
+     * @param container the container to set
+     */
+    public void setContainer(JPanel container) {
+        this.container = container;
     }
 }

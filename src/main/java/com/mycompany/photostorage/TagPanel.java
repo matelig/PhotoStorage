@@ -6,10 +6,13 @@
 package com.mycompany.photostorage;
 
 
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
@@ -30,7 +33,7 @@ public class TagPanel extends JPanel {
         this.add(tagPanel);;
     }
     
-    public void addTagComponent(String tagText, JPanel mainPanel){        
+    public void addTagComponent(String tagText, Container mainPanel){        
         TagComponent tagComponent = new TagComponent(tagText, tagPanel, mainPanel);
         tagPanel.add(tagComponent);        
         tagTextField.setText("");
@@ -39,6 +42,13 @@ public class TagPanel extends JPanel {
         if(mainPanel instanceof PhotoViewPanel){
             PhotoViewPanel viewPanel = (PhotoViewPanel) mainPanel;
             viewPanel.updateMainView();
+        }else if(mainPanel instanceof PhotoToEditPanel) {
+                ((PhotoToEditPanel)mainPanel).updatePanel();
+        }else if(mainPanel instanceof JPanel) {
+            Component[] pteps = mainPanel.getComponents();
+            for(int i = 0; i < pteps.length; i++) {
+                ((PhotoToEditPanel)pteps[i]).updatePanel();
+            }
         }
     }
     
@@ -53,5 +63,9 @@ public class TagPanel extends JPanel {
     
     public void addPosibility(List<String> tagName) {
         tagTextField.addAllPossibilities(tagName);
-    }    
+    }  
+    
+    public void setPossibility(Set<String> tagName) {
+        tagTextField.setAllPossibilities(tagName);
+    }
 }

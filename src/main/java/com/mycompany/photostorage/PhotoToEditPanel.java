@@ -8,7 +8,9 @@ package com.mycompany.photostorage;
 import com.mycompany.photostorage.entity.Category;
 import com.mycompany.photostorage.entity.Photo;
 import com.mycompany.photostorage.entity.Tag;
+import com.mycompany.photostorage.entity.User;
 import com.mycompany.photostorage.util.HibernateUtil;
+import java.awt.Component;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -16,16 +18,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 import org.hibernate.Query;
 import org.hibernate.Session;
 
 /**
  * JPanel providing interface allowing to move photos to chosen device
+ *
  * @author alachman
  */
 public class PhotoToEditPanel extends javax.swing.JPanel {
@@ -33,6 +38,8 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
     private BufferedImage image;
     private List<Category> categories = new ArrayList<>();
     private int photoID;
+    private List<String> allTags = new ArrayList<>();
+    private JPanel parentPanel;
 
     /**
      * Creates new form PhotoToEditPanel
@@ -43,8 +50,10 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
         setVisible(true);
     }
 
-    public PhotoToEditPanel(String filePath, List<Category> categories) {
+    public PhotoToEditPanel(String filePath, List<Category> categories, Set<String> allTags, JPanel parentPanel) {
         this.categories = categories;
+        this.allTags.addAll(allTags);
+        this.parentPanel = parentPanel;
         initComponents();
         txtFieldDescription.setText("Default");
         setComboBoxCategories();
@@ -52,9 +61,11 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
         setVisible(true);
     }
 
-    public PhotoToEditPanel(int photoID, List<Category> categories) {
+    public PhotoToEditPanel(int photoID, List<Category> categories, List<String> allTags, JPanel parentPanel) {
         this.categories.addAll(categories);
         this.photoID = photoID;
+        this.allTags = allTags;
+        this.parentPanel = parentPanel;
         initComponents();
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -68,20 +79,18 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
         setComboBoxCategories();
         if (dbPhoto.getCategory() != null) {
             String categoryName = dbPhoto.getCategory().getName();
-            
-            for (int i = 0;i<categoryComboBox.getItemCount();i++) {
+
+            for (int i = 0; i < categoryComboBox.getItemCount(); i++) {
                 if (this.categoryComboBox.getItemAt(i).equals(categoryName)) {
                     categoryComboBox.setSelectedIndex(i);
                     break;
                 }
             }
-            
         }
         setImageMiniature(dbPhoto.getMiniature());
         session.getTransaction().commit();
         session.close();
         setVisible(true);
-
     }
 
     private void setImageMiniature(byte[] file) {
@@ -123,9 +132,9 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
     }
 
     public List<String> getTags() {
-        return tagPanel1.takeTags();
+        return getTagPanel().takeTags();
     }
-    
+
     public int getPhotoID() {
         return this.photoID;
     }
@@ -217,6 +226,40 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
         categoryComboBox.addItem("None");
         for (Category c : categories) {
             categoryComboBox.addItem(c.getName());
+        }
+    }
+
+    /**
+     * @return the tagPanel1
+     */
+    public com.mycompany.photostorage.TagPanel getTagPanel() {
+        return tagPanel1;
+    }
+
+    /**
+     * @param tagPanel1 the tagPanel1 to set
+     */
+    public void setTagPanel(com.mycompany.photostorage.TagPanel tagPanel1) {
+        this.tagPanel1 = tagPanel1;
+    }
+
+    public void updatePanel() {
+        Set<String> tags = new HashSet<>();
+        tags.addAll(allTags);
+        if (parentPanel instanceof PhotoPanelEdit) {
+            PhotoPanelEdit viewPanel = (PhotoPanelEdit) parentPanel;
+            Component[] comps = viewPanel.getContainer().getComponents();
+            for (int i = 0; i < comps.length; i++) {
+                tags.addAll(((PhotoToEditPanel) comps[i]).getTags());
+            }
+            this.tagPanel1.setPossibility(tags);
+        } else if(parentPanel instanceof AddPhotoEdition) {
+            AddPhotoEdition viewPanel = (AddPhotoEdition) parentPanel;
+            Component[] comps = viewPanel.getContainer().getComponents();
+            for (int i = 0; i < comps.length; i++) {
+                tags.addAll(((PhotoToEditPanel) comps[i]).getTags());
+            }
+            this.tagPanel1.setPossibility(tags);
         }
     }
 }
