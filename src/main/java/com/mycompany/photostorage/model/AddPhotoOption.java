@@ -18,7 +18,7 @@ import javax.swing.JFileChooser;
 import org.apache.commons.io.FilenameUtils;
 
 /**
- *
+ * Class making transition to AddPhotoEdition JPanel
  * @author m_lig
  */
 public class AddPhotoOption {
@@ -27,11 +27,19 @@ public class AddPhotoOption {
     private MainProgramFrame parentFrame;
     private CurrentUser currentUser;
 
+    /**
+     * Constructor
+     * @param frame main frame of the program
+     * @param currentUser currently logged in user
+     */
     public AddPhotoOption(MainProgramFrame frame, CurrentUser currentUser) {
         parentFrame = frame;
         this.currentUser = currentUser;
     }
 
+    /**
+     * Opens user photos and passes them to AddPhotoEdition JPanel
+     */
     public void showChoosePhotosDialog() {
         boolean choosenPhotos = false;
         JFileChooser fileChooser = new JFileChooser();

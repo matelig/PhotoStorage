@@ -13,7 +13,7 @@ import javax.swing.JOptionPane;
 import org.hibernate.Session;
 
 /**
- *
+ * JPanel providing interface allowing to sign up
  * @author Jakub
  */
 public class SignUp extends javax.swing.JPanel {
@@ -22,6 +22,7 @@ public class SignUp extends javax.swing.JPanel {
 
     /**
      * Creates new form SingUp
+     * @param parentFrame frame containing object
      */
     public SignUp(MainProgramFrame parentFrame) {
         frame = parentFrame;
@@ -120,9 +121,11 @@ public class SignUp extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_usernameTextFieldActionPerformed
 
+    /**
+     * Calls appropriate methods to process input data and switches to Sign In
+     * @param evt 
+     */
     private void signUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signUpButtonActionPerformed
-        //frame.displayMenu();
-        //frame.setPanel(new PhotoViewPanel());
         try {
             if (isDataCorrect()) {
                 insertUser();
@@ -140,19 +143,19 @@ public class SignUp extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_signUpButtonActionPerformed
 
+    /**
+     * cancels action and returns to SignIn panel
+     * @param evt 
+     */
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         frame.setPanel(new SignIn(frame));
     }//GEN-LAST:event_cancelButtonActionPerformed
 
-//    public static void main(String[] args) {
-//        javax.swing.SwingUtilities.invokeLater(() -> {
-//            JFrame frame = new JFrame("");
-//            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//            frame.add(new SignUp());
-//            frame.setSize(600, 600);
-//            frame.setVisible(true);
-//        });
-//    }
+    /**
+     * checks if entered data is correct
+     * @return validation output
+     * @throws Exception in case of incorrect data
+     */
     private Boolean isDataCorrect() throws Exception {
         if (!Arrays.equals(passwordField.getPassword(), confirmPasswordField.getPassword())) {
             throw new Exception("Passwords must be equals");
@@ -176,6 +179,9 @@ public class SignUp extends javax.swing.JPanel {
         return true;
     }
 
+    /**
+     * puts new user in the DB
+     */
     private void insertUser() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();

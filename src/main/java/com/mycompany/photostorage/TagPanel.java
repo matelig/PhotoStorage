@@ -17,7 +17,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
 /**
- *
+ * JPanel managing tags
  * @author Jakub
  */
 public class TagPanel extends JPanel {
@@ -33,6 +33,11 @@ public class TagPanel extends JPanel {
         this.add(tagPanel);;
     }
     
+    /**
+     * Creates and adds TagComponent to tagPanel field
+     * @param tagText created tag text
+     * @param mainPanel container having this instance on TagPanel
+     */
     public void addTagComponent(String tagText, Container mainPanel){        
         TagComponent tagComponent = new TagComponent(tagText, tagPanel, mainPanel);
         tagPanel.add(tagComponent);        
@@ -52,6 +57,10 @@ public class TagPanel extends JPanel {
         }
     }
     
+    /**
+     * returns list of currently picked tags
+     * @return list of current tags
+     */
     public List<String> takeTags() {
         List<String> tagList = new ArrayList<>();
         for (int i = 0; i< tagPanel.getComponentCount();i++) {
@@ -61,10 +70,18 @@ public class TagPanel extends JPanel {
         return tagList;
     }
     
+    /**
+     * adds new possibilities of autocompletion
+     * @param tagName list of new words
+     */
     public void addPosibility(List<String> tagName) {
         tagTextField.addAllPossibilities(tagName);
     }  
     
+    /**
+     * sets list of autocompletion to new set of words
+     * @param tagName list of new words
+     */
     public void setPossibility(Set<String> tagName) {
         tagTextField.setAllPossibilities(tagName);
     }

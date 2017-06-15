@@ -8,7 +8,7 @@ package com.mycompany.photostorage.model;
 import java.util.Date;
 
 /**
- *
+ * Class representing photo not yet existing in the system
  * @author m_lig
  */
 public class NewPhoto {   //not implemented - will be done soon

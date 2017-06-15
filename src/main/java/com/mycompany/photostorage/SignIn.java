@@ -10,19 +10,18 @@ import com.mycompany.photostorage.model.CurrentUser;
 import com.mycompany.photostorage.util.HibernateUtil;
 import java.util.List;
 import javax.swing.JOptionPane;
-import javax.swing.JRootPane;
-import javax.swing.SwingUtilities;
 import org.hibernate.Session;
 
 
 /**
- *
+ * JPanel providing interface allowing to sign in
  * @author Jakub
  */
 public class SignIn extends javax.swing.JPanel {
     MainProgramFrame frame;
     /**
      * Creates new form SignIn
+     * @param parentFrame frame containing object
      */
     public SignIn(MainProgramFrame parentFrame) {
         frame = parentFrame;
@@ -112,6 +111,10 @@ public class SignIn extends javax.swing.JPanel {
  
     }//GEN-LAST:event_usernameTextFieldActionPerformed
 
+    /**
+     * Calls appropriate methods to process input data and switches to PhotoViewPanel
+     * @param evt 
+     */
     private void signInButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signInButtonActionPerformed
         try {
             CurrentUser currentUser = getDatabaseUser();
@@ -122,10 +125,19 @@ public class SignIn extends javax.swing.JPanel {
         }       
     }//GEN-LAST:event_signInButtonActionPerformed
 
+    /**
+     * sets panel to SignUp
+     * @param evt 
+     */
     private void registerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerButtonActionPerformed
         frame.setPanel(new SignUp(frame));
     }//GEN-LAST:event_registerButtonActionPerformed
 
+    /**
+     * gets user with provided login credentials
+     * @return user
+     * @throws Exception when input is incorrect
+     */
     private CurrentUser getDatabaseUser() throws Exception{
         if (usernameTextField.getText().isEmpty()||passwordTextField.getPassword().length==0) {
             throw new Exception("All information fields must be filled out before you can click OK. ");

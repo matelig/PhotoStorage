@@ -34,7 +34,7 @@ import org.hibernate.Session;
 import org.jdesktop.swingx.JXDatePicker;
 
 /**
- *
+ * JPanel providing interface allowing to view and manage photos
  * @author Wojtek
  */
 public class PhotoViewPanel extends javax.swing.JPanel {
@@ -56,6 +56,11 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         initComponents();
     }
 
+    /**
+     * Constructor for object having current user's photos
+     * @param frame JFrame containing object
+     * @param currentUser user whose photos are beeing displayed
+     */
     public PhotoViewPanel(MainProgramFrame frame, CurrentUser currentUser) {
         this.frame = frame;
         this.currentUser = currentUser;
@@ -82,6 +87,11 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         categoryTree.setSelectionRow(0);
     }
 
+    /**
+     * Creates tree of user's categories
+     * @param categoriesAL
+     * @param supCategory 
+     */
     private void createCategoriesTree(List<Category> categoriesAL, DefaultMutableTreeNode supCategory) {
         DefaultMutableTreeNode category = null;
         if (!categoriesAL.isEmpty()) {

@@ -27,6 +27,9 @@ import javax.persistence.TemporalType;
 @Table(name="photo"
     ,catalog="photokeeper"
 )
+/**
+ * Class representing photo
+ */
 public class Photo  implements java.io.Serializable {
 
 
@@ -44,10 +47,23 @@ public class Photo  implements java.io.Serializable {
      private Set<Device> devices = new HashSet<Device>(0);
      private Set<Tag> tags = new HashSet<Tag>(0);
 
+    /**
+     * Basic constructor
+     */
     public Photo() {
     }
 
-	
+    /**
+     * Constructor not assigning category
+     * @param user user owning photo
+     * @param date date of shooting photo
+     * @param size size of photo in bytes
+     * @param format format in which photo is saved
+     * @param resolution resolution of photo
+     * @param miniature array of bytes with photo's miniature
+     * @param isArchivised information if photo is saved somewhere
+     * @param path path to photo on disc
+     */
     public Photo(User user, Date date, int size, String format, String resolution, byte[] miniature, byte isArchivised, String path) {
         this.user = user;
         this.date = date;
@@ -58,6 +74,22 @@ public class Photo  implements java.io.Serializable {
         this.isArchivised = isArchivised;
         this.path = path;
     }
+    
+    /**
+     * Constructor assigning category, description, devices and tags
+     * @param category assigned category
+     * @param user user owning photo
+     * @param date date of shooting photo
+     * @param size size of photo in bytes
+     * @param format format in which photo is saved
+     * @param resolution resolution of photo
+     * @param description description of the photo
+     * @param miniature array of bytes with photo's miniature
+     * @param isArchivised information if photo is saved somewhere
+     * @param path path to photo on disc
+     * @param devices deviced storing this photo
+     * @param tags tags of the photo
+     */
     public Photo(Category category, User user, Date date, int size, String format, String resolution, String description, byte[] miniature, byte isArchivised, String path, Set<Device> devices, Set<Tag> tags) {
        this.category = category;
        this.user = user;

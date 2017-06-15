@@ -19,6 +19,9 @@ import javax.persistence.Table;
 @Table(name="tag"
     ,catalog="photokeeper"
 )
+/**
+ * Class representing tag
+ */
 public class Tag  implements java.io.Serializable {
 
 
@@ -26,13 +29,25 @@ public class Tag  implements java.io.Serializable {
      private Photo photo;
      private String value;
 
+    /**
+     * Basic constructor
+     */
     public Tag() {
     }
 
-	
+    /**
+     * Constructor assigning photo
+     * @param photo photo having this tag
+     */
     public Tag(Photo photo) {
         this.photo = photo;
     }
+    
+    /**
+     * Constructor assigning values
+     * @param photo photo having this tag
+     * @param value tag text
+     */
     public Tag(Photo photo, String value) {
        this.photo = photo;
        this.value = value;

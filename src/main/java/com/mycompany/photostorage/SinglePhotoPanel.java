@@ -20,7 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.border.Border;
 
 /**
- *
+ * JPanel diplaying single photo
  * @author Wojtek
  */
 public class SinglePhotoPanel extends javax.swing.JPanel {
@@ -41,6 +41,14 @@ public class SinglePhotoPanel extends javax.swing.JPanel {
         photoNameLabel.setText("Wódz wspaniały");
     }
 
+    /**
+     * Constructor
+     * @param photo array of photo's bytes
+     * @param description photo's description
+     * @param id photo's id
+     * @param isArchivised is photo archived
+     * @param photoOnDevice set of devices having this photo
+     */
     public SinglePhotoPanel(byte[] photo, String description, int id, byte isArchivised,Set<Device> photoOnDevice) {
         initComponents();
         this.photoID = id;
@@ -58,6 +66,9 @@ public class SinglePhotoPanel extends javax.swing.JPanel {
         photoNameLabel.setText(description);
     }
 
+    /**
+     * sets miniature displayed in JPanel
+     */
     private void setImageMiniature() {
         try {
             image = ImageIO.read(new File("src/Photo.png"));
@@ -72,6 +83,10 @@ public class SinglePhotoPanel extends javax.swing.JPanel {
         }
     }
 
+    /**
+     * sets miniature displayed in JPanel
+     * @param photo array of photo's bytes
+     */
     private void setImageMiniature(byte[] photo) {
         try {
             InputStream in = new ByteArrayInputStream(photo);

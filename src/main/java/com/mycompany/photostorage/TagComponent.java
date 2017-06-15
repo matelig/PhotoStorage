@@ -13,7 +13,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 /**
- *
+ * JPanel representing already added tag
  * @author Jakub
  */
 public class TagComponent extends JPanel {
@@ -22,6 +22,12 @@ public class TagComponent extends JPanel {
     private String tagString;
     private Container mainPanel;
 
+    /**
+     * Creator
+     * @param text tag's text
+     * @param parent JPanel containing this object
+     * @param mPanel main JPanel in JFrame
+     */
     public TagComponent(String text, JPanel parent, Container mPanel) {
         parentPanel = parent;
         tagString = text;

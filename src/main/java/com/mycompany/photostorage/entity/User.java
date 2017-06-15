@@ -22,6 +22,9 @@ import javax.persistence.UniqueConstraint;
     ,catalog="photokeeper"
     , uniqueConstraints = @UniqueConstraint(columnNames="nickname") 
 )
+/**
+ * Class representing user
+ */
 public class User  implements java.io.Serializable {
 
 
@@ -31,14 +34,29 @@ public class User  implements java.io.Serializable {
      private Set<Category> categories = new HashSet<Category>(0);
      private Set<Photo> photos = new HashSet<Photo>(0);
 
+    /**
+     * Basic constructor
+     */
     public User() {
     }
 
-	
+    /**
+     * Constructor setting login credentials
+     * @param nickname user's login
+     * @param password user's password
+     */
     public User(String nickname, String password) {
         this.nickname = nickname;
         this.password = password;
     }
+    
+    /**
+     * Constructor setting all user's information
+     * @param nickname user's login
+     * @param password user's password
+     * @param categories set of user's categories
+     * @param photos set of user's photos
+     */
     public User(String nickname, String password, Set<Category> categories, Set<Photo> photos) {
        this.nickname = nickname;
        this.password = password;

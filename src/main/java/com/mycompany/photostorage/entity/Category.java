@@ -22,6 +22,9 @@ import javax.persistence.Table;
 @Table(name="category"
     ,catalog="photokeeper"
 )
+/**
+ * Class representing category
+ */
 public class Category  implements java.io.Serializable {
 
 
@@ -32,14 +35,30 @@ public class Category  implements java.io.Serializable {
      private Set<Photo> photos = new HashSet<Photo>(0);
      private Set<Category> categories = new HashSet<Category>(0);
 
+    /**
+     * basic constructor
+     */
     public Category() {
     }
-
-	
+    
+    /**
+     * Constructor for empty category
+     * @param user user owning category
+     * @param name name of the category
+     */
     public Category(User user, String name) {
         this.user = user;
         this.name = name;
     }
+    
+    /**
+     * Constructor putting photos and categories
+     * @param category 
+     * @param user user owning category
+     * @param name name of the category
+     * @param photos photos in the category
+     * @param categories 
+     */
     public Category(Category category, User user, String name, Set<Photo> photos, Set<Category> categories) {
        this.category = category;
        this.user = user;

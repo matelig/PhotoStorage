@@ -25,6 +25,9 @@ import javax.persistence.UniqueConstraint;
     ,catalog="photokeeper"
     , uniqueConstraints = {@UniqueConstraint(columnNames="idd"), @UniqueConstraint(columnNames="name")} 
 )
+/**
+ * Class representing storing device
+ */
 public class Device  implements java.io.Serializable {
 
 
@@ -36,10 +39,20 @@ public class Device  implements java.io.Serializable {
      private byte isStoring;
      private Set<Photo> photos = new HashSet<Photo>(0);
 
+    /**
+     * Basic constructor
+     */
     public Device() {
     }
 
-	
+    /**
+     * Constructor for empty device
+     * @param typeofdevice type of the device
+     * @param name name of the device
+     * @param capacity capacity of the device
+     * @param freeSpace free space left on the device
+     * @param isStoring information if device is storing any photos
+     */
     public Device(Typeofdevice typeofdevice, String name, String capacity, String freeSpace, byte isStoring) {
        
         this.typeofdevice = typeofdevice;
@@ -48,6 +61,16 @@ public class Device  implements java.io.Serializable {
         this.freeSpace = freeSpace;
         this.isStoring = isStoring;
     }
+    
+    /**
+     * Constructor for device having photos
+     * @param typeofdevice type of the device
+     * @param name name of the device
+     * @param capacity capacity of the device
+     * @param freeSpace free space left on the device
+     * @param isStoring information if device is storing any photos
+     * @param photos stored photos
+     */
     public Device(Typeofdevice typeofdevice, String name, String capacity, String freeSpace, byte isStoring, Set<Photo> photos) {
        this.typeofdevice = typeofdevice;
        this.name = name;

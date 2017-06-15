@@ -6,18 +6,26 @@
 package com.mycompany.photostorage.model;
 
 /**
- *
+ * Class storing information about current user
  * @author m_lig
  */
 public class CurrentUser {
     private int userID;
     private String userName;
     
+    /**
+     * Constructor setting all fields
+     * @param userID current user's id
+     * @param userName current user's username
+     */
     public CurrentUser(int userID, String userName) {
         this.userID = userID;
         this.userName = userName;
     }
-    
+  
+    /**
+     * Basic constructor
+     */
     public CurrentUser() {
         
     }

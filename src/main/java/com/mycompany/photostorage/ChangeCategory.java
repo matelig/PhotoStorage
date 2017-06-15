@@ -6,7 +6,7 @@
 package com.mycompany.photostorage;
 
 /**
- * panel providing interface allowing to choose new category
+ * JPanel providing interface allowing to choose new category
  * @author Rafał Swoboda
  */
 public class ChangeCategory extends javax.swing.JPanel {

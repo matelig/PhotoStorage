@@ -29,7 +29,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 /**
- * JPanel providing interface allowing to move photos to chosen device
+ * JPanel providing interface allowing to edit photo information
  *
  * @author alachman
  */
@@ -50,6 +50,13 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
         setVisible(true);
     }
 
+    /**
+     * Constructor for object assigned to photo given by file path
+     * @param filePath path to photo
+     * @param categories list of user's categories
+     * @param allTags list of user's tags
+     * @param parentPanel JPanel containing object
+     */
     public PhotoToEditPanel(String filePath, List<Category> categories, Set<String> allTags, JPanel parentPanel) {
         this.categories = categories;
         this.allTags.addAll(allTags);
@@ -61,6 +68,13 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
         setVisible(true);
     }
 
+    /**
+     * Constructor for object assigned to specific photo
+     * @param photoID photo id in DB
+     * @param categories list of user's categories
+     * @param allTags list of user's tags
+     * @param parentPanel JPanel containing object
+     */
     public PhotoToEditPanel(int photoID, List<Category> categories, List<String> allTags, JPanel parentPanel) {
         this.categories.addAll(categories);
         this.photoID = photoID;
@@ -93,6 +107,10 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
         setVisible(true);
     }
 
+    /**
+     * sets photo's miniature from byte array
+     * @param file byte informatioin about photo
+     */
     private void setImageMiniature(byte[] file) {
         try {
             InputStream in = new ByteArrayInputStream(file);
@@ -109,6 +127,10 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
         }
     }
 
+    /**
+     * sets photo's miniature from file
+     * @param filePath path to photo
+     */
     private void setImageMiniature(String filePath) {
         try {
             image = ImageIO.read(new File(filePath));
@@ -243,6 +265,9 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
         this.tagPanel1 = tagPanel1;
     }
 
+    /**
+     * update photo and user information according to changes made in panel
+     */
     public void updatePanel() {
         Set<String> tags = new HashSet<>();
         tags.addAll(allTags);

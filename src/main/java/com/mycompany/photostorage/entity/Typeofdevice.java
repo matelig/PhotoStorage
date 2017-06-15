@@ -20,6 +20,9 @@ import javax.persistence.Table;
 @Table(name="typeofdevice"
     ,catalog="photokeeper"
 )
+/**
+ * Class representing device type
+ */
 public class Typeofdevice  implements java.io.Serializable {
 
 
@@ -28,13 +31,25 @@ public class Typeofdevice  implements java.io.Serializable {
      private String singleSave;
      private Set<Device> devices = new HashSet<Device>(0);
 
+    /**
+     * Basic constructor
+     */
     public Typeofdevice() {
     }
 
-	
+    /**
+     * Constructor assigning description
+     * @param description type description
+     */
     public Typeofdevice(String description) {
         this.description = description;
     }
+    /***
+     * Constructor assigning all paramaters
+     * @param description type description
+     * @param singleSave information about multiplicity of saving data
+     * @param devices set of deices haing this type
+     */
     public Typeofdevice(String description, String singleSave, Set<Device> devices) {
        this.description = description;
        this.singleSave = singleSave;

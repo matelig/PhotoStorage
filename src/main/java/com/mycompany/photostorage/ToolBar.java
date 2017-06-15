@@ -12,7 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JToolBar;
 
 /**
- *
+ * Class creating JToolbar allowing navigation through application
  * @author Jakub
  */
 public class ToolBar implements ActionListener{
@@ -20,6 +20,11 @@ public class ToolBar implements ActionListener{
     JButton button;
     MainProgramFrame frame;
     
+    /**
+     * Creates JToolbar with navigation buttons
+     * @param parentFrame frame containing JToolbar
+     * @return created JToolBar
+     */
     public JToolBar createToolBar(MainProgramFrame parentFrame){
         frame = parentFrame;
         toolBar = new JToolBar();
@@ -58,16 +63,13 @@ public class ToolBar implements ActionListener{
         return toolBar;
     }
 
+    /**
+     * Does action depending on button pressed
+     * @param e 
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
-        switch(e.getActionCommand()){
-            //nie ma buttonów/opcji dla tych panelów
-            
-            //archivePhotos
-            //changeCategory
-            //closeDevice
-            //deleteDevice
-            
+        switch(e.getActionCommand()){            
             case "Add photos":
                 AddPhotoOption addPhoto = new AddPhotoOption(frame,frame.getCurrentUser());
                 addPhoto.showChoosePhotosDialog();
@@ -89,7 +91,6 @@ public class ToolBar implements ActionListener{
                 break;
             default:
                 break;
-                
         }
     }
 }
