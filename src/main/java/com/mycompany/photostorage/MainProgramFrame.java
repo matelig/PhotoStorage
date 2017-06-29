@@ -24,10 +24,11 @@ public class MainProgramFrame {
      * Creates frame and assign default values
      */
     public void CreateAndShowGUI() {
-        frame = new JFrame("");
+        frame = new JFrame("PhotoStorage");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPanel(new SignIn(this));
         frame.pack();
+        frame.setResizable(false);
         frame.setVisible(true);
     }
 

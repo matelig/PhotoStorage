@@ -8,16 +8,23 @@ package com.mycompany.photostorage;
 import com.mycompany.photostorage.entity.Category;
 import com.mycompany.photostorage.entity.Photo;
 import com.mycompany.photostorage.entity.Tag;
+import com.mycompany.photostorage.entity.User;
 import com.mycompany.photostorage.util.HibernateUtil;
 import java.awt.BorderLayout;
+import java.awt.Component;
+import static java.awt.Component.LEFT_ALIGNMENT;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -36,6 +43,8 @@ public class PhotoPanelEdit extends JPanel{
     private List<SinglePhotoPanel> selectedPhotos = new ArrayList<>();
     private List<Category> categoriesAL = new ArrayList<>();
     private List<String> tags = new ArrayList<>();
+    private JComboBox categoriesComboBox = new JComboBox();
+    private JButton applyButton;
 
     /**
      * constructor
@@ -48,17 +57,41 @@ public class PhotoPanelEdit extends JPanel{
         this.tags.addAll(tags);
         container.setLayout(new BoxLayout(getContainer(), BoxLayout.Y_AXIS));
         initComponent();
-        this.setLayout(new BorderLayout());
+        JLabel label = new JLabel("Choose category for all photos:");
+        label.setSize(new Dimension(100,30));
+        label.setAlignmentX(LEFT_ALIGNMENT);
+        categoriesComboBox.setAlignmentX(LEFT_ALIGNMENT);
+        FillCategoriesComboBox();
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         scrollPane = new JScrollPane(getContainer());
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setPreferredSize(new Dimension(480, 360));
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        this.add(scrollPane, BorderLayout.CENTER);
-        this.add(editButton, BorderLayout.SOUTH);
+        scrollPane.setAlignmentX(LEFT_ALIGNMENT);
+        this.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        this.add(label);
+        this.add(Box.createRigidArea(new Dimension(0,5)));
+        this.add(categoriesComboBox);
+        this.add(Box.createRigidArea(new Dimension(0,5)));
+        this.add(applyButton);
+        this.add(Box.createRigidArea(new Dimension(0,5)));
+        this.add(scrollPane);
+        this.add(Box.createRigidArea(new Dimension(0,5)));
+        this.add(editButton);
         setVisible(true);
         scrollPane.revalidate();
     }
 
+    /**
+     * Fills combo box with all categories
+     */
+    public void FillCategoriesComboBox() {
+        categoriesComboBox.addItem("None");
+        for (Category cat : categoriesAL) {
+            categoriesComboBox.addItem(cat.getName());
+        }
+    }
+    
     /**
      * initialise JPanel components
      */
@@ -70,12 +103,33 @@ public class PhotoPanelEdit extends JPanel{
         }
         this.editButton = new JButton("Edit");
         this.editButton.setSize(new Dimension(40, 20));
+        this.editButton.setAlignmentX(LEFT_ALIGNMENT);
         this.editButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 onEditButtonClick();
             }
         });
+        this.applyButton = new JButton("Apply");
+        this.applyButton.setPreferredSize(new Dimension(100, 25));
+        this.applyButton.setAlignmentX(LEFT_ALIGNMENT);
+        this.applyButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                changeAllCategories();
+            }
+        });
+    }
+    
+    /**
+     * Changes categories in all PhotoToEditPanels
+     */
+    private void changeAllCategories() {
+        Component[] comps = container.getComponents();
+        for(int i = 0; i < comps.length; i++) {
+            PhotoToEditPanel panel = (PhotoToEditPanel)comps[i];
+            panel.getCategoryComboBox().setSelectedItem(categoriesComboBox.getSelectedItem());
+        }
     }
 
     /**
