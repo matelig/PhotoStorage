@@ -133,7 +133,13 @@ public class MovePhotosPanel extends javax.swing.JPanel {
         boolean found = false;
         for (int i = 0; i < files.length; i++) {
             name = FileSystemView.getFileSystemView().getSystemDisplayName(files[i]);
-            if (name.contains(deviceName.split(" ")[0])) {
+            String[] devicePartName = name.split(" ");
+            name = "";
+            for (int j = 0 ; j<devicePartName.length-1;j++) {
+                name = name + devicePartName[j] + " ";
+            }
+            name = name.substring(0,name.length()-1);
+            if (name.equals(deviceName)) {
                 destination = files[i].getAbsolutePath();
                 found = true;
                 break;
@@ -160,6 +166,7 @@ public class MovePhotosPanel extends javax.swing.JPanel {
                     photosOnDevice.add(photo);
                     session.update(photo);
                 } catch (IOException ex) {
+                    ex.getStackTrace();
                 }
             }
             currentDevice.setPhotos(photosOnDevice);
