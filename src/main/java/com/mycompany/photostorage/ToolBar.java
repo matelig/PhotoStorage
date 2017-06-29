@@ -45,6 +45,11 @@ public class ToolBar implements ActionListener{
         button.addActionListener(this);
         toolBar.add(button);
         
+        button  = new JButton("Delete device");
+        button.setActionCommand("Delete device");
+        button.addActionListener(this);
+        toolBar.add(button);
+        
         button  = new JButton("Search");
         button.setActionCommand("Search");
         button.addActionListener(this);
@@ -76,7 +81,10 @@ public class ToolBar implements ActionListener{
                 break;
             case "Add device":
                 frame.setPanel(new AddDevicePanel(frame));
-                break;            
+                break; 
+            case "Delete device":
+                frame.setPanel(new DeleteDevicePanel(frame));
+                break;
             case "Add category":
                 frame.setPanel(new AddCategoryPanel(frame.getCurrentUser()));
                 break;

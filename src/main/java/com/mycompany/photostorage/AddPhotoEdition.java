@@ -6,6 +6,7 @@
 package com.mycompany.photostorage;
 
 import com.mycompany.photostorage.entity.Category;
+import com.mycompany.photostorage.entity.Device;
 import com.mycompany.photostorage.entity.Photo;
 import com.mycompany.photostorage.entity.Tag;
 import com.mycompany.photostorage.entity.User;
@@ -13,6 +14,7 @@ import com.mycompany.photostorage.model.CurrentUser;
 import com.mycompany.photostorage.model.NewPhoto;
 import com.mycompany.photostorage.util.HibernateUtil;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -30,9 +32,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -52,6 +58,8 @@ public class AddPhotoEdition extends JPanel {
     private JScrollPane scrollPane;
     private CurrentUser currentUser;
     private MainProgramFrame mainFrame;
+    private JComboBox categoriesComboBox = new JComboBox();
+    private JButton applyButton;
 
     /**
      * 
@@ -65,16 +73,45 @@ public class AddPhotoEdition extends JPanel {
         this.currentUser = currentUser;
         container.setLayout(new BoxLayout(getContainer(), BoxLayout.Y_AXIS));
         initComponents();
-        this.setLayout(new BorderLayout());
+        this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+        JLabel label = new JLabel("Choose category for all photos:");
+        label.setSize(new Dimension(100,30));
+        label.setAlignmentX(LEFT_ALIGNMENT);
+        categoriesComboBox.setAlignmentX(LEFT_ALIGNMENT);
+        FillCategoriesComboBox();
         scrollPane = new JScrollPane(getContainer());
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         scrollPane.setPreferredSize(new Dimension(480, 360));
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scrollPane.setAlignmentX(LEFT_ALIGNMENT);
 
-        this.add(scrollPane, BorderLayout.CENTER);
-        this.add(insertPhotoButton, BorderLayout.SOUTH);
+        this.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        this.add(label);
+        this.add(Box.createRigidArea(new Dimension(0,5)));
+        this.add(categoriesComboBox);
+        this.add(Box.createRigidArea(new Dimension(0,5)));
+        this.add(applyButton);
+        this.add(Box.createRigidArea(new Dimension(0,5)));
+        this.add(scrollPane);
+        this.add(Box.createRigidArea(new Dimension(0,5)));
+        this.add(insertPhotoButton);
         setVisible(true);
         scrollPane.revalidate();
+    }
+    
+    public void FillCategoriesComboBox() {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+        Query query = session.createQuery("from User u where u.idu = " + currentUser.getUserID());
+        User dbUser = (User) query.list().get(0);
+        Set<Category> categories = dbUser.getCategories();
+        List<Category> categoriesAL = new ArrayList<>();
+        categoriesAL.addAll(categories);
+        categoriesComboBox.addItem("None");
+        for (Category cat : categoriesAL) {
+            categoriesComboBox.addItem(cat.getName());
+        }
+        session.close();
     }
 
     private void initComponents() {
@@ -105,15 +142,33 @@ public class AddPhotoEdition extends JPanel {
                 getContainer().add(ptep);
             }
         }
+        applyButton = new JButton("Apply");
+        applyButton.setPreferredSize(new Dimension(100, 25));
+        applyButton.setAlignmentX(LEFT_ALIGNMENT);
+        applyButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                changeAllCategories();
+            }
+        });
         //newPhoto.clear();
         this.insertPhotoButton = new JButton("Save");
-        this.insertPhotoButton.setSize(new Dimension(40, 20));
+        this.insertPhotoButton.setPreferredSize(new Dimension(100, 25));
+        this.insertPhotoButton.setAlignmentX(LEFT_ALIGNMENT);
         this.insertPhotoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 insertPhotoButtonActionPerformed();
             }
         });
+    }
+    
+    private void changeAllCategories() {
+        Component[] comps = container.getComponents();
+        for(int i = 0; i < comps.length; i++) {
+            PhotoToEditPanel panel = (PhotoToEditPanel)comps[i];
+            panel.getCategoryComboBox().setSelectedItem(categoriesComboBox.getSelectedItem());
+        }
     }
 
     private void insertPhotoButtonActionPerformed() {
