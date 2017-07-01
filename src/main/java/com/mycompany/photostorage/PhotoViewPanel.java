@@ -35,6 +35,7 @@ import org.jdesktop.swingx.JXDatePicker;
 
 /**
  * JPanel providing interface allowing to view and manage photos
+ *
  * @author Wojtek
  */
 public class PhotoViewPanel extends javax.swing.JPanel {
@@ -58,6 +59,7 @@ public class PhotoViewPanel extends javax.swing.JPanel {
 
     /**
      * Constructor for object having current user's photos
+     *
      * @param frame JFrame containing object
      * @param currentUser user whose photos are beeing displayed
      */
@@ -89,8 +91,9 @@ public class PhotoViewPanel extends javax.swing.JPanel {
 
     /**
      * Creates tree of user's categories
+     *
      * @param categoriesAL
-     * @param supCategory 
+     * @param supCategory
      */
     private void createCategoriesTree(List<Category> categoriesAL, DefaultMutableTreeNode supCategory) {
         DefaultMutableTreeNode category = null;
@@ -370,27 +373,41 @@ public class PhotoViewPanel extends javax.swing.JPanel {
                 selectedPhotos.add(p);
             }
         }
-        frame.setPanel(new PhotoPanelEdit(selectedPhotos, allCategories, tagNames));
+        if (!selectedPhotos.isEmpty()) {
+            frame.setPanel(new PhotoPanelEdit(selectedPhotos, allCategories, tagNames, frame));
+        } else {
+            JOptionPane.showMessageDialog(this, "No photo has beed selected", "Info", JOptionPane.INFORMATION_MESSAGE);
+        }
     }//GEN-LAST:event_editPhotoButtonActionPerformed
 
     private void deletePhotoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deletePhotoButtonActionPerformed
-        Object[] options = {"Yes", "No"};
-        int x = JOptionPane.showOptionDialog(null,
-                "Do you really want to delete selected photos?",
-                "Delete",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null, options, options[1]);
-        if (x == 0) {
-            List<SinglePhotoPanel> photosToDelete = new ArrayList<>();
-            for (int i = photoPanels.size() - 1; i >= 0; i--) {
-                if (photoPanels.get(i).isChecked()) {
-                    photosToDelete.add(photoPanels.get(i));
-                    photoPanels.remove(i);
-                }
+        List<SinglePhotoPanel> selectedPhotos = new ArrayList<>();
+        for (int i = photoPanels.size() - 1; i >= 0; i--) {
+            if (photoPanels.get(i).isChecked()) {
+                selectedPhotos.add(photoPanels.get(i));
             }
-            deletePhotoFromDatabase(photosToDelete);
-            updateMainView();
+        }
+        if (selectedPhotos.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No photo has beed selected", "Info", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            Object[] options = {"Yes", "No"};
+            int x = JOptionPane.showOptionDialog(this,
+                    "Do you really want to delete selected photos?",
+                    "Delete",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null, options, options[1]);
+            if (x == 0) {
+                List<SinglePhotoPanel> photosToDelete = new ArrayList<>();
+                for (int i = photoPanels.size() - 1; i >= 0; i--) {
+                    if (photoPanels.get(i).isChecked()) {
+                        photosToDelete.add(photoPanels.get(i));
+                        photoPanels.remove(i);
+                    }
+                }
+                deletePhotoFromDatabase(photosToDelete);
+                updateMainView();
+            }
         }
     }//GEN-LAST:event_deletePhotoButtonActionPerformed
 
@@ -411,6 +428,7 @@ public class PhotoViewPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void movePhotoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_movePhotoButtonActionPerformed
+
         List<Photo> selectedPhotos = new ArrayList<>();
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -423,7 +441,11 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         }
         session.getTransaction().commit();
         session.close();
-        frame.setPanel(new MovePhotosPanel(frame, selectedPhotos));
+        if (selectedPhotos.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No photo has beed selected", "Info", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            frame.setPanel(new MovePhotosPanel(frame, selectedPhotos));
+        }
     }//GEN-LAST:event_movePhotoButtonActionPerformed
 
 

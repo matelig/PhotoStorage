@@ -30,6 +30,7 @@ public class MainProgramFrame {
         frame.pack();
         frame.setResizable(false);
         frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
     }
 
     /**
@@ -52,5 +53,9 @@ public class MainProgramFrame {
   
     public CurrentUser getCurrentUser() {
         return this.currentUser;
+    }
+    
+    public void setRelative() {
+        frame.setLocationRelativeTo(null);
     }
 }

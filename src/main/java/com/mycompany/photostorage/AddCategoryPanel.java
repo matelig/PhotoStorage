@@ -20,12 +20,15 @@ import org.hibernate.Session;
  */
 public class AddCategoryPanel extends javax.swing.JPanel {
 
+    private MainProgramFrame frame;
+    
     /**
      * Creates new form AddCategoryPanel
      * @param currentUser logged user
      */
-    public AddCategoryPanel(CurrentUser currentUser) {
+    public AddCategoryPanel(CurrentUser currentUser,MainProgramFrame frame) {
         this.currentUser = currentUser;
+        this.frame = frame;
         initComponents();
         fillCategoryComboBox();
         setVisible(true);
@@ -116,6 +119,7 @@ public class AddCategoryPanel extends javax.swing.JPanel {
             try {
                 addNewCategory();
                 JOptionPane.showMessageDialog(this, "Category added", "Info", JOptionPane.INFORMATION_MESSAGE);
+                frame.setPanel(new AddCategoryPanel(frame.getCurrentUser(),frame));
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
             }
@@ -152,8 +156,8 @@ public class AddCategoryPanel extends javax.swing.JPanel {
         category.setUser(user);
         session.save(category);
         session.getTransaction().commit();
-        session.close();
-
+        session.close();        
+        
     }
 
     CurrentUser currentUser;
