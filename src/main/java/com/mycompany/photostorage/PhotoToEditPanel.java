@@ -150,7 +150,7 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
     }
 
     public String getCategory() {
-        return categoryComboBox.getSelectedItem().toString();
+        return getCategoryComboBox().getSelectedItem().toString();
     }
 
     public List<String> getTags() {
@@ -190,6 +190,12 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
 
         jLabel3.setText("Tags");
 
+        categoryComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                categoryComboBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -204,12 +210,11 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
                     .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txtFieldDescription)
-                    .addComponent(categoryComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(tagPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(txtFieldDescription, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
+                        .addComponent(categoryComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(tagPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -229,9 +234,13 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
                             .addComponent(jLabel3)
                             .addComponent(tagPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(labelPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(35, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void categoryComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_categoryComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_categoryComboBoxActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -245,9 +254,9 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 
     private void setComboBoxCategories() {
-        categoryComboBox.addItem("None");
+        getCategoryComboBox().addItem("None");
         for (Category c : categories) {
-            categoryComboBox.addItem(c.getName());
+            getCategoryComboBox().addItem(c.getName());
         }
     }
 
@@ -286,5 +295,12 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
             }
             this.tagPanel1.setPossibility(tags);
         }
+    }
+
+    /**
+     * @return the categoryComboBox
+     */
+    public javax.swing.JComboBox<String> getCategoryComboBox() {
+        return categoryComboBox;
     }
 }

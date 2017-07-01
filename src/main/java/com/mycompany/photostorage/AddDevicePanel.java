@@ -114,13 +114,19 @@ public class AddDevicePanel extends javax.swing.JPanel {
      * @param evt 
      */
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
+        String[] selectedDeviceNameParts = deviceNameComboBox.getSelectedItem().toString().split(" ");
+        String deviceName = "";
+        for (int i = 0;i<selectedDeviceNameParts.length-1;i++) {
+            deviceName = deviceName+selectedDeviceNameParts[i] +" ";
+        }      
+        deviceName = deviceName.substring(0, deviceName.length() - 1);
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
         Query query = session.createQuery("from Device");
         List<Device> devices = new ArrayList<>();
         devices = query.list();
         for (Device device : devices) {
-            if (device.getName().equals(deviceNameComboBox.getSelectedItem().toString())) {
+            if (device.getName().equals(deviceName)) {
                 JOptionPane.showMessageDialog(this,
                         "Device already exists",
                         "Warning",
@@ -131,9 +137,17 @@ public class AddDevicePanel extends javax.swing.JPanel {
             }
         }
         Device dev = new Device();
-        dev.setName(deviceNameComboBox.getSelectedItem().toString().split(" ")[0]); //TODO dopracować!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!*******************************************************************************************************
-        dev.setCapacity("1");
-        dev.setFreeSpace("1");
+        File[] files = File.listRoots();
+        File currentDevice = files[0];
+        for (File file : files) {
+            if (FileSystemView.getFileSystemView().getSystemDisplayName(file).equals(deviceNameComboBox.getSelectedItem().toString())) {
+                currentDevice = file;
+                break;
+            }
+        }        
+        dev.setName(deviceName); 
+        dev.setCapacity(Long.toString(currentDevice.getTotalSpace()));
+        dev.setFreeSpace(Long.toString(currentDevice.getFreeSpace()));
         dev.setIsStoring((byte) 0);
         query = session.createQuery("from Typeofdevice");
         List<Typeofdevice> types = new ArrayList<>();
