@@ -1,22 +1,47 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.mycompany.photostorage;
 
+import com.mycompany.photostorage.entity.Photo;
+import com.mycompany.photostorage.model.CurrentUser;
+import com.mycompany.photostorage.util.HibernateUtil;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.Set;
 import javax.swing.JOptionPane;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.mycompany.photostorage.entity.Category;
+import com.mycompany.photostorage.entity.Device;
+import com.mycompany.photostorage.entity.User;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Iterator;
+import javax.swing.JFileChooser;
 
 /**
- *
+ *JPanel used for triggering report generation, based on the report type chosen by user.
  * @author alachman
  */
 public class GenerateReportPanel extends javax.swing.JPanel {
 
+    private final CurrentUser currentUser;
+
     /**
      * Creates new form GenerateReportPanel
+     *
+     * @param user
      */
-    public GenerateReportPanel() {
+    public GenerateReportPanel(CurrentUser user) {
+        this.currentUser = user;
         initComponents();
         setVisible(true);
     }
@@ -112,18 +137,20 @@ public class GenerateReportPanel extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_radioBtnDeviceActionPerformed
 
+    /**
+     * Method triggers report generation.
+     *
+     * @param evt
+     */
     private void btnGenerateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGenerateActionPerformed
         if (buttonGroup.getSelection() == null) {
             JOptionPane.showMessageDialog(this,
                     "You have to select report type",
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
-        }
-        else{
-            JOptionPane.showMessageDialog(this,
-                    "This is a very nice report!",
-                    "Report",
-                    JOptionPane.INFORMATION_MESSAGE);
+        } else {
+
+            chooseReportType();
         }
     }//GEN-LAST:event_btnGenerateActionPerformed
 
@@ -138,4 +165,327 @@ public class GenerateReportPanel extends javax.swing.JPanel {
     private javax.swing.JRadioButton radioBtnCategory;
     private javax.swing.JRadioButton radioBtnDevice;
     // End of variables declaration//GEN-END:variables
+
+    private void prepareReportForDevice(Session session, Document document) throws Exception {
+        PdfPTable tablesup = new PdfPTable(6);
+        tablesup.addCell("Lp.");
+        tablesup.addCell("Category");
+        tablesup.addCell("Path");
+        tablesup.addCell("Resolution");
+        tablesup.addCell("Description");
+        tablesup.addCell("Format");
+
+        Query sessionQuery = session.createQuery("from Device");
+        java.util.List<Device> devices = new ArrayList<>();
+        devices = sessionQuery.list();
+
+        for (Device device : devices) {
+            PdfPCell cell = new PdfPCell(new Paragraph(getParagraphForDevice(device)));
+            cell.setColspan(8);
+            cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+            cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+            tablesup.addCell(cell);
+
+            Set<Photo> photosOnDevice = device.getPhotos();
+            photosOnDevice.stream().filter((photo
+                    -> photo.getUser().getIdu().equals(currentUser.getUserID())));
+            Iterator<Photo> iterator = photosOnDevice.iterator();
+            int photoCounter = 0;
+            while (iterator.hasNext()) {
+                try {
+                    Photo photo = iterator.next();
+                    photoCounter++;
+                    String v0 = photoCounter + ".";
+                    String v1;
+                    if (photo.getCategory() == null) {
+                        v1 = "No category assigned";
+                    } else {
+                        v1 = photo.getCategory().getName();
+                    }
+
+                    String v2 = photo.getPath();
+                    String v3 = photo.getResolution();
+                    String v4 = photo.getDescription();
+                    String v5 = photo.getFormat();
+                    tablesup.addCell(v0);
+                    tablesup.addCell(v1);
+                    tablesup.addCell(v2);
+                    tablesup.addCell(v3);
+                    tablesup.addCell(v4);
+                    tablesup.addCell(v5);
+
+                } catch (Exception e) {
+                    System.out.println("Exception: " + e.getLocalizedMessage());
+                }
+            }
+        }
+        document.add(tablesup);
+
+    }
+
+    /**
+     * Method for getting report type based on radio buttons selection.
+     *
+     * @return String describing report type
+     */
+    private String getReportType() {
+        if (radioBtnDevice.isSelected()) {
+            return "device";
+        } else if (radioBtnArchived.isSelected()) {
+            return "archived";
+        } else if (radioBtnCategory.isSelected()) {
+            return "category";
+        }
+        return "";
+    }
+
+    /**
+     * Method used for generating description of a device.
+     *
+     * @param device
+     * @return
+     */
+    private String getParagraphForDevice(Device device) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Device name: ");
+        builder.append(device.getName());
+        builder.append("\n");
+        builder.append("Device capacity: ");
+        builder.append(device.getCapacity());
+        builder.append("\n");
+        builder.append("Device free space: ");
+        builder.append(device.getFreeSpace());
+        builder.append("\n");
+        builder.append("Device type ");
+        builder.append(device.getTypeofdevice().getDescription());
+
+        return builder.toString();
+    }
+
+    /**
+     * Method triggering report generation for current report type.
+     */
+    private void chooseReportType() {
+        try {
+            prepareReport();
+            JOptionPane.showMessageDialog(this,
+                    "The report was generated successfully!",
+                    "Report for" + getReportType(),
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "There was an error during report generation: " + e.getMessage(),
+                    "Report",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void prepareReportArchive(Session session, Document document) throws Exception {
+
+        PdfPTable tablesup = new PdfPTable(7);
+        tablesup.addCell("Lp.");
+        tablesup.addCell("Category");
+        tablesup.addCell("Path");
+        tablesup.addCell("Resolution");
+        tablesup.addCell("Description");
+        tablesup.addCell("Format");
+        tablesup.addCell("Device name");
+
+        PdfPCell cell = new PdfPCell(new Paragraph("Unarchivised"));
+        cell.setColspan(8);
+        cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+        tablesup.addCell(cell);
+
+        Query query = session.createQuery("from User where idu=" + currentUser.getUserID());
+        User dbUser = (User) query.list().get(0);
+        Set<Photo> photos = dbUser.getPhotos();
+        Iterator<Photo> iterator = photos.iterator();
+        int unarchivisedCounter = 0;
+        while (iterator.hasNext()) {
+            Photo photo = iterator.next();
+            if (photo.getIsArchivised() == 0) {
+                unarchivisedCounter++;
+                String v0 = unarchivisedCounter + ".";
+                String v1;
+                if (photo.getCategory() == null) {
+                    v1 = "No category assigned";
+                } else {
+                    v1 = photo.getCategory().getName();
+                }
+
+                String v2 = photo.getPath();
+                String v3 = photo.getResolution();
+                String v4 = photo.getDescription();
+                String v5 = photo.getFormat();
+                String v6 = "-";
+                tablesup.addCell(v0);
+                tablesup.addCell(v1);
+                tablesup.addCell(v2);
+                tablesup.addCell(v3);
+                tablesup.addCell(v4);
+                tablesup.addCell(v5);
+                tablesup.addCell(v6);
+
+            }
+        }
+        cell = new PdfPCell(new Paragraph("Archivised"));
+        cell.setColspan(8);
+        cell.setHorizontalAlignment(Element.ALIGN_LEFT);
+        cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+        tablesup.addCell(cell);
+        iterator = photos.iterator();
+        int archivisedCounter = 0;
+        while (iterator.hasNext()) {
+            Photo photo = iterator.next();
+            if (photo.getIsArchivised() == 1) {
+                archivisedCounter++;
+                String v0 = archivisedCounter + ".";
+                String v1;
+                if (photo.getCategory() == null) {
+                    v1 = "No category assigned";
+                } else {
+                    v1 = photo.getCategory().getName();
+                }
+
+                String v2 = photo.getPath();
+                String v3 = photo.getResolution();
+                String v4 = photo.getDescription();
+                String v5 = photo.getFormat();
+                String v6 = getDevicesNames(photo);
+                tablesup.addCell(v0);
+                tablesup.addCell(v1);
+                tablesup.addCell(v2);
+                tablesup.addCell(v3);
+                tablesup.addCell(v4);
+                tablesup.addCell(v5);
+                tablesup.addCell(v6);
+
+            }
+        }
+
+        document.add(tablesup);
+
+    }
+
+    private void prepareReport() throws Exception {
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.beginTransaction();
+
+        Document document = new Document();
+        document.setMargins(2.0f, 2.0f, 4.0f, 4.0f);
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
+        String file = "Report-" + dateFormat.format(date) + ".pdf";
+        PdfWriter.getInstance(document, new FileOutputStream(getFileTargetPath(file)));
+        document.open();
+        Paragraph paragraph = new Paragraph("Report based on " + getReportType(),
+                FontFactory.getFont(FontFactory.TIMES_BOLD, 18, Font.BOLD, BaseColor.BLACK));
+        paragraph.setAlignment(Element.ALIGN_CENTER);
+        document.add(paragraph);
+        paragraph = new Paragraph("Generated by " + currentUser.getUserName());
+        paragraph.setAlignment(Element.ALIGN_CENTER);
+        document.add(paragraph);
+        paragraph = new Paragraph(new Date().toString());
+        paragraph.setAlignment(Element.ALIGN_CENTER);
+        document.add(paragraph);
+                paragraph = new Paragraph("\n \n");
+        paragraph.setAlignment(Element.ALIGN_CENTER);
+        document.add(paragraph);
+
+        String reportType = getReportType();
+        switch (reportType) {
+            case "device": {
+                prepareReportForDevice(session, document);
+                break;
+            }
+            case "archived": {
+                prepareReportArchive(session, document);
+                break;
+            }
+            case "category": {
+                prepareReportForCategory(session, document);
+                break;
+            }
+            default:
+                break;
+        }
+
+        document.close();
+        session.getTransaction()
+                .commit();
+        session.close();
+    }
+
+    private void prepareReportForCategory(Session session, Document document) throws Exception {
+
+        PdfPTable tablesup = new PdfPTable(6);
+        tablesup.addCell("Lp.");
+        tablesup.addCell("Path");
+        tablesup.addCell("Resolution");
+        tablesup.addCell("Description");
+        tablesup.addCell("Format");
+        tablesup.addCell("Device name");
+
+        Query query = session.createQuery("from Category");
+        java.util.List<Category> categories = new ArrayList<>();
+        categories = query.list();
+        for (Category category : categories) {
+            PdfPCell cell = new PdfPCell(new Paragraph(category.getName()));
+            cell.setColspan(8);
+            cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+            cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+            tablesup.addCell(cell);
+
+            Set<Photo> photos = category.getPhotos();
+            Iterator<Photo> iterator = photos.iterator();
+            int unarchivisedCounter = 0;
+            while (iterator.hasNext()) {
+                Photo photo = iterator.next();
+
+                unarchivisedCounter++;
+                String v0 = unarchivisedCounter + ".";
+                String v1 = photo.getPath();
+                String v3 = photo.getResolution();
+                String v4 = photo.getDescription();
+                String v5 = photo.getFormat();
+                String v6 = getDevicesNames(photo);
+                tablesup.addCell(v0);
+                tablesup.addCell(v1);
+                tablesup.addCell(v3);
+                tablesup.addCell(v4);
+                tablesup.addCell(v5);
+                tablesup.addCell(v6);
+
+            }
+
+        }
+        document.add(tablesup);
+    }
+
+    private String getFileTargetPath(String file) {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setCurrentDirectory(new java.io.File("."));
+        chooser.setDialogTitle("Choose target directory");
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setAcceptAllFileFilterUsed(false);
+
+        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            return chooser.getSelectedFile() + "/" + file;
+
+        }
+        return null;
+    }
+
+    private String getDevicesNames(Photo photo) {
+        Set<Device> devices = photo.getDevices();
+        StringBuilder devicesNames = new StringBuilder("");
+        for (Device device : devices) {
+            devicesNames.append(device.getName());
+            devicesNames.append(" ");
+
+        }
+        return devicesNames.toString();
+    }
+
 }

@@ -92,7 +92,7 @@ public class ToolBar implements ActionListener{
                 frame.setPanel(new PhotoViewPanel(frame,frame.getCurrentUser()));
                 break;
             case "Generate report":
-                frame.setPanel(new GenerateReportPanel());
+                frame.setPanel(new GenerateReportPanel(frame.getCurrentUser()));
                 break;
             case "Log out":
                 frame.setPanel(new SignIn(frame));
