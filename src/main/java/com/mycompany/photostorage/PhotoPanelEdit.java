@@ -45,13 +45,15 @@ public class PhotoPanelEdit extends JPanel{
     private List<String> tags = new ArrayList<>();
     private JComboBox categoriesComboBox = new JComboBox();
     private JButton applyButton;
+    private MainProgramFrame frame;
 
     /**
      * constructor
      * @param selectedPhotos list of photos to edit
      * @param categoriesAL list of categories
      */
-    public PhotoPanelEdit(List<SinglePhotoPanel> selectedPhotos, List<Category> categoriesAL, List<String> tags) {
+    public PhotoPanelEdit(List<SinglePhotoPanel> selectedPhotos, List<Category> categoriesAL, List<String> tags, MainProgramFrame frame) {
+        this.frame = frame;
         this.selectedPhotos.addAll(selectedPhotos);
         this.categoriesAL.addAll(categoriesAL);
         this.tags.addAll(tags);
@@ -183,6 +185,7 @@ public class PhotoPanelEdit extends JPanel{
                         "Photos have been edited.",
                         "Information",
                         JOptionPane.INFORMATION_MESSAGE);       
+        frame.setPanel(new PhotoViewPanel(frame,frame.getCurrentUser()));
     }
 
     /**

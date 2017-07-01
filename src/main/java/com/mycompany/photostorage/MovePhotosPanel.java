@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.swing.JOptionPane;
@@ -156,23 +157,27 @@ public class MovePhotosPanel extends javax.swing.JPanel {
                     break;
                 }
             }
-            Set<Photo> photosOnDevice = currentDevice.getPhotos();
+            Set<Device> devices = new HashSet<>();
+            devices.add(currentDevice);
             for (Photo photo : photos) {
                 File file = new File(photo.getPath());
                 try {
-                    Files.move(Paths.get(photo.getPath()), Paths.get(destination + file.getName()));
+                    Files.move(Paths.get(photo.getPath()), Paths.get(destination + file.getName()));///////////////////przenoszenie z literka
                     photo.setPath(destination + file.getName());
                     photo.setIsArchivised((byte) 1);
-                    photosOnDevice.add(photo);
-                    session.update(photo);
+                    photo.setDevices(devices);
+                    session.update(photo);                
                 } catch (IOException ex) {
                     ex.getStackTrace();
                 }
             }
-            currentDevice.setPhotos(photosOnDevice);
-            session.save(currentDevice);
             session.getTransaction().commit();
             session.close();
+            JOptionPane.showMessageDialog(this,
+                    "Photo has been moved",
+                    "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
+            frame.setPanel(new PhotoViewPanel(frame,frame.getCurrentUser()));
         } else {
             JOptionPane.showMessageDialog(this,
                     "Device have not been found. Try to plug it in.",
