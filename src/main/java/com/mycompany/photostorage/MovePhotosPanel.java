@@ -8,6 +8,8 @@ package com.mycompany.photostorage;
 import com.mycompany.photostorage.entity.Device;
 import com.mycompany.photostorage.entity.Photo;
 import com.mycompany.photostorage.util.HibernateUtil;
+import com.mycompany.photostorage.model.JWorkingDlg;
+import java.awt.EventQueue;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,7 +18,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.filechooser.FileSystemView;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -29,9 +34,15 @@ import org.hibernate.Session;
 public class MovePhotosPanel extends javax.swing.JPanel {
 
     MainProgramFrame frame;
+    final javax.swing.JPanel panel = this;
     List<Photo> photos = new ArrayList<>();
     List<Photo> notMovedPhotos = new ArrayList<>();
     Set<String> devicesToConnect = new HashSet<>();
+    JOptionPane pleaseWaitPane = new JOptionPane("Work in progress. Please wait.",
+            JOptionPane.INFORMATION_MESSAGE,
+            JOptionPane.DEFAULT_OPTION, null,
+            new Object[]{});
+    private JDialog waitDialog;
 
     /**
      * Creates new form MovePhotosPanel
@@ -44,7 +55,21 @@ public class MovePhotosPanel extends javax.swing.JPanel {
         this.photos = photos;
         initComponents();
         fillComboBox();
+        prepareDialog();
     }
+
+    SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+        @Override
+        protected Void doInBackground() throws Exception {
+            prepareDialog();
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            waitDialog.dispose();
+        }
+    };
 
     /**
      * creates list of available devices, select from database
@@ -61,7 +86,6 @@ public class MovePhotosPanel extends javax.swing.JPanel {
         session.getTransaction().commit();
         session.close();
     }
-    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -130,7 +154,12 @@ public class MovePhotosPanel extends javax.swing.JPanel {
      * @param evt
      */
     private void acceptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptButtonActionPerformed
-        File[] files = File.listRoots();
+        
+        
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                File[] files = File.listRoots();
         String name;
         String destination = "";
         String deviceName = devicesComboBox.getSelectedItem().toString();
@@ -176,7 +205,7 @@ public class MovePhotosPanel extends javax.swing.JPanel {
                     if (isDeviceConnected(oldDevice.get(0).getName())) {
                         sourcePath = getDeviceAbsolutePath(oldDevice.get(0).getName());
                         sourcePath = sourcePath + photo.getPath().substring(3, photo.getPath().length());
-                        file = new File(sourcePath);                        
+                        file = new File(sourcePath);
                         proceed = true;
                     } else {
                         notMovedPhotos.add(photo);
@@ -202,8 +231,8 @@ public class MovePhotosPanel extends javax.swing.JPanel {
                     }
                 }
 
-            }            
-            for (Device device: databaseDevices) {
+            }
+            for (Device device : databaseDevices) {
                 if (isDeviceConnected(device.getName())) {
                     File file = new File(getDeviceAbsolutePath(device.getName()));
                     Long size = file.getFreeSpace();
@@ -213,28 +242,34 @@ public class MovePhotosPanel extends javax.swing.JPanel {
             }
             session.getTransaction().commit();
             session.close();
+            waitDialog.dispose();
             if (!repeat) {
-                JOptionPane.showMessageDialog(this,
+                JOptionPane.showMessageDialog(panel,
                         "Photo has been moved",
                         "Success",
                         JOptionPane.INFORMATION_MESSAGE);
                 frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
             } else {
-                String namesOfDevice="";
-                for (String s:devicesToConnect)
-                    namesOfDevice+=s+" ";
-              JOptionPane.showMessageDialog(this,
-                        "Some devices have not been connected. Connect: "+namesOfDevice,
+                String namesOfDevice = "";
+                for (String s : devicesToConnect) {
+                    namesOfDevice += s + " ";
+                }
+                JOptionPane.showMessageDialog(panel,
+                        "Some devices have not been connected. Connect: " + namesOfDevice,
                         "Warning",
                         JOptionPane.INFORMATION_MESSAGE);
                 frame.setPanel(new MovePhotosPanel(frame, notMovedPhotos));
             }
         } else {
-            JOptionPane.showMessageDialog(this,
+            waitDialog.dispose();
+            JOptionPane.showMessageDialog(panel,
                     "Device have not been found. Try to plug it in.",
                     "Warning!",
                     JOptionPane.INFORMATION_MESSAGE);
         }
+            }
+        }).start();
+        waitDialog.setVisible(true);
     }//GEN-LAST:event_acceptButtonActionPerformed
 
     private boolean isDeviceConnected(String deviceName) {
@@ -291,4 +326,12 @@ public class MovePhotosPanel extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> devicesComboBox;
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
+
+    private void prepareDialog() {
+        waitDialog = pleaseWaitPane.createDialog(panel, "Please Wait");
+        waitDialog.setContentPane(pleaseWaitPane);        
+        waitDialog.setModal(true);        
+        waitDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        waitDialog.pack();    
+    }
 }
