@@ -31,6 +31,7 @@ public class MovePhotosPanel extends javax.swing.JPanel {
     MainProgramFrame frame;
     List<Photo> photos = new ArrayList<>();
     List<Photo> notMovedPhotos = new ArrayList<>();
+    Set<String> devicesToConnect = new HashSet<>();
 
     /**
      * Creates new form MovePhotosPanel
@@ -60,6 +61,7 @@ public class MovePhotosPanel extends javax.swing.JPanel {
         session.getTransaction().commit();
         session.close();
     }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -150,6 +152,7 @@ public class MovePhotosPanel extends javax.swing.JPanel {
                 break;
             }
         }
+        File destinationDevice = new File(destination);
         if (found) {
             Session session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
@@ -173,10 +176,11 @@ public class MovePhotosPanel extends javax.swing.JPanel {
                     if (isDeviceConnected(oldDevice.get(0).getName())) {
                         sourcePath = getDeviceAbsolutePath(oldDevice.get(0).getName());
                         sourcePath = sourcePath + photo.getPath().substring(3, photo.getPath().length());
-                        file = new File(sourcePath);
+                        file = new File(sourcePath);                        
                         proceed = true;
                     } else {
                         notMovedPhotos.add(photo);
+                        devicesToConnect.add(oldDevice.get(0).getName());
                         repeat = true;
                     }
                 } else {
@@ -186,16 +190,26 @@ public class MovePhotosPanel extends javax.swing.JPanel {
                 }
                 if (proceed) { //sprawdzanie, czy Device z ktorego chcemy przeniesc zdjecie jest dostepne
                     try {
-                        Files.move(Paths.get(sourcePath), Paths.get(destination + file.getName()));///////////////////przenoszenie z literka
+                        Files.move(Paths.get(sourcePath), Paths.get(destination + file.getName()));//przenoszenie z literka
                         photo.setPath(destination + file.getName());
                         photo.setIsArchivised((byte) 1);
                         photo.setDevices(devices);
                         session.update(photo);
+                        currentDevice.setFreeSpace(Long.toString(destinationDevice.getFreeSpace()));
+                        session.save(currentDevice);
                     } catch (IOException ex) {
                         ex.getStackTrace();
                     }
                 }
 
+            }            
+            for (Device device: databaseDevices) {
+                if (isDeviceConnected(device.getName())) {
+                    File file = new File(getDeviceAbsolutePath(device.getName()));
+                    Long size = file.getFreeSpace();
+                    device.setFreeSpace(Long.toString(size));
+                    session.update(device);
+                }
             }
             session.getTransaction().commit();
             session.close();
@@ -206,9 +220,12 @@ public class MovePhotosPanel extends javax.swing.JPanel {
                         JOptionPane.INFORMATION_MESSAGE);
                 frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
             } else {
+                String namesOfDevice="";
+                for (String s:devicesToConnect)
+                    namesOfDevice+=s+" ";
               JOptionPane.showMessageDialog(this,
-                        "Some devices have not been connected. Try Again",
-                        "Success",
+                        "Some devices have not been connected. Connect: "+namesOfDevice,
+                        "Warning",
                         JOptionPane.INFORMATION_MESSAGE);
                 frame.setPanel(new MovePhotosPanel(frame, notMovedPhotos));
             }
