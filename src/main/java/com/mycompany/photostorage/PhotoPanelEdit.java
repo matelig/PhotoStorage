@@ -51,6 +51,8 @@ public class PhotoPanelEdit extends JPanel{
      * constructor
      * @param selectedPhotos list of photos to edit
      * @param categoriesAL list of categories
+     * @param tags list of all tags used in creating photos
+     * @param frame Main frame of the program
      */
     public PhotoPanelEdit(List<SinglePhotoPanel> selectedPhotos, List<Category> categoriesAL, List<String> tags, MainProgramFrame frame) {
         this.frame = frame;
@@ -135,7 +137,7 @@ public class PhotoPanelEdit extends JPanel{
     }
 
     /**
-     * Puts changes in DB 
+     * Event fired, when "Edit" button is clicked. Modyfies Values of selected photos in Database.
      */
     private void onEditButtonClick() {
         Session session = HibernateUtil.getSessionFactory().openSession();

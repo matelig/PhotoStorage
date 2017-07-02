@@ -20,7 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.border.Border;
 
 /**
- * JPanel diplaying single photo
+ * JPanel diplaying single photo in View Panel
  * @author Wojtek
  */
 public class SinglePhotoPanel extends javax.swing.JPanel {
@@ -102,6 +102,10 @@ public class SinglePhotoPanel extends javax.swing.JPanel {
         }
     }
 
+    /** 
+     * 
+     * @return true if given photo has been clicked
+     */
     public boolean isChecked() {
         return this.isChecked;
     }
@@ -192,10 +196,18 @@ public class SinglePhotoPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * event that allowed to sidplay full description if mouse cursor enter the field
+     * @param evt 
+     */
     private void photoNameLabelMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_photoNameLabelMouseEntered
         photoNameLabel.setToolTipText(photoNameLabel.getText());
     }//GEN-LAST:event_photoNameLabelMouseEntered
 
+    /**
+     * event that colour the border if photo is clicked
+     * @param evt 
+     */
     private void formMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseReleased
         // TODO add your handling code here:
         if (!isChecked) {
@@ -206,6 +218,10 @@ public class SinglePhotoPanel extends javax.swing.JPanel {
         isChecked = !isChecked;
     }//GEN-LAST:event_formMouseReleased
 
+    /**
+     * Display string information about archivised photos, if mouse cursor is above colored square
+     * @param evt 
+     */
     private void jPanel1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel1MouseEntered
         if (jPanel1.getBackground()==Color.green) 
             jPanel1.setToolTipText("This photo has been archivised.");

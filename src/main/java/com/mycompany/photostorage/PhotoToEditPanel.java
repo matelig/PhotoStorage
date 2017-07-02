@@ -42,7 +42,7 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
     private JPanel parentPanel;
 
     /**
-     * Creates new form PhotoToEditPanel
+     * Creates new form PhotoToEditPanel, default constructor, never used
      */
     public PhotoToEditPanel() {
         initComponents();
@@ -145,22 +145,42 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
         }
     }
 
+    /**
+     * 
+     * @return description of Photo
+     */
     public String getDescription() {
         return txtFieldDescription.getText();
     }
 
+    /**
+     * 
+     * @return String representation of photo category
+     */
     public String getCategory() {
         return getCategoryComboBox().getSelectedItem().toString();
     }
 
+    /**
+     * 
+     * @return List of string representation of photo tags
+     */
     public List<String> getTags() {
         return getTagPanel().takeTags();
     }
 
+    /**
+     * 
+     * @return photo ID
+     */
     public int getPhotoID() {
         return this.photoID;
     }
 
+    /**
+     * 
+     * @return Scalled munature of the photo
+     */
     public Icon getMiniature() {
         return labelPhoto.getIcon();
     }
@@ -253,6 +273,9 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
     private javax.swing.JTextField txtFieldDescription;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * Add all categories to comboBox
+     */
     private void setComboBoxCategories() {
         getCategoryComboBox().addItem("None");
         for (Category c : categories) {

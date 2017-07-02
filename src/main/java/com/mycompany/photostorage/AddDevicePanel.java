@@ -17,11 +17,14 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 /**
- *
+ * Category which allows user to add new Device to database
  * @author m_lig
  */
 public class AddDevicePanel extends javax.swing.JPanel {
 
+    /**
+     * Main frame of the program
+     */
     private MainProgramFrame frame;
 
     /**
@@ -185,6 +188,9 @@ public class AddDevicePanel extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> typesComboBox;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * Select TypeOfDevice from database and add it to comboBox
+     */
     private void setItemModelSelect() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -197,6 +203,9 @@ public class AddDevicePanel extends javax.swing.JPanel {
         session.close();
     }
 
+    /**
+     * Add name of connected devices to ComboBox
+     */
     private void addDevices() {
         File[] files = File.listRoots();
         String names;

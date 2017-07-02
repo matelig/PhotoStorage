@@ -23,12 +23,14 @@ import org.hibernate.Session;
 
 /**
  * JPanel providing interface allowing to move photos to chosen device
+ *
  * @author Rafał Swoboda
  */
 public class MovePhotosPanel extends javax.swing.JPanel {
 
     MainProgramFrame frame;
     List<Photo> photos = new ArrayList<>();
+    List<Photo> notMovedPhotos = new ArrayList<>();
 
     /**
      * Creates new form MovePhotosPanel
@@ -44,7 +46,7 @@ public class MovePhotosPanel extends javax.swing.JPanel {
     }
 
     /**
-     * creates list of available devices
+     * creates list of available devices, select from database
      */
     public final void fillComboBox() {
         Session session = HibernateUtil.getSessionFactory().openSession();
@@ -121,8 +123,9 @@ public class MovePhotosPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * Moves given photos to selected device
-     * @param evt 
+     * Moves given photos to selected device. Shows if device is not available
+     *
+     * @param evt
      */
     private void acceptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptButtonActionPerformed
         File[] files = File.listRoots();
@@ -132,14 +135,15 @@ public class MovePhotosPanel extends javax.swing.JPanel {
         List<Device> databaseDevices;
         Device currentDevice = null;
         boolean found = false;
+        boolean repeat = false;
         for (int i = 0; i < files.length; i++) {
             name = FileSystemView.getFileSystemView().getSystemDisplayName(files[i]);
             String[] devicePartName = name.split(" ");
             name = "";
-            for (int j = 0 ; j<devicePartName.length-1;j++) {
+            for (int j = 0; j < devicePartName.length - 1; j++) {
                 name = name + devicePartName[j] + " ";
             }
-            name = name.substring(0,name.length()-1);
+            name = name.substring(0, name.length() - 1);
             if (name.equals(deviceName)) {
                 destination = files[i].getAbsolutePath();
                 found = true;
@@ -153,31 +157,61 @@ public class MovePhotosPanel extends javax.swing.JPanel {
             databaseDevices = query.list();
             for (Device device : databaseDevices) {
                 if (device.getName().equals(deviceName)) {
-                    currentDevice = device;
+                    currentDevice = device; //device do zapisu
                     break;
                 }
             }
             Set<Device> devices = new HashSet<>();
             devices.add(currentDevice);
             for (Photo photo : photos) {
-                File file = new File(photo.getPath());
-                try {
-                    Files.move(Paths.get(photo.getPath()), Paths.get(destination + file.getName()));///////////////////przenoszenie z literka
-                    photo.setPath(destination + file.getName());
-                    photo.setIsArchivised((byte) 1);
-                    photo.setDevices(devices);
-                    session.update(photo);                
-                } catch (IOException ex) {
-                    ex.getStackTrace();
+                File file = null;
+                boolean proceed = false;
+                List<Device> oldDevice = new ArrayList<>();
+                oldDevice.addAll(photo.getDevices());
+                String sourcePath = null;
+                if (photo.getIsArchivised() == 1) {
+                    if (isDeviceConnected(oldDevice.get(0).getName())) {
+                        sourcePath = getDeviceAbsolutePath(oldDevice.get(0).getName());
+                        sourcePath = sourcePath + photo.getPath().substring(3, photo.getPath().length());
+                        file = new File(sourcePath);
+                        proceed = true;
+                    } else {
+                        notMovedPhotos.add(photo);
+                        repeat = true;
+                    }
+                } else {
+                    sourcePath = photo.getPath();
+                    file = new File(photo.getPath());
+                    proceed = true;
                 }
+                if (proceed) { //sprawdzanie, czy Device z ktorego chcemy przeniesc zdjecie jest dostepne
+                    try {
+                        Files.move(Paths.get(sourcePath), Paths.get(destination + file.getName()));///////////////////przenoszenie z literka
+                        photo.setPath(destination + file.getName());
+                        photo.setIsArchivised((byte) 1);
+                        photo.setDevices(devices);
+                        session.update(photo);
+                    } catch (IOException ex) {
+                        ex.getStackTrace();
+                    }
+                }
+
             }
             session.getTransaction().commit();
             session.close();
-            JOptionPane.showMessageDialog(this,
-                    "Photo has been moved",
-                    "Success",
-                    JOptionPane.INFORMATION_MESSAGE);
-            frame.setPanel(new PhotoViewPanel(frame,frame.getCurrentUser()));
+            if (!repeat) {
+                JOptionPane.showMessageDialog(this,
+                        "Photo has been moved",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+                frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
+            } else {
+              JOptionPane.showMessageDialog(this,
+                        "Some devices have not been connected. Try Again",
+                        "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+                frame.setPanel(new MovePhotosPanel(frame, notMovedPhotos));
+            }
         } else {
             JOptionPane.showMessageDialog(this,
                     "Device have not been found. Try to plug it in.",
@@ -186,9 +220,48 @@ public class MovePhotosPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_acceptButtonActionPerformed
 
+    private boolean isDeviceConnected(String deviceName) {
+        File[] files = File.listRoots();
+        String name;
+        for (int i = 0; i < files.length; i++) {
+            name = FileSystemView.getFileSystemView().getSystemDisplayName(files[i]);
+            String[] devicePartName = name.split(" ");
+            name = "";
+            for (int j = 0; j < devicePartName.length - 1; j++) {
+                name = name + devicePartName[j] + " ";
+            }
+            name = name.substring(0, name.length() - 1);
+            if (name.equals(deviceName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String getDeviceAbsolutePath(String deviceName) {
+        File[] files = File.listRoots();
+        String name;
+        String destination = "";
+        for (int i = 0; i < files.length; i++) {
+            name = FileSystemView.getFileSystemView().getSystemDisplayName(files[i]);
+            String[] devicePartName = name.split(" ");
+            name = "";
+            for (int j = 0; j < devicePartName.length - 1; j++) {
+                name = name + devicePartName[j] + " ";
+            }
+            name = name.substring(0, name.length() - 1);
+            if (name.equals(deviceName)) {
+                destination = files[i].getAbsolutePath();
+                break;
+            }
+        }
+        return destination;
+    }
+
     /**
      * Cancels operation and goes back to previous JPanel
-     * @param evt 
+     *
+     * @param evt
      */
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
