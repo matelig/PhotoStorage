@@ -1,4 +1,3 @@
-
 package com.mycompany.photostorage;
 
 import com.mycompany.photostorage.entity.Photo;
@@ -28,7 +27,9 @@ import java.util.Iterator;
 import javax.swing.JFileChooser;
 
 /**
- *JPanel used for triggering report generation, based on the report type chosen by user.
+ * JPanel used for triggering report generation, based on the report type chosen
+ * by user.
+ *
  * @author alachman
  */
 public class GenerateReportPanel extends javax.swing.JPanel {
@@ -138,7 +139,7 @@ public class GenerateReportPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_radioBtnDeviceActionPerformed
 
     /**
-     * Method triggers report generation.
+     * Method triggers report generation when a report type is selected.
      *
      * @param evt
      */
@@ -166,6 +167,13 @@ public class GenerateReportPanel extends javax.swing.JPanel {
     private javax.swing.JRadioButton radioBtnDevice;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * Method preparing report content for report based on device.
+     *
+     * @param session
+     * @param document
+     * @throws Exception
+     */
     private void prepareReportForDevice(Session session, Document document) throws Exception {
         PdfPTable tablesup = new PdfPTable(6);
         tablesup.addCell("Lp.");
@@ -280,6 +288,13 @@ public class GenerateReportPanel extends javax.swing.JPanel {
         }
     }
 
+    /**
+     * Method preparing report content for report based on archivisation state.
+     *
+     * @param session
+     * @param document
+     * @throws Exception
+     */
     private void prepareReportArchive(Session session, Document document) throws Exception {
 
         PdfPTable tablesup = new PdfPTable(7);
@@ -368,6 +383,12 @@ public class GenerateReportPanel extends javax.swing.JPanel {
 
     }
 
+    /**
+     * Method preparing main body of report and inserting data specific for
+     * chosen report type.
+     *
+     * @throws Exception
+     */
     private void prepareReport() throws Exception {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -389,7 +410,7 @@ public class GenerateReportPanel extends javax.swing.JPanel {
         paragraph = new Paragraph(new Date().toString());
         paragraph.setAlignment(Element.ALIGN_CENTER);
         document.add(paragraph);
-                paragraph = new Paragraph("\n \n");
+        paragraph = new Paragraph("\n \n");
         paragraph.setAlignment(Element.ALIGN_CENTER);
         document.add(paragraph);
 
@@ -417,6 +438,13 @@ public class GenerateReportPanel extends javax.swing.JPanel {
         session.close();
     }
 
+    /**
+     * Method preparing report content for report based on category.
+     *
+     * @param session
+     * @param document
+     * @throws Exception
+     */
     private void prepareReportForCategory(Session session, Document document) throws Exception {
 
         PdfPTable tablesup = new PdfPTable(6);
@@ -463,6 +491,12 @@ public class GenerateReportPanel extends javax.swing.JPanel {
         document.add(tablesup);
     }
 
+    /**
+     * Method handling directory selection.
+     *
+     * @param file
+     * @return
+     */
     private String getFileTargetPath(String file) {
         JFileChooser chooser = new JFileChooser();
         chooser.setCurrentDirectory(new java.io.File("."));
@@ -477,6 +511,12 @@ public class GenerateReportPanel extends javax.swing.JPanel {
         return null;
     }
 
+    /**
+     * Method return string with all devices containing given photo.
+     *
+     * @param photo
+     * @return
+     */
     private String getDevicesNames(Photo photo) {
         Set<Device> devices = photo.getDevices();
         StringBuilder devicesNames = new StringBuilder("");
