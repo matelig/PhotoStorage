@@ -10,6 +10,7 @@ import com.mycompany.photostorage.entity.Photo;
 import com.mycompany.photostorage.util.HibernateUtil;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -168,7 +169,8 @@ public class MovePhotosPanel extends javax.swing.JPanel {
                 List<Device> databaseDevices;
                 Device currentDevice = null;
                 boolean found = false;
-                boolean repeat = false;
+                boolean deviceNotConnected = false;
+                boolean fullDevice = false;
                 for (int i = 0; i < files.length; i++) {
                     name = FileSystemView.getFileSystemView().getSystemDisplayName(files[i]);
                     String[] devicePartName = name.split(" ");
@@ -212,7 +214,7 @@ public class MovePhotosPanel extends javax.swing.JPanel {
                             } else {
                                 notMovedPhotos.add(photo);
                                 devicesToConnect.add(oldDevice.get(0).getName());
-                                repeat = true;
+                                deviceNotConnected = true;
                             }
                         } else {
                             sourcePath = photo.getPath();
@@ -228,8 +230,12 @@ public class MovePhotosPanel extends javax.swing.JPanel {
                                 session.update(photo);
                                 currentDevice.setFreeSpace(Long.toString(destinationDevice.getFreeSpace()));
                                 session.save(currentDevice);
+                            } catch (FileSystemException ex) {
+                                notMovedPhotos.add(photo);
+                                fullDevice = true;
                             } catch (IOException ex) {
                                 ex.getStackTrace();
+                                System.out.println("aejfawegg");
                             }
                         }
 
@@ -245,22 +251,40 @@ public class MovePhotosPanel extends javax.swing.JPanel {
                     session.getTransaction().commit();
                     session.close();
                     waitDialog.dispose();
-                    if (!repeat) {
-                        JOptionPane.showMessageDialog(panel,
-                                "Photo has been moved",
-                                "Success",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
+                    if (!deviceNotConnected) {
+                        if (!fullDevice) {
+                            JOptionPane.showMessageDialog(panel,
+                                    "Photo has been moved",
+                                    "Success",
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
+                        } else {
+                            JOptionPane.showMessageDialog(panel,
+                                    "Your target device is full",
+                                    "Failure",
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
+                        }
                     } else {
                         String namesOfDevice = "";
                         for (String s : devicesToConnect) {
                             namesOfDevice += s + " ";
                         }
-                        JOptionPane.showMessageDialog(panel,
-                                "Some devices have not been connected. Connect: " + namesOfDevice,
-                                "Warning",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        frame.setPanel(new MovePhotosPanel(frame, notMovedPhotos));
+                        if (!fullDevice) {
+                            JOptionPane.showMessageDialog(panel,
+                                    "Some devices have not been connected. Connect: " + namesOfDevice,
+                                    "Warning",
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            frame.setPanel(new MovePhotosPanel(frame, notMovedPhotos));
+                        } else {
+                            File file = new File(destination);
+                            JOptionPane.showMessageDialog(panel,
+                                    "Some devices have not been connected. Connect: " + namesOfDevice
+                                    + "\n" + FileSystemView.getFileSystemView().getSystemDisplayName(file) + " is full.",
+                                    "Warning",
+                                    JOptionPane.INFORMATION_MESSAGE);
+                            frame.setPanel(new MovePhotosPanel(frame, notMovedPhotos));
+                        }
                     }
                 } else {
                     waitDialog.dispose();
