@@ -6,14 +6,12 @@
 package com.mycompany.photostorage;
 
 import com.mycompany.photostorage.entity.Category;
-import com.mycompany.photostorage.entity.Device;
 import com.mycompany.photostorage.entity.Photo;
 import com.mycompany.photostorage.entity.Tag;
 import com.mycompany.photostorage.entity.User;
 import com.mycompany.photostorage.model.CurrentUser;
 import com.mycompany.photostorage.model.NewPhoto;
 import com.mycompany.photostorage.util.HibernateUtil;
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -21,12 +19,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -47,27 +45,53 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 /**
+ * Class which allows user editing selected photos
  *
  * @author m_lig
  */
 public class AddPhotoEdition extends JPanel {
 
-    private JButton insertPhotoButton;
+    /**
+     * Save button
+     */
+    private JButton savePhotoButton;
+    /**
+     * List of selected photo to add
+     */
     private List<NewPhoto> newPhoto = new ArrayList<>();
+    /**
+     * inner JPanel in which photos are added
+     */
     private JPanel container = new JPanel();
+    /**
+     * scrollPane
+     */
     private JScrollPane scrollPane;
+    /**
+     * Logged user
+     */
     private CurrentUser currentUser;
+    /**
+     * Main frame of the program
+     */
     private MainProgramFrame mainFrame;
+    /**
+     * list of existing categories from current user
+     */
     private JComboBox categoriesComboBox = new JComboBox();
+    /**
+     * Button which allows user to determine category for all photos
+     */
     private JButton applyButton;
 
     /**
-     * 
+     * Constructor of the class
+     *
      * @param newPhoto list of photos to add
      * @param currentUser logged in user
      * @param mainFrame parent JFrame
      */
-    public AddPhotoEdition(List<NewPhoto> newPhoto, CurrentUser currentUser,MainProgramFrame mainFrame) {
+    public AddPhotoEdition(List<NewPhoto> newPhoto, CurrentUser currentUser, MainProgramFrame mainFrame) {
         this.mainFrame = mainFrame;
         this.newPhoto.addAll(newPhoto);
         this.currentUser = currentUser;
@@ -75,7 +99,7 @@ public class AddPhotoEdition extends JPanel {
         initComponents();
         this.setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         JLabel label = new JLabel("Choose category for all photos:");
-        label.setSize(new Dimension(100,30));
+        label.setSize(new Dimension(100, 30));
         label.setAlignmentX(LEFT_ALIGNMENT);
         categoriesComboBox.setAlignmentX(LEFT_ALIGNMENT);
         FillCategoriesComboBox();
@@ -85,20 +109,23 @@ public class AddPhotoEdition extends JPanel {
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setAlignmentX(LEFT_ALIGNMENT);
 
-        this.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         this.add(label);
-        this.add(Box.createRigidArea(new Dimension(0,5)));
+        this.add(Box.createRigidArea(new Dimension(0, 5)));
         this.add(categoriesComboBox);
-        this.add(Box.createRigidArea(new Dimension(0,5)));
+        this.add(Box.createRigidArea(new Dimension(0, 5)));
         this.add(applyButton);
-        this.add(Box.createRigidArea(new Dimension(0,5)));
+        this.add(Box.createRigidArea(new Dimension(0, 5)));
         this.add(scrollPane);
-        this.add(Box.createRigidArea(new Dimension(0,5)));
-        this.add(insertPhotoButton);
+        this.add(Box.createRigidArea(new Dimension(0, 5)));
+        this.add(savePhotoButton);
         setVisible(true);
         scrollPane.revalidate();
     }
-    
+
+    /**
+     * This method adds user's categories to the combo box
+     */
     public void FillCategoriesComboBox() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -114,6 +141,10 @@ public class AddPhotoEdition extends JPanel {
         session.close();
     }
 
+    /**
+     * Initialization of the panel. Get current user, categories list, existing
+     * photos and existing tags from Database
+     */
     private void initComponents() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -124,21 +155,21 @@ public class AddPhotoEdition extends JPanel {
         categoriesAL.addAll(categories);
         Set<Photo> dbPhotos = dbUser.getPhotos();
         Set<Tag> tags = new HashSet<>();
-        for(Photo p : dbPhotos) {
+        for (Photo p : dbPhotos) {
             tags.addAll(p.getTags());
         }
         session.getTransaction().commit();
         session.close();
         Set<String> tagNames = new HashSet<>();
-        for(Tag t: tags) {
+        for (Tag t : tags) {
             tagNames.add(t.getValue());
         }
         List<String> listedTags = new ArrayList<>();
         listedTags.addAll(tagNames);
         for (NewPhoto photo : newPhoto) {
             if (!FilenameUtils.getExtension(photo.getPath()).equalsIgnoreCase("gif")) {
-            PhotoToEditPanel ptep = new PhotoToEditPanel(photo.getPath(), categoriesAL, tagNames, this);
-            ptep.getTagPanel().addPosibility(listedTags);
+                PhotoToEditPanel ptep = new PhotoToEditPanel(photo.getPath(), categoriesAL, tagNames, this);
+                ptep.getTagPanel().addPosibility(listedTags);
                 getContainer().add(ptep);
             }
         }
@@ -151,53 +182,62 @@ public class AddPhotoEdition extends JPanel {
                 changeAllCategories();
             }
         });
-        //newPhoto.clear();
-        this.insertPhotoButton = new JButton("Save");
-        this.insertPhotoButton.setPreferredSize(new Dimension(100, 25));
-        this.insertPhotoButton.setAlignmentX(LEFT_ALIGNMENT);
-        this.insertPhotoButton.addActionListener(new ActionListener() {
+        this.savePhotoButton = new JButton("Save");
+        this.savePhotoButton.setPreferredSize(new Dimension(100, 25));
+        this.savePhotoButton.setAlignmentX(LEFT_ALIGNMENT);
+        this.savePhotoButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 insertPhotoButtonActionPerformed();
             }
         });
     }
-    
+
+    /**
+     * Method which provides adjust categories for all photos selected
+     */
     private void changeAllCategories() {
         Component[] comps = container.getComponents();
-        for(int i = 0; i < comps.length; i++) {
-            PhotoToEditPanel panel = (PhotoToEditPanel)comps[i];
+        for (int i = 0; i < comps.length; i++) {
+            PhotoToEditPanel panel = (PhotoToEditPanel) comps[i];
             panel.getCategoryComboBox().setSelectedItem(categoriesComboBox.getSelectedItem());
         }
     }
 
+    /**
+     * Method that inserts insormation of selected photos to database
+     */
     private void insertPhotoButtonActionPerformed() {
+        File dir = new File("photos");
+        dir.mkdir();
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
-        
         Query queryUser = session.createQuery("from User where idu=" + currentUser.getUserID());
         User user = (User) queryUser.list().get(0);
         Set<Category> categories = user.getCategories();
         for (int i = 0; i < newPhoto.size(); i++) {
-            PhotoToEditPanel ptep = (PhotoToEditPanel) getContainer().getComponent(i);            
-            Photo photo = new Photo();            
+            PhotoToEditPanel ptep = (PhotoToEditPanel) getContainer().getComponent(i);
+            Photo photo = new Photo();
             photo.setDescription(ptep.getDescription());
             photo.setFormat(newPhoto.get(i).getFormat());
             photo.setIsArchivised((byte) 0);
-            
+
             Icon image = ptep.getMiniature();
             BufferedImage bi = new BufferedImage(image.getIconWidth(), image.getIconHeight(), BufferedImage.TYPE_INT_RGB);
             Graphics g = bi.createGraphics();
             image.paintIcon(null, g, 0, 0);
             ByteArrayOutputStream baos = null;
-            try {
+            File file = null;
+            try {                
                 baos = new ByteArrayOutputStream();
                 ImageIO.write(bi, "png", baos);
                 byte[] imageInByte = baos.toByteArray();
                 photo.setMiniature(imageInByte);
                 BasicFileAttributes attr = Files.readAttributes(Paths.get(newPhoto.get(i).getPath()), BasicFileAttributes.class);
-                long date = attr.creationTime().toMillis();                
+                long date = attr.creationTime().toMillis();
                 photo.setDate(new Date(date));
+                file = new File(newPhoto.get(i).getPath());
+                Files.move(Paths.get(newPhoto.get(i).getPath()), Paths.get("photos/" + file.getName()));
             } catch (IOException e) {
             } finally {
                 try {
@@ -205,7 +245,7 @@ public class AddPhotoEdition extends JPanel {
                 } catch (Exception e) {
                 }
             }
-            photo.setPath(newPhoto.get(i).getPath());
+            photo.setPath(Paths.get("photos/" + file.getName()).toString());
             photo.setResolution(newPhoto.get(i).getResolution());
             photo.setSize(Integer.parseInt(newPhoto.get(i).getSize()));
             photo.setUser(user);
@@ -218,19 +258,19 @@ public class AddPhotoEdition extends JPanel {
                 }
             }
             session.save(photo);
-            List<String> tagList = ptep.getTags();            
+            List<String> tagList = ptep.getTags();
             for (String s : tagList) {
-                Tag tag = new Tag(photo,s);
+                Tag tag = new Tag(photo, s);
                 session.save(tag);
             }
         }
         session.getTransaction().commit();
         session.close();
         JOptionPane.showMessageDialog(this,
-                        "Photos have been inserted.",
-                        "Information",
-                        JOptionPane.INFORMATION_MESSAGE);
-        mainFrame.setPanel(new PhotoViewPanel(mainFrame,currentUser));
+                "Photos have been inserted.",
+                "Information",
+                JOptionPane.INFORMATION_MESSAGE);
+        mainFrame.setPanel(new PhotoViewPanel(mainFrame, currentUser));
     }
 
     /**

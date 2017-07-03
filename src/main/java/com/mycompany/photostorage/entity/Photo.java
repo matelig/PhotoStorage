@@ -217,7 +217,7 @@ public class Photo  implements java.io.Serializable {
         this.path = path;
     }
 
-@ManyToMany(fetch=FetchType.LAZY)
+@ManyToMany(fetch=FetchType.EAGER)
     @JoinTable(name="device_has_photo", catalog="photokeeper", joinColumns = { 
         @JoinColumn(name="Photo_idp", nullable=false, updatable=false) }, inverseJoinColumns = { 
         @JoinColumn(name="Device_idd", nullable=false, updatable=false) })

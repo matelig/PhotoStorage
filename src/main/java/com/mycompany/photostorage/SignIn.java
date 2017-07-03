@@ -12,21 +12,27 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import org.hibernate.Session;
 
-
 /**
  * JPanel providing interface allowing to sign in
+ *
  * @author Jakub
  */
 public class SignIn extends javax.swing.JPanel {
+
+    /**
+     * Program frame
+     */
     MainProgramFrame frame;
+
     /**
      * Creates new form SignIn
+     *
      * @param parentFrame frame containing object
      */
     public SignIn(MainProgramFrame parentFrame) {
         frame = parentFrame;
         initComponents();
-        
+
     }
 
     /**
@@ -108,26 +114,30 @@ public class SignIn extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void usernameTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usernameTextFieldActionPerformed
- 
+
     }//GEN-LAST:event_usernameTextFieldActionPerformed
 
     /**
-     * Calls appropriate methods to process input data and switches to PhotoViewPanel
-     * @param evt 
+     * Calls appropriate methods to process input data and switches to
+     * PhotoViewPanel
+     *
+     * @param evt
      */
     private void signInButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signInButtonActionPerformed
         try {
             CurrentUser currentUser = getDatabaseUser();
             frame.setCurrentUser(currentUser);
-            frame.setPanel(new PhotoViewPanel(frame,frame.getCurrentUser()));
+            frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
+            frame.setRelative();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, ex, "Warning", JOptionPane.WARNING_MESSAGE);
-        }       
+        }
     }//GEN-LAST:event_signInButtonActionPerformed
 
     /**
      * sets panel to SignUp
-     * @param evt 
+     *
+     * @param evt
      */
     private void registerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_registerButtonActionPerformed
         frame.setPanel(new SignUp(frame));
@@ -135,22 +145,23 @@ public class SignIn extends javax.swing.JPanel {
 
     /**
      * gets user with provided login credentials
+     *
      * @return user
      * @throws Exception when input is incorrect
      */
-    private CurrentUser getDatabaseUser() throws Exception{
-        if (usernameTextField.getText().isEmpty()||passwordTextField.getPassword().length==0) {
+    private CurrentUser getDatabaseUser() throws Exception {
+        if (usernameTextField.getText().isEmpty() || passwordTextField.getPassword().length == 0) {
             throw new Exception("All information fields must be filled out before you can click OK. ");
         }
-        
+
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
         List<User> users = session.createCriteria(User.class).list();
         //Arrays.equals(jPasswordField1.getPassword(), jPasswordField2.getPassword()
         for (User user : users) {
             if ((user.getNickname().equals(usernameTextField.getText()))
-                    &&(user.getPassword().equals(new String(passwordTextField.getPassword())))) {
-                CurrentUser cu = new CurrentUser(user.getIdu(),user.getNickname());
+                    && (user.getPassword().equals(new String(passwordTextField.getPassword())))) {
+                CurrentUser cu = new CurrentUser(user.getIdu(), user.getNickname());
                 session.getTransaction().rollback();
                 session.close();
                 return cu;
@@ -158,11 +169,10 @@ public class SignIn extends javax.swing.JPanel {
         }
         session.getTransaction().rollback();
         session.close();
-        throw new Exception ("No user in database");
+        throw new Exception("No user in database");
     }
-    
-    
-    
+
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel passwordLabel;
     private javax.swing.JPasswordField passwordTextField;

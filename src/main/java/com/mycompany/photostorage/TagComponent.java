@@ -18,8 +18,17 @@ import javax.swing.JPanel;
  */
 public class TagComponent extends JPanel {
 
+    /**
+     * Parent panel to actual TagComponent
+     */
     private JPanel parentPanel;
+    /**
+     * Created tag
+     */
     private String tagString;
+    /**
+     * Main panel of tag component
+     */
     private Container mainPanel;
 
     /**

@@ -8,9 +8,7 @@ package com.mycompany.photostorage;
 import com.mycompany.photostorage.entity.Category;
 import com.mycompany.photostorage.entity.Photo;
 import com.mycompany.photostorage.entity.Tag;
-import com.mycompany.photostorage.entity.User;
 import com.mycompany.photostorage.util.HibernateUtil;
-import java.awt.BorderLayout;
 import java.awt.Component;
 import static java.awt.Component.LEFT_ALIGNMENT;
 import java.awt.Dimension;
@@ -24,6 +22,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -33,32 +32,88 @@ import org.hibernate.Session;
 
 /**
  * JPanel providing interface allowing to edit photo parameters
+ *
  * @author m_lig
  */
-public class PhotoPanelEdit extends JPanel{
-
-    private JScrollPane scrollPane;
-    private JButton editButton;
-    private JPanel container = new JPanel();
-    private List<SinglePhotoPanel> selectedPhotos = new ArrayList<>();
-    private List<Category> categoriesAL = new ArrayList<>();
-    private List<String> tags = new ArrayList<>();
-    private JComboBox categoriesComboBox = new JComboBox();
-    private JButton applyButton;
+public class PhotoPanelEdit extends JPanel {
 
     /**
-     * constructor
+     * Scroll pane with PhotoToEditPanels
+     */
+    private JScrollPane scrollPane;
+    /**
+     * Button to accept edition
+     */
+    private JButton editButton;
+    /**
+     * Contains all PhotoToEditPanels that will be placed in scrollPane
+     */
+    private JPanel container = new JPanel();
+    /**
+     * List of photos selected to edit
+     */
+    private List<SinglePhotoPanel> selectedPhotos = new ArrayList<>();
+    /**
+     * List of all categories
+     */
+    private List<Category> categoriesAL = new ArrayList<>();
+    /**
+     * List of tags
+     */
+    private List<String> tags = new ArrayList<>();
+    /**
+     * Combo Box with all categories, to change them all at one click
+     */
+    private JComboBox categoriesComboBox = new JComboBox();
+    /**
+     * Button to apply category to all photos
+     */
+    private JButton applyButton;
+    /**
+     * Program frame to change between panels
+     */
+    private MainProgramFrame frame;
+    /**
+     * Panel with wait information
+     */
+    JOptionPane pleaseWaitPane = new JOptionPane("Photos being edited. Please wait.",
+            JOptionPane.INFORMATION_MESSAGE,
+            JOptionPane.DEFAULT_OPTION, null,
+            new Object[]{});
+    /**
+     * Wait dialog
+     */
+    private JDialog waitDialog;
+
+    /**
+     * Method that prepares waitDialog for use
+     */
+    private void prepareDialog() {
+        waitDialog = pleaseWaitPane.createDialog(this, "Please Wait");
+        waitDialog.setContentPane(pleaseWaitPane);
+        waitDialog.setModal(true);
+        waitDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        waitDialog.pack();
+        waitDialog.setLocationRelativeTo(this);
+    }
+
+    /**
+     * Constructor
+     *
      * @param selectedPhotos list of photos to edit
      * @param categoriesAL list of categories
+     * @param tags list of all tags used in creating photos
+     * @param frame Main frame of the program
      */
-    public PhotoPanelEdit(List<SinglePhotoPanel> selectedPhotos, List<Category> categoriesAL, List<String> tags) {
+    public PhotoPanelEdit(List<SinglePhotoPanel> selectedPhotos, List<Category> categoriesAL, List<String> tags, MainProgramFrame frame) {
+        this.frame = frame;
         this.selectedPhotos.addAll(selectedPhotos);
         this.categoriesAL.addAll(categoriesAL);
         this.tags.addAll(tags);
         container.setLayout(new BoxLayout(getContainer(), BoxLayout.Y_AXIS));
         initComponent();
         JLabel label = new JLabel("Choose category for all photos:");
-        label.setSize(new Dimension(100,30));
+        label.setSize(new Dimension(100, 30));
         label.setAlignmentX(LEFT_ALIGNMENT);
         categoriesComboBox.setAlignmentX(LEFT_ALIGNMENT);
         FillCategoriesComboBox();
@@ -68,15 +123,15 @@ public class PhotoPanelEdit extends JPanel{
         scrollPane.setPreferredSize(new Dimension(480, 360));
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setAlignmentX(LEFT_ALIGNMENT);
-        this.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         this.add(label);
-        this.add(Box.createRigidArea(new Dimension(0,5)));
+        this.add(Box.createRigidArea(new Dimension(0, 5)));
         this.add(categoriesComboBox);
-        this.add(Box.createRigidArea(new Dimension(0,5)));
+        this.add(Box.createRigidArea(new Dimension(0, 5)));
         this.add(applyButton);
-        this.add(Box.createRigidArea(new Dimension(0,5)));
+        this.add(Box.createRigidArea(new Dimension(0, 5)));
         this.add(scrollPane);
-        this.add(Box.createRigidArea(new Dimension(0,5)));
+        this.add(Box.createRigidArea(new Dimension(0, 5)));
         this.add(editButton);
         setVisible(true);
         scrollPane.revalidate();
@@ -91,7 +146,7 @@ public class PhotoPanelEdit extends JPanel{
             categoriesComboBox.addItem(cat.getName());
         }
     }
-    
+
     /**
      * initialise JPanel components
      */
@@ -120,69 +175,79 @@ public class PhotoPanelEdit extends JPanel{
             }
         });
     }
-    
+
     /**
      * Changes categories in all PhotoToEditPanels
      */
     private void changeAllCategories() {
         Component[] comps = container.getComponents();
-        for(int i = 0; i < comps.length; i++) {
-            PhotoToEditPanel panel = (PhotoToEditPanel)comps[i];
+        for (int i = 0; i < comps.length; i++) {
+            PhotoToEditPanel panel = (PhotoToEditPanel) comps[i];
             panel.getCategoryComboBox().setSelectedItem(categoriesComboBox.getSelectedItem());
         }
     }
 
     /**
-     * Puts changes in DB 
+     * Event fired, when "Edit" button is clicked. Modyfies Values of selected
+     * photos in Database.
      */
     private void onEditButtonClick() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
-        for (int i = 0; i < selectedPhotos.size(); i++) {
-            PhotoToEditPanel ptep = (PhotoToEditPanel) getContainer().getComponent(i);
-            Query queryPhoto = session.createQuery("from Photo where idp=" + ptep.getPhotoID());
-            Photo dbPhoto = (Photo) queryPhoto.list().get(0);
-            if (!ptep.getCategory().equalsIgnoreCase("none")) {
-                for (Category c : categoriesAL) {
-                    if (c.getName().equals(ptep.getCategory())) {
-                        dbPhoto.setCategory(c);
-                        break;
+        prepareDialog();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Session session = HibernateUtil.getSessionFactory().openSession();
+                session.beginTransaction();
+                for (int i = 0; i < selectedPhotos.size(); i++) {
+                    PhotoToEditPanel ptep = (PhotoToEditPanel) getContainer().getComponent(i);
+                    Query queryPhoto = session.createQuery("from Photo where idp=" + ptep.getPhotoID());
+                    Photo dbPhoto = (Photo) queryPhoto.list().get(0);
+                    if (!ptep.getCategory().equalsIgnoreCase("none")) {
+                        for (Category c : categoriesAL) {
+                            if (c.getName().equals(ptep.getCategory())) {
+                                dbPhoto.setCategory(c);
+                                break;
+                            }
+                        }
+                    } else {
+                        dbPhoto.setCategory(null);
                     }
-                }
-            } else {
-                dbPhoto.setCategory(null);
-            }
-            dbPhoto.setDescription(ptep.getDescription());
-            Set<Tag> tagsFromDB = dbPhoto.getTags();
-            List<Tag> oldTags = new ArrayList<>();
-            for (Tag t : tagsFromDB) {
-                oldTags.add(t);
-            }
-            List<String> newTags = ptep.getTags();
-            for (int k = oldTags.size()-1;k>=0;k--) {
-                for (int j = newTags.size()-1;j>=0;j--) {
-                    if (oldTags.get(k).getValue().equals(newTags.get(j))) {
-                        oldTags.remove(k);
-                        newTags.remove(j);
+                    dbPhoto.setDescription(ptep.getDescription());
+                    Set<Tag> tagsFromDB = dbPhoto.getTags();
+                    List<Tag> oldTags = new ArrayList<>();
+                    for (Tag t : tagsFromDB) {
+                        oldTags.add(t);
                     }
+                    List<String> newTags = ptep.getTags();
+                    for (int k = oldTags.size() - 1; k >= 0; k--) {
+                        for (int j = newTags.size() - 1; j >= 0; j--) {
+                            if (oldTags.get(k).getValue().equals(newTags.get(j))) {
+                                oldTags.remove(k);
+                                newTags.remove(j);
+                            }
+                        }
+                    }
+                    for (Tag tag : oldTags) {
+                        session.delete(tag);
+                    }
+                    session.update(dbPhoto);
+                    for (String s : newTags) {
+                        Tag tag = new Tag(dbPhoto, s);
+                        session.save(tag);
+                    }
+
                 }
-            }
-            for (Tag tag : oldTags) {
-                session.delete(tag);
-            }
-            session.update(dbPhoto);
-            for (String s : newTags) {
-                Tag tag = new Tag (dbPhoto,s);
-                session.save(tag);
-            }            
-            
-        }
-        session.getTransaction().commit();
-        session.close();
-        JOptionPane.showMessageDialog(this,
+                session.getTransaction().commit();
+                session.close();
+                frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
+                waitDialog.dispose();
+                JOptionPane.showMessageDialog(frame.getFrame(),
                         "Photos have been edited.",
                         "Information",
-                        JOptionPane.INFORMATION_MESSAGE);       
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        }).start();
+        waitDialog.setVisible(true);
     }
 
     /**

@@ -35,18 +35,46 @@ import org.jdesktop.swingx.JXDatePicker;
 
 /**
  * JPanel providing interface allowing to view and manage photos
+ *
  * @author Wojtek
  */
 public class PhotoViewPanel extends javax.swing.JPanel {
 
+    /**
+     * Currently loged user
+     */
     private CurrentUser currentUser;
+    /**
+     * List of categories in text form
+     */
     private List<String> categoriesNames;
+    /**
+     * List of selected photos
+     */
     private List<Photo> selectedPhotos = new ArrayList<>();
+    /**
+     * List of photo panels in current view
+     */
     private List<SinglePhotoPanel> photoPanels = new ArrayList<>();
+    /**
+     * List of all tags in database
+     */
     private List<String> tagNames = new ArrayList<>();
+    /**
+     * Program frame
+     */
     private MainProgramFrame frame;
+    /**
+     * List of all categories
+     */
     private List<Category> allCategories = new ArrayList<>();
+    /**
+     * Start date to search photos by it
+     */
     private Date startDate;
+    /**
+     * End date to search photos by it
+     */
     private Date endDate;
 
     /**
@@ -58,6 +86,7 @@ public class PhotoViewPanel extends javax.swing.JPanel {
 
     /**
      * Constructor for object having current user's photos
+     *
      * @param frame JFrame containing object
      * @param currentUser user whose photos are beeing displayed
      */
@@ -89,8 +118,9 @@ public class PhotoViewPanel extends javax.swing.JPanel {
 
     /**
      * Creates tree of user's categories
+     *
      * @param categoriesAL
-     * @param supCategory 
+     * @param supCategory
      */
     private void createCategoriesTree(List<Category> categoriesAL, DefaultMutableTreeNode supCategory) {
         DefaultMutableTreeNode category = null;
@@ -107,6 +137,9 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         }
     }
 
+    /**
+     * start creation of this panel. Gets information about current user, preparing creation of category tree
+     */
     private void prepareCreation() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -142,6 +175,9 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         session.close();
     }
 
+    /**
+     * updating view fired while any of search settings are changed (tags, categories, start and end date)
+     */
     private void updatePhotoView() {
         photoPanels.clear();
         selectedPhotos = new ArrayList<>();
@@ -174,6 +210,10 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         session.close();
     }
 
+    /**
+     * Recursive creating of category tree
+     * @param node current node
+     */
     private void getNodePhotos(DefaultMutableTreeNode node) {
         categoriesNames.add((String) node.getUserObject());
         if (node.isLeaf()) {
@@ -354,15 +394,23 @@ public class PhotoViewPanel extends javax.swing.JPanel {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(25, 25, 25)
                 .addComponent(jSplitPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 332, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(deletePhotoButton)
-                    .addComponent(movePhotoButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(editPhotoButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(movePhotoButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(editPhotoButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(deletePhotoButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Event lauched when "Edit" button is pressed. Selected photos are going to be edited.
+     * @param evt 
+     */
     private void editPhotoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editPhotoButtonActionPerformed
         List<SinglePhotoPanel> selectedPhotos = new ArrayList<>();
         for (SinglePhotoPanel p : photoPanels) {
@@ -370,30 +418,52 @@ public class PhotoViewPanel extends javax.swing.JPanel {
                 selectedPhotos.add(p);
             }
         }
-        frame.setPanel(new PhotoPanelEdit(selectedPhotos, allCategories, tagNames));
+        if (!selectedPhotos.isEmpty()) {
+            frame.setPanel(new PhotoPanelEdit(selectedPhotos, allCategories, tagNames, frame));
+        } else {
+            JOptionPane.showMessageDialog(this, "No photo has beed selected", "Info", JOptionPane.INFORMATION_MESSAGE);
+        }
     }//GEN-LAST:event_editPhotoButtonActionPerformed
 
+    /**
+     * Event lauched when "Delete" button is pressed. Selected photos are going to be deleted.
+     * @param evt 
+     */
     private void deletePhotoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deletePhotoButtonActionPerformed
-        Object[] options = {"Yes", "No"};
-        int x = JOptionPane.showOptionDialog(null,
-                "Do you really want to delete selected photos?",
-                "Delete",
-                JOptionPane.DEFAULT_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null, options, options[1]);
-        if (x == 0) {
-            List<SinglePhotoPanel> photosToDelete = new ArrayList<>();
-            for (int i = photoPanels.size() - 1; i >= 0; i--) {
-                if (photoPanels.get(i).isChecked()) {
-                    photosToDelete.add(photoPanels.get(i));
-                    photoPanels.remove(i);
-                }
+        List<SinglePhotoPanel> selectedPhotos = new ArrayList<>();
+        for (int i = photoPanels.size() - 1; i >= 0; i--) {
+            if (photoPanels.get(i).isChecked()) {
+                selectedPhotos.add(photoPanels.get(i));
             }
-            deletePhotoFromDatabase(photosToDelete);
-            updateMainView();
+        }
+        if (selectedPhotos.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No photo has beed selected", "Info", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            Object[] options = {"Yes", "No"};
+            int x = JOptionPane.showOptionDialog(this,
+                    "Do you really want to delete selected photos?",
+                    "Delete",
+                    JOptionPane.DEFAULT_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null, options, options[1]);
+            if (x == 0) {
+                List<SinglePhotoPanel> photosToDelete = new ArrayList<>();
+                for (int i = photoPanels.size() - 1; i >= 0; i--) {
+                    if (photoPanels.get(i).isChecked()) {
+                        photosToDelete.add(photoPanels.get(i));
+                        photoPanels.remove(i);
+                    }
+                }
+                deletePhotoFromDatabase(photosToDelete);
+                updateMainView();
+            }
         }
     }//GEN-LAST:event_deletePhotoButtonActionPerformed
 
+    /**
+     * button that resets the start date 
+     * @param evt 
+     */
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         if (startDatePicker.getDate() != null) {
             startDatePicker.setDate(null);
@@ -402,6 +472,10 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
+    /**
+     * button that resets the end date
+     * @param evt 
+     */
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         if (endDatePicker.getDate() != null) {
             endDatePicker.setDate(null);
@@ -410,7 +484,12 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    /**
+     * Event lauched when "Move" button is pressed. Selected photos are going to be archivised
+     * @param evt 
+     */
     private void movePhotoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_movePhotoButtonActionPerformed
+
         List<Photo> selectedPhotos = new ArrayList<>();
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -423,7 +502,11 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         }
         session.getTransaction().commit();
         session.close();
-        frame.setPanel(new MovePhotosPanel(frame, selectedPhotos));
+        if (selectedPhotos.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "No photo has beed selected", "Info", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            frame.setPanel(new MovePhotosPanel(frame, selectedPhotos));
+        }
     }//GEN-LAST:event_movePhotoButtonActionPerformed
 
 
@@ -447,6 +530,9 @@ public class PhotoViewPanel extends javax.swing.JPanel {
     private com.mycompany.photostorage.TagPanel tagPanel;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * Show all photos, regardless of category, tag and date 
+     */
     private void fillView() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -467,6 +553,10 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         session.close();
     }
 
+    /**
+     * Delete selected photos from database
+     * @param selectedPhotos List of selected photos, which should be deleted
+     */
     private void deletePhotoFromDatabase(List<SinglePhotoPanel> selectedPhotos) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -479,6 +569,9 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         session.close();
     }
 
+    /**
+     * Adding listeners to JDatePicker, providing firing event, when End Date or Start Date are checked
+     */
     private void addJDatePickerListener() {
         ActionListener l = new ActionListener() {
             @Override
@@ -502,6 +595,9 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         endDatePicker.addActionListener(l1);
     }
 
+    /**
+     * Updating photos, which should be currently showed
+     */
     public void updateMainView() {
         categoriesNames = new ArrayList<>();
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) categoryTree.getLastSelectedPathComponent();
@@ -516,6 +612,10 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         photosPanel.repaint();
     }
 
+    /**
+     * Method that allows to check, if creating date of the photo is older than Start Date and younger than End Date
+     * @param selectedPhotos 
+     */
     private void checkPhotoDate(List<Photo> selectedPhotos) {
         for (int i = selectedPhotos.size() - 1; i >= 0; i--) {
             if (startDate != null) {
@@ -533,6 +633,10 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         }
     }
 
+    /**
+     * Allows photo to be sorted by ID
+     * @param photos List of photos prom database
+     */
     private void sortPhotos(List<Photo> photos) {
         Collections.sort(photos, new Comparator<Photo>() {
             @Override
@@ -542,6 +646,9 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         });
     }
 
+    /**
+     * Gets every tag that is assigned to photos. used by Tag searching
+     */
     private void getAllTags() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -560,6 +667,9 @@ public class PhotoViewPanel extends javax.swing.JPanel {
         session.close();
     }
 
+    /**
+     * If tag is added or deleted from searching this method is fired, allowing to display only this photos, that fulfill search expectation
+     */
     public void photosByTags() {
         List<String> tags = tagPanel.takeTags();
         boolean removePhoto = false;

@@ -38,7 +38,7 @@
         <property name="path" type="string">
             <column name="path" length="500" not-null="true" />
         </property>
-        <set name="devices" table="device_has_photo" inverse="false" lazy="true" fetch="select">
+        <set name="devices" table="device_has_photo" inverse="false" lazy="false" fetch="select">
             <key>
                 <column name="Photo_idp" not-null="true" />
             </key>

@@ -16,7 +16,13 @@ import javax.swing.JPanel;
  */
 public class MainProgramFrame {
 
+    /**
+     * Program frame
+     */
     private JFrame frame;
+    /**
+     * Currently logged user
+     */
     private CurrentUser currentUser;
 
 
@@ -24,12 +30,13 @@ public class MainProgramFrame {
      * Creates frame and assign default values
      */
     public void CreateAndShowGUI() {
-        frame = new JFrame("PhotoStorage");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setFrame(new JFrame("PhotoStorage"));
+        getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setPanel(new SignIn(this));
-        frame.pack();
-        frame.setResizable(false);
-        frame.setVisible(true);
+        getFrame().pack();
+        getFrame().setResizable(false);
+        getFrame().setVisible(true);
+        getFrame().setLocationRelativeTo(null);
     }
 
     /**
@@ -37,20 +44,47 @@ public class MainProgramFrame {
      * @param panel JPanel to be displayed
      */
     public void setPanel(JPanel panel) {
-        frame.getContentPane().removeAll();
+        getFrame().getContentPane().removeAll();
         if(!(panel instanceof SignIn)&& !(panel instanceof SignUp)){
-            frame.add(new ToolBar().createToolBar(this), BorderLayout.PAGE_START);
+            getFrame().add(new ToolBar().createToolBar(this), BorderLayout.PAGE_START);
         }
-        frame.getContentPane().add(panel);
-        frame.pack();
-        frame.revalidate();
+        getFrame().getContentPane().add(panel);
+        getFrame().pack();
+        getFrame().revalidate();
     }
   
+    /**
+     * @param cu current user
+     */
     public void setCurrentUser(CurrentUser cu) {
         this.currentUser = cu;
     }
   
+    /**
+     * @return current user
+     */
     public CurrentUser getCurrentUser() {
         return this.currentUser;
+    }
+    
+    /**
+     * Set frame position to center of screen
+     */
+    public void setRelative() {
+        getFrame().setLocationRelativeTo(null);
+    }
+
+    /**
+     * @return the frame
+     */
+    public JFrame getFrame() {
+        return frame;
+    }
+
+    /**
+     * @param frame the frame to set
+     */
+    public void setFrame(JFrame frame) {
+        this.frame = frame;
     }
 }

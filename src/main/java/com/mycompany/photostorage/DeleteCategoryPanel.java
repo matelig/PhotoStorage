@@ -15,19 +15,24 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 /**
- * JPanel providing interface allowing user to add category
- * @author alachman
+ * JPanel providing interface allowing user to delete category
+ *
+ * @author matelig
  */
-public class AddCategoryPanel extends javax.swing.JPanel {
+public class DeleteCategoryPanel extends javax.swing.JPanel {
 
-    private MainProgramFrame frame;
-    private CurrentUser currentUser;
-    
     /**
-     * Creates new form AddCategoryPanel
-     * @param currentUser logged user
+     * field represents main frame of the program
      */
-    public AddCategoryPanel(CurrentUser currentUser,MainProgramFrame frame) {
+    private MainProgramFrame frame;
+
+    /**
+     * Creates new form DeleteCategoryPanel
+     *
+     * @param currentUser logged user
+     * @param frame frame to which panel are switched
+     */
+    public DeleteCategoryPanel(CurrentUser currentUser, MainProgramFrame frame) {
         this.currentUser = currentUser;
         this.frame = frame;
         initComponents();
@@ -47,47 +52,42 @@ public class AddCategoryPanel extends javax.swing.JPanel {
         jSeparator1 = new javax.swing.JSeparator();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        txtFieldCategory = new javax.swing.JTextField();
-        btnAddCategory = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
+        btnDeleteCategory = new javax.swing.JButton();
         categoryComboBox = new javax.swing.JComboBox<>();
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jLabel1.setText("Add category");
+        jLabel1.setText("Delete category");
         jLabel1.setPreferredSize(new java.awt.Dimension(82, 20));
 
         jLabel2.setText("Category name");
 
-        btnAddCategory.setText("Add category");
-        btnAddCategory.addActionListener(new java.awt.event.ActionListener() {
+        btnDeleteCategory.setText("Delete category");
+        btnDeleteCategory.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAddCategoryActionPerformed(evt);
+                btnDeleteCategoryActionPerformed(evt);
             }
         });
-
-        jLabel3.setText("Superior category");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(184, Short.MAX_VALUE)
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(115, 115, 115))
             .addComponent(jSeparator1)
             .addGroup(layout.createSequentialGroup()
-                .addGap(93, 93, 93)
+                .addGap(85, 85, 85)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnAddCategory)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(categoryComboBox, 0, 168, Short.MAX_VALUE)
-                        .addComponent(txtFieldCategory)))
-                .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(31, 31, 31)
+                        .addComponent(categoryComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(btnDeleteCategory)
+                        .addGap(87, 87, 87)))
+                .addContainerGap(110, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(117, 117, 117))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -96,83 +96,58 @@ public class AddCategoryPanel extends javax.swing.JPanel {
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(1, 1, 1)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(txtFieldCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(23, 23, 23)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
                     .addComponent(categoryComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(btnAddCategory)
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addComponent(btnDeleteCategory)
+                .addContainerGap(25, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnAddCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddCategoryActionPerformed
-        if (txtFieldCategory.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "You have to provide category name",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-        } else {
-            try {
-                addNewCategory();
-                JOptionPane.showMessageDialog(this, "Category added", "Info", JOptionPane.INFORMATION_MESSAGE);
-                frame.setPanel(new AddCategoryPanel(frame.getCurrentUser(),frame));
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, ex.getMessage(), "Warning", JOptionPane.WARNING_MESSAGE);
-            }
-        }
-    }//GEN-LAST:event_btnAddCategoryActionPerformed
+    private void btnDeleteCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteCategoryActionPerformed
+        deleteCategory();
+        JOptionPane.showMessageDialog(this, "Category deleted", "Info", JOptionPane.INFORMATION_MESSAGE);
+        frame.setPanel(new DeleteCategoryPanel(frame.getCurrentUser(), frame));
+    }//GEN-LAST:event_btnDeleteCategoryActionPerformed
 
     /**
-     * Adds new category and assigns it to current user
-     * @throws Exception on adding already existing category
+     * Deletes selected category
+     *
      */
-    private void addNewCategory() throws Exception {
-        String QUERY_CATEGORY = "from Category c where c.User_idu = ";
+    private void deleteCategory() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
         Query query = session.createQuery("from User u where u.idu = " + currentUser.getUserID());
         User dbUser = (User) query.list().get(0);
         Set<Category> categories = dbUser.getCategories();
+        Category category = null;
         for (Category cat : categories) {
-            if (cat.getName().equalsIgnoreCase(txtFieldCategory.getText())) {
-                throw new Exception("Category already exists");
+            if (cat.getName().equalsIgnoreCase(categoryComboBox.getSelectedItem().toString())) {
+                category = cat;
+                break;
             }
         }
-        Category category = new Category();
-        category.setName(txtFieldCategory.getText());
-        User user = (User) session.createQuery("from User u where u.id=" + currentUser.getUserID()).uniqueResult();
-        if (!categoryComboBox.getSelectedItem().toString().equals("None")) {
-            for (Category c : categories) {
-                if (categoryComboBox.getSelectedItem().toString().equals(c.getName())) {
-                    category.setCategory(c);
-                    break;
-                }
-            }
-        }
-        category.setUser(user);
-        session.save(category);
+        session.delete(category);
         session.getTransaction().commit();
-        session.close();        
-        
+        session.close();
     }
 
+    /**
+     * field represents logged user
+     */
+    CurrentUser currentUser;
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAddCategory;
+    private javax.swing.JButton btnDeleteCategory;
     private javax.swing.JComboBox<String> categoryComboBox;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTextField txtFieldCategory;
     // End of variables declaration//GEN-END:variables
 
     /**
-     * Displays existing categories
+     * Displays existing categories in combobox
      */
     private void fillCategoryComboBox() {
         Session session = HibernateUtil.getSessionFactory().openSession();
@@ -180,7 +155,6 @@ public class AddCategoryPanel extends javax.swing.JPanel {
         Query query = session.createQuery("from User u where u.idu = " + currentUser.getUserID());
         User dbUser = (User) query.list().get(0);
         Set<Category> categories = dbUser.getCategories();
-        categoryComboBox.addItem("None");
         for (Category c : categories) {
             categoryComboBox.addItem(c.getName());
         }
