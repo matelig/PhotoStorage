@@ -24,6 +24,7 @@ import com.mycompany.photostorage.entity.User;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import javax.swing.JFileChooser;
 
 /**
@@ -458,8 +459,34 @@ public class GenerateReportPanel extends javax.swing.JPanel {
         Query query = session.createQuery("from Category");
         java.util.List<Category> categories = new ArrayList<>();
         categories = query.list();
+
+        PdfPCell cell = new PdfPCell(new Paragraph("Photos without category"));
+        cell.setColspan(8);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+        tablesup.addCell(cell);
+
+        Query queryPhoto = session.createQuery("from Photo where Category_idc = null");
+        List<Photo> photoList = new ArrayList<>();
+        photoList = queryPhoto.list();
+        int photoCount = 0;
+        for (Photo photoEl : photoList) {
+            photoCount++;
+            String v0 = photoCount + ".";
+            String v1 = photoEl.getPath();
+            String v3 = photoEl.getResolution();
+            String v4 = photoEl.getDescription();
+            String v5 = photoEl.getFormat();
+            String v6 = getDevicesNames(photoEl);
+            tablesup.addCell(v0);
+            tablesup.addCell(v1);
+            tablesup.addCell(v3);
+            tablesup.addCell(v4);
+            tablesup.addCell(v5);
+            tablesup.addCell(v6);
+        }
         for (Category category : categories) {
-            PdfPCell cell = new PdfPCell(new Paragraph(category.getName()));
+            cell = new PdfPCell(new Paragraph(category.getName()));
             cell.setColspan(8);
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
