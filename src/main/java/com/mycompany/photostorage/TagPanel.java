@@ -21,7 +21,13 @@ import javax.swing.JPanel;
  * @author Jakub
  */
 public class TagPanel extends JPanel {
+    /**
+     * Auto completing field that gives suggestions based on existing tags
+     */
     AutoCompleteTextField tagTextField;
+    /**
+     * Tag Panel
+     */
     JPanel tagPanel;
     
     public TagPanel(){

@@ -15,14 +15,19 @@ import org.hibernate.Session;
 
 /**
  * Panel responsible for deleting selected device from database
+ *
  * @author Rafał Swoboda
  */
 public class DeleteDevicePanel extends javax.swing.JPanel {
 
-    // main program frame, to change it's panel
+    /**
+     * Main program frame, to change it's panel
+     */
     private MainProgramFrame frame;
+
     /**
      * Creates new form DeleteDevicePanel
+     *
      * @param frame main program frame
      */
     public DeleteDevicePanel(MainProgramFrame frame) {
@@ -30,7 +35,7 @@ public class DeleteDevicePanel extends javax.swing.JPanel {
         initComponents();
         fillComboBox();
     }
-    
+
     /**
      * Method for filling combo box with devices in database
      */
@@ -59,8 +64,10 @@ public class DeleteDevicePanel extends javax.swing.JPanel {
         deleteButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         devicesComboBox = new javax.swing.JComboBox<>();
+        jSeparator1 = new javax.swing.JSeparator();
+        jLabel3 = new javax.swing.JLabel();
 
-        setPreferredSize(new java.awt.Dimension(400, 125));
+        setPreferredSize(new java.awt.Dimension(400, 200));
 
         cancelButton.setText("Cancel");
         cancelButton.addActionListener(new java.awt.event.ActionListener() {
@@ -78,38 +85,54 @@ public class DeleteDevicePanel extends javax.swing.JPanel {
 
         jLabel1.setText("Choose device which you want to delete:");
 
+        jLabel3.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        jLabel3.setText("Delete device");
+        jLabel3.setPreferredSize(new java.awt.Dimension(82, 20));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(36, 36, 36)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(99, 99, 99))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(37, 37, 37)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(cancelButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(200, 200, 200)
                         .addComponent(deleteButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(4, 4, 4))
                     .addComponent(devicesComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(36, 36, 36))
+                .addGap(66, 66, 66))
+            .addComponent(jSeparator1, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(devicesComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(deleteButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(cancelButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(26, 26, 26))
+                    .addComponent(cancelButton)
+                    .addComponent(deleteButton))
+                .addGap(29, 29, 29))
         );
     }// </editor-fold>//GEN-END:initComponents
 
     /**
      * Action for clicking cancel button
+     *
      * @param evt event
      */
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
@@ -118,6 +141,7 @@ public class DeleteDevicePanel extends javax.swing.JPanel {
 
     /**
      * Action for clicking delete buton
+     *
      * @param evt event
      */
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
@@ -127,7 +151,7 @@ public class DeleteDevicePanel extends javax.swing.JPanel {
         List<Device> devices = new ArrayList<>();
         devices = query.list();
         for (Device device : devices) {
-            if(devicesComboBox.getSelectedItem().toString().equals(device.getName())) {
+            if (devicesComboBox.getSelectedItem().toString().equals(device.getName())) {
                 session.delete(device);
                 session.getTransaction().commit();
                 session.close();
@@ -138,7 +162,7 @@ public class DeleteDevicePanel extends javax.swing.JPanel {
                 frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
             }
         }
-        
+
     }//GEN-LAST:event_deleteButtonActionPerformed
 
 
@@ -147,5 +171,7 @@ public class DeleteDevicePanel extends javax.swing.JPanel {
     private javax.swing.JButton deleteButton;
     private javax.swing.JComboBox<String> devicesComboBox;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JSeparator jSeparator1;
     // End of variables declaration//GEN-END:variables
 }

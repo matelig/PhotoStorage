@@ -6,7 +6,7 @@
 package com.mycompany.photostorage;
 
 /**
- *
+ * Main program class
  * @author Jakub
  */
 public class MainClass {

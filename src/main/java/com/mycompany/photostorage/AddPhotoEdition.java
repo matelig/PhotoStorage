@@ -6,14 +6,12 @@
 package com.mycompany.photostorage;
 
 import com.mycompany.photostorage.entity.Category;
-import com.mycompany.photostorage.entity.Device;
 import com.mycompany.photostorage.entity.Photo;
 import com.mycompany.photostorage.entity.Tag;
 import com.mycompany.photostorage.entity.User;
 import com.mycompany.photostorage.model.CurrentUser;
 import com.mycompany.photostorage.model.NewPhoto;
 import com.mycompany.photostorage.util.HibernateUtil;
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -26,7 +24,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -181,7 +178,6 @@ public class AddPhotoEdition extends JPanel {
                 changeAllCategories();
             }
         });
-        //newPhoto.clear();
         this.savePhotoButton = new JButton("Save");
         this.savePhotoButton.setPreferredSize(new Dimension(100, 25));
         this.savePhotoButton.setAlignmentX(LEFT_ALIGNMENT);
@@ -194,7 +190,7 @@ public class AddPhotoEdition extends JPanel {
     }
 
     /**
-     * method which provides adjust categories for all photos selected
+     * Method which provides adjust categories for all photos selected
      */
     private void changeAllCategories() {
         Component[] comps = container.getComponents();

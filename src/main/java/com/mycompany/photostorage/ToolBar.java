@@ -9,6 +9,8 @@ import com.mycompany.photostorage.model.AddPhotoOption;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 
 /**
@@ -18,9 +20,41 @@ import javax.swing.JToolBar;
  */
 public class ToolBar implements ActionListener {
 
+    /**
+     * Program ToolBar
+     */
     JToolBar toolBar;
+    /**
+     * Button showed on tool bar
+     */
     JButton button;
+    /**
+     * Program frame
+     */
     MainProgramFrame frame;
+    /**
+     * Panel with wait information
+     */
+    JOptionPane pleaseWaitPane = new JOptionPane("Photos are loading. Please wait.",
+            JOptionPane.INFORMATION_MESSAGE,
+            JOptionPane.DEFAULT_OPTION, null,
+            new Object[]{});
+    /**
+     * Wait dialog
+     */
+    private JDialog waitDialog;
+
+    /**
+     * Method that prepares waitDialog for use
+     */
+    private void prepareDialog() {
+        waitDialog = pleaseWaitPane.createDialog(frame.getFrame(), "Please Wait");
+        waitDialog.setContentPane(pleaseWaitPane);
+        waitDialog.setModal(true);
+        waitDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        waitDialog.pack();
+        waitDialog.setLocationRelativeTo(frame.getFrame());
+    }
 
     /**
      * Creates JToolbar with navigation buttons
@@ -101,13 +135,22 @@ public class ToolBar implements ActionListener {
                 frame.setPanel(new DeleteCategoryPanel(frame.getCurrentUser(), frame));
                 break;
             case "Search":
-                frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
+                prepareDialog();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
+                        waitDialog.dispose();
+                    }
+                }).start();
+                waitDialog.setVisible(true);
                 break;
             case "Generate report":
                 frame.setPanel(new GenerateReportPanel(frame.getCurrentUser()));
                 break;
             case "Log out":
                 frame.setPanel(new SignIn(frame));
+                frame.setRelative();
                 break;
             default:
                 break;

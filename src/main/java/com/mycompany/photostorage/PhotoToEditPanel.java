@@ -8,7 +8,6 @@ package com.mycompany.photostorage;
 import com.mycompany.photostorage.entity.Category;
 import com.mycompany.photostorage.entity.Photo;
 import com.mycompany.photostorage.entity.Tag;
-import com.mycompany.photostorage.entity.User;
 import com.mycompany.photostorage.util.HibernateUtil;
 import java.awt.Component;
 import java.awt.Image;
@@ -35,20 +34,26 @@ import org.hibernate.Session;
  */
 public class PhotoToEditPanel extends javax.swing.JPanel {
 
-    private BufferedImage image;
-    private List<Category> categories = new ArrayList<>();
-    private int photoID;
-    private List<String> allTags = new ArrayList<>();
-    private JPanel parentPanel;
-
     /**
-     * Creates new form PhotoToEditPanel, default constructor, never used
+     * BufferedImage used to creation of miniature
      */
-    public PhotoToEditPanel() {
-        initComponents();
-        setImageMiniature("src/wojtek.jpg");
-        setVisible(true);
-    }
+    private BufferedImage image;
+    /**
+     * List of categories
+     */
+    private List<Category> categories = new ArrayList<>();
+    /**
+     * ID of photo in database
+     */
+    private int photoID;
+    /**
+     * List of tags
+     */
+    private List<String> allTags = new ArrayList<>();
+    /**
+     * Parent panel to PhotoToEditPanel, to access TagsPanels
+     */
+    private JPanel parentPanel;
 
     /**
      * Constructor for object assigned to photo given by file path
@@ -221,7 +226,7 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(29, 29, 29)
                 .addComponent(labelPhoto, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -229,12 +234,11 @@ public class PhotoToEditPanel extends javax.swing.JPanel {
                     .addComponent(jLabel3)
                     .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(txtFieldDescription, javax.swing.GroupLayout.DEFAULT_SIZE, 260, Short.MAX_VALUE)
-                        .addComponent(categoryComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(tagPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(txtFieldDescription)
+                    .addComponent(categoryComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(tagPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 310, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
