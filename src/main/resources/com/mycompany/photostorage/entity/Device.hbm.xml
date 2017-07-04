@@ -20,8 +20,8 @@
         <property name="freeSpace" type="string">
             <column name="freeSpace" length="50" not-null="true" />
         </property>
-        <property name="isStoring" type="byte">
-            <column name="isStoring" not-null="true" />
+        <property name="isClosed" type="byte">
+            <column name="isClosed" not-null="true" />
         </property>
         <set name="photos" table="device_has_photo" inverse="false" lazy="true" fetch="select">
             <key>

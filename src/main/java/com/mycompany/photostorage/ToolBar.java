@@ -92,6 +92,11 @@ public class ToolBar implements ActionListener {
         button.addActionListener(this);
         toolBar.add(button);
 
+        button = new JButton("Close device");
+        button.setActionCommand("Close device");
+        button.addActionListener(this);
+        toolBar.add(button);
+
         button = new JButton("Search");
         button.setActionCommand("Search");
         button.addActionListener(this);
@@ -133,6 +138,9 @@ public class ToolBar implements ActionListener {
                 break;
             case "Delete category":
                 frame.setPanel(new DeleteCategoryPanel(frame.getCurrentUser(), frame));
+                break;
+            case "Close device":
+                frame.setPanel(new CloseDevicePanel());
                 break;
             case "Search":
                 prepareDialog();
