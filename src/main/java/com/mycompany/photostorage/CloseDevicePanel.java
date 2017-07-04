@@ -14,15 +14,24 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 /**
- *  Class that allows user to close targeted device. That means any photo can no longer be movet to this device, but photos can be taken from it.
+ * Class that allows user to close targeted device. That means any photo can no
+ * longer be movet to this device, but photos can be taken from it.
+ *
  * @author m_ligus
  */
 public class CloseDevicePanel extends javax.swing.JPanel {
 
     /**
-     * Creates new form CloseDevicePanel
+     * Represents main frame of the program
      */
-    public CloseDevicePanel() {
+    private MainProgramFrame frame;
+
+    /**
+     * Creates new form CloseDevicePanel
+     * @param frame main frame
+     */
+    public CloseDevicePanel(MainProgramFrame frame) {
+        this.frame = frame;
         initComponents();
         setDialogItems();
     }
@@ -44,6 +53,11 @@ public class CloseDevicePanel extends javax.swing.JPanel {
         jLabel1.setText("Choose device to close:");
 
         cancelButton.setText("Cancel");
+        cancelButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelButtonActionPerformed(evt);
+            }
+        });
 
         applyButton.setText("Apply");
         applyButton.addActionListener(new java.awt.event.ActionListener() {
@@ -57,14 +71,14 @@ public class CloseDevicePanel extends javax.swing.JPanel {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(36, 36, 36)
+                .addGap(42, 42, 42)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(cancelButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 179, Short.MAX_VALUE)
-                        .addComponent(applyButton))
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(closeDeviceComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 160, Short.MAX_VALUE)
+                        .addComponent(applyButton, javax.swing.GroupLayout.PREFERRED_SIZE, 74, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(closeDeviceComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(55, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -84,7 +98,8 @@ public class CloseDevicePanel extends javax.swing.JPanel {
 
     /**
      * Called after Apply button click
-     * @param evt 
+     *
+     * @param evt
      */
     private void applyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyButtonActionPerformed
         Object[] options = {"Yes", "No"};
@@ -128,6 +143,10 @@ public class CloseDevicePanel extends javax.swing.JPanel {
 
 
     }//GEN-LAST:event_applyButtonActionPerformed
+
+    private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
+        frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
+    }//GEN-LAST:event_cancelButtonActionPerformed
     /**
      * Adds existing devices from database to combo box
      */
