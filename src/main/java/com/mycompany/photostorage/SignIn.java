@@ -19,6 +19,9 @@ import org.hibernate.Session;
  */
 public class SignIn extends javax.swing.JPanel {
 
+    /**
+     * Program frame
+     */
     MainProgramFrame frame;
 
     /**

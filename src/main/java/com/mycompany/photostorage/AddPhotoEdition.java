@@ -6,14 +6,12 @@
 package com.mycompany.photostorage;
 
 import com.mycompany.photostorage.entity.Category;
-import com.mycompany.photostorage.entity.Device;
 import com.mycompany.photostorage.entity.Photo;
 import com.mycompany.photostorage.entity.Tag;
 import com.mycompany.photostorage.entity.User;
 import com.mycompany.photostorage.model.CurrentUser;
 import com.mycompany.photostorage.model.NewPhoto;
 import com.mycompany.photostorage.util.HibernateUtil;
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -21,12 +19,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -48,6 +46,7 @@ import org.hibernate.Session;
 
 /**
  * Class which allows user editing selected photos
+ *
  * @author m_lig
  */
 public class AddPhotoEdition extends JPanel {
@@ -87,6 +86,7 @@ public class AddPhotoEdition extends JPanel {
 
     /**
      * Constructor of the class
+     *
      * @param newPhoto list of photos to add
      * @param currentUser logged in user
      * @param mainFrame parent JFrame
@@ -142,7 +142,8 @@ public class AddPhotoEdition extends JPanel {
     }
 
     /**
-     * Initialization of the panel. Get current user, categories list, existing photos and existing tags from Database
+     * Initialization of the panel. Get current user, categories list, existing
+     * photos and existing tags from Database
      */
     private void initComponents() {
         Session session = HibernateUtil.getSessionFactory().openSession();
@@ -181,7 +182,6 @@ public class AddPhotoEdition extends JPanel {
                 changeAllCategories();
             }
         });
-        //newPhoto.clear();
         this.savePhotoButton = new JButton("Save");
         this.savePhotoButton.setPreferredSize(new Dimension(100, 25));
         this.savePhotoButton.setAlignmentX(LEFT_ALIGNMENT);
@@ -194,7 +194,7 @@ public class AddPhotoEdition extends JPanel {
     }
 
     /**
-     * method which provides adjust categories for all photos selected
+     * Method which provides adjust categories for all photos selected
      */
     private void changeAllCategories() {
         Component[] comps = container.getComponents();
@@ -208,6 +208,8 @@ public class AddPhotoEdition extends JPanel {
      * Method that inserts insormation of selected photos to database
      */
     private void insertPhotoButtonActionPerformed() {
+        File dir = new File("photos");
+        dir.mkdir();
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
         Query queryUser = session.createQuery("from User where idu=" + currentUser.getUserID());
@@ -225,7 +227,8 @@ public class AddPhotoEdition extends JPanel {
             Graphics g = bi.createGraphics();
             image.paintIcon(null, g, 0, 0);
             ByteArrayOutputStream baos = null;
-            try {
+            File file = null;
+            try {                
                 baos = new ByteArrayOutputStream();
                 ImageIO.write(bi, "png", baos);
                 byte[] imageInByte = baos.toByteArray();
@@ -233,6 +236,8 @@ public class AddPhotoEdition extends JPanel {
                 BasicFileAttributes attr = Files.readAttributes(Paths.get(newPhoto.get(i).getPath()), BasicFileAttributes.class);
                 long date = attr.creationTime().toMillis();
                 photo.setDate(new Date(date));
+                file = new File(newPhoto.get(i).getPath());
+                Files.move(Paths.get(newPhoto.get(i).getPath()), Paths.get("photos/" + file.getName()));
             } catch (IOException e) {
             } finally {
                 try {
@@ -240,7 +245,7 @@ public class AddPhotoEdition extends JPanel {
                 } catch (Exception e) {
                 }
             }
-            photo.setPath(newPhoto.get(i).getPath());
+            photo.setPath(Paths.get("photos/" + file.getName()).toString());
             photo.setResolution(newPhoto.get(i).getResolution());
             photo.setSize(Integer.parseInt(newPhoto.get(i).getSize()));
             photo.setUser(user);

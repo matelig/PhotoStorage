@@ -13,6 +13,8 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 
 /**
@@ -22,9 +24,41 @@ import javax.swing.JToolBar;
  */
 public class ToolBar implements ActionListener {
 
+    /**
+     * Program ToolBar
+     */
     JToolBar toolBar;
+    /**
+     * Button showed on tool bar
+     */
     JButton button;
+    /**
+     * Program frame
+     */
     MainProgramFrame frame;
+    /**
+     * Panel with wait information
+     */
+    JOptionPane pleaseWaitPane = new JOptionPane("Photos are loading. Please wait.",
+            JOptionPane.INFORMATION_MESSAGE,
+            JOptionPane.DEFAULT_OPTION, null,
+            new Object[]{});
+    /**
+     * Wait dialog
+     */
+    private JDialog waitDialog;
+
+    /**
+     * Method that prepares waitDialog for use
+     */
+    private void prepareDialog() {
+        waitDialog = pleaseWaitPane.createDialog(frame.getFrame(), "Please Wait");
+        waitDialog.setContentPane(pleaseWaitPane);
+        waitDialog.setModal(true);
+        waitDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        waitDialog.pack();
+        waitDialog.setLocationRelativeTo(frame.getFrame());
+    }
 
     /**
      * Creates JToolbar with navigation buttons
@@ -59,6 +93,11 @@ public class ToolBar implements ActionListener {
 
         button = new JButton("Delete device");
         button.setActionCommand("Delete device");
+        button.addActionListener(this);
+        toolBar.add(button);
+
+        button = new JButton("Close device");
+        button.setActionCommand("Close device");
         button.addActionListener(this);
         toolBar.add(button);
 
@@ -111,14 +150,26 @@ public class ToolBar implements ActionListener {
             case "Delete category":
                 frame.setPanel(new DeleteCategoryPanel(frame.getCurrentUser(), frame));
                 break;
+            case "Close device":
+                frame.setPanel(new CloseDevicePanel(frame));
+                break;
             case "Search":
-                frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
+                prepareDialog();
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
+                        waitDialog.dispose();
+                    }
+                }).start();
+                waitDialog.setVisible(true);
                 break;
             case "Generate report":
                 frame.setPanel(new GenerateReportPanel(frame.getCurrentUser()));
                 break;
             case "Log out":
                 frame.setPanel(new SignIn(frame));
+                frame.setRelative();
                 break;
             case "Help":
                 JFrame helpFrame = new net.sourceforge.helpgui.gui.MainFrame("/docs/help/", "java");//"/src/main/java/com/mycompany/photostorage/HelpFolder/","java");

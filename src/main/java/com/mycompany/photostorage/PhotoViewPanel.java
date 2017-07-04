@@ -40,14 +40,41 @@ import org.jdesktop.swingx.JXDatePicker;
  */
 public class PhotoViewPanel extends javax.swing.JPanel {
 
+    /**
+     * Currently loged user
+     */
     private CurrentUser currentUser;
+    /**
+     * List of categories in text form
+     */
     private List<String> categoriesNames;
+    /**
+     * List of selected photos
+     */
     private List<Photo> selectedPhotos = new ArrayList<>();
+    /**
+     * List of photo panels in current view
+     */
     private List<SinglePhotoPanel> photoPanels = new ArrayList<>();
+    /**
+     * List of all tags in database
+     */
     private List<String> tagNames = new ArrayList<>();
+    /**
+     * Program frame
+     */
     private MainProgramFrame frame;
+    /**
+     * List of all categories
+     */
     private List<Category> allCategories = new ArrayList<>();
+    /**
+     * Start date to search photos by it
+     */
     private Date startDate;
+    /**
+     * End date to search photos by it
+     */
     private Date endDate;
 
     /**
@@ -367,11 +394,15 @@ public class PhotoViewPanel extends javax.swing.JPanel {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(25, 25, 25)
                 .addComponent(jSplitPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 332, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(deletePhotoButton)
-                    .addComponent(movePhotoButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(editPhotoButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(6, 6, 6)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(movePhotoButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(editPhotoButton, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(deletePhotoButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents

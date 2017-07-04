@@ -25,10 +25,25 @@ import javax.swing.border.Border;
  */
 public class SinglePhotoPanel extends javax.swing.JPanel {
 
+    /**
+     * Photo ID from database
+     */
     private int photoID;
+    /**
+     * BufferedImage to create miniature
+     */
     private BufferedImage image;
+    /**
+     * Black border to show that panel is selected
+     */
     private Border blackBorder = BorderFactory.createLineBorder(Color.BLACK, 2);
+    /**
+     * Information about selection of panel
+     */
     private Boolean isChecked = false;
+    /**
+     * Empty border to show that panel is not selected
+     */
     private Border emptyBorder = BorderFactory.createEmptyBorder(2, 2, 2, 2);
 
     /**

@@ -10,12 +10,14 @@ import com.mycompany.photostorage.entity.Photo;
 import com.mycompany.photostorage.util.HibernateUtil;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileSystemView;
 import org.hibernate.Query;
@@ -28,9 +30,37 @@ import org.hibernate.Session;
  */
 public class MovePhotosPanel extends javax.swing.JPanel {
 
-    MainProgramFrame frame;
-    List<Photo> photos = new ArrayList<>();
-    List<Photo> notMovedPhotos = new ArrayList<>();
+    /**
+     * Program frame
+     */
+    private MainProgramFrame frame;
+    /**
+     * Reference to current panel
+     */
+    final javax.swing.JPanel panel = this;
+    /**
+     * List of photos
+     */
+    private List<Photo> photos = new ArrayList<>();
+    /**
+     * List of not moved photos
+     */
+    private List<Photo> notMovedPhotos = new ArrayList<>();
+    /**
+     * Set of devices that need to be connected
+     */
+    private Set<String> devicesToConnect = new HashSet<>();
+    /**
+     * Panel with wait information
+     */
+    private JOptionPane pleaseWaitPane = new JOptionPane("Work in progress. Please wait.",
+            JOptionPane.INFORMATION_MESSAGE,
+            JOptionPane.DEFAULT_OPTION, null,
+            new Object[]{});
+    /**
+     * Wait dialog
+     */
+    private JDialog waitDialog;
 
     /**
      * Creates new form MovePhotosPanel
@@ -46,7 +76,7 @@ public class MovePhotosPanel extends javax.swing.JPanel {
     }
 
     /**
-     * creates list of available devices, select from database
+     * Creates list of available devices, select from database
      */
     public final void fillComboBox() {
         Session session = HibernateUtil.getSessionFactory().openSession();
@@ -128,98 +158,160 @@ public class MovePhotosPanel extends javax.swing.JPanel {
      * @param evt
      */
     private void acceptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptButtonActionPerformed
-        File[] files = File.listRoots();
-        String name;
-        String destination = "";
-        String deviceName = devicesComboBox.getSelectedItem().toString();
-        List<Device> databaseDevices;
-        Device currentDevice = null;
-        boolean found = false;
-        boolean repeat = false;
-        for (int i = 0; i < files.length; i++) {
-            name = FileSystemView.getFileSystemView().getSystemDisplayName(files[i]);
-            String[] devicePartName = name.split(" ");
-            name = "";
-            for (int j = 0; j < devicePartName.length - 1; j++) {
-                name = name + devicePartName[j] + " ";
-            }
-            name = name.substring(0, name.length() - 1);
-            if (name.equals(deviceName)) {
-                destination = files[i].getAbsolutePath();
-                found = true;
-                break;
-            }
-        }
-        if (found) {
-            Session session = HibernateUtil.getSessionFactory().openSession();
-            session.beginTransaction();
-            Query query = session.createQuery("from Device");
-            databaseDevices = query.list();
-            for (Device device : databaseDevices) {
-                if (device.getName().equals(deviceName)) {
-                    currentDevice = device; //device do zapisu
-                    break;
+        prepareDialog();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                File[] files = File.listRoots();
+                String name;
+                String destination = "";
+                String deviceName = devicesComboBox.getSelectedItem().toString();
+                List<Device> databaseDevices;
+                Device currentDevice = null;
+                boolean found = false;
+                boolean deviceNotConnected = false;
+                boolean fullDevice = false;
+                for (int i = 0; i < files.length; i++) {
+                    name = FileSystemView.getFileSystemView().getSystemDisplayName(files[i]);
+                    String[] devicePartName = name.split(" ");
+                    name = "";
+                    for (int j = 0; j < devicePartName.length - 1; j++) {
+                        name = name + devicePartName[j] + " ";
+                    }
+                    name = name.substring(0, name.length() - 1);
+                    if (name.equals(deviceName)) {
+                        destination = files[i].getAbsolutePath();
+                        found = true;
+                        break;
+                    }
                 }
-            }
-            Set<Device> devices = new HashSet<>();
-            devices.add(currentDevice);
-            for (Photo photo : photos) {
-                File file = null;
-                boolean proceed = false;
-                List<Device> oldDevice = new ArrayList<>();
-                oldDevice.addAll(photo.getDevices());
-                String sourcePath = null;
-                if (photo.getIsArchivised() == 1) {
-                    if (isDeviceConnected(oldDevice.get(0).getName())) {
-                        sourcePath = getDeviceAbsolutePath(oldDevice.get(0).getName());
-                        sourcePath = sourcePath + photo.getPath().substring(3, photo.getPath().length());
-                        file = new File(sourcePath);
-                        proceed = true;
+                File destinationDevice = new File(destination);
+                if (found) {
+                    Session session = HibernateUtil.getSessionFactory().openSession();
+                    session.beginTransaction();
+                    Query query = session.createQuery("from Device");
+                    databaseDevices = query.list();
+                    for (Device device : databaseDevices) {
+                        if (device.getName().equals(deviceName)) {
+                            currentDevice = device;
+                            break;
+                        }
+                    }
+                    if (currentDevice.getIsClosed() == 0) {
+                        Set<Device> devices = new HashSet<>();
+                        devices.add(currentDevice);
+                        for (Photo photo : photos) {
+                            File file = null;
+                            boolean proceed = false;
+                            List<Device> oldDevice = new ArrayList<>();
+                            oldDevice.addAll(photo.getDevices());
+                            String sourcePath = null;
+                            if (photo.getIsArchivised() == 1) {
+                                if (isDeviceConnected(oldDevice.get(0).getName())) {
+                                    sourcePath = getDeviceAbsolutePath(oldDevice.get(0).getName());
+                                    sourcePath = sourcePath + photo.getPath().substring(3, photo.getPath().length());
+                                    file = new File(sourcePath);
+                                    proceed = true;
+                                } else {
+                                    notMovedPhotos.add(photo);
+                                    devicesToConnect.add(oldDevice.get(0).getName());
+                                    deviceNotConnected = true;
+                                }
+                            } else {
+                                sourcePath = photo.getPath();
+                                file = new File(photo.getPath());
+                                proceed = true;
+                            }
+                            if (proceed) { //sprawdzanie, czy Device z ktorego chcemy przeniesc zdjecie jest dostepne
+                                try {
+                                    Files.move(Paths.get(sourcePath), Paths.get(destination + file.getName()));//przenoszenie z literka
+                                    photo.setPath(destination + file.getName());
+                                    photo.setIsArchivised((byte) 1);
+                                    photo.setDevices(devices);
+                                    session.update(photo);
+                                    currentDevice.setFreeSpace(Long.toString(destinationDevice.getFreeSpace()));
+                                    session.save(currentDevice);
+                                } catch (FileSystemException ex) {
+                                    notMovedPhotos.add(photo);
+                                    fullDevice = true;
+                                } catch (IOException ex) {
+                                    ex.getStackTrace();
+                                    System.out.println("aejfawegg");
+                                }
+                            }
+
+                        }
+                        for (Device device : databaseDevices) {
+                            if (isDeviceConnected(device.getName())) {
+                                File file = new File(getDeviceAbsolutePath(device.getName()));
+                                Long size = file.getFreeSpace();
+                                device.setFreeSpace(Long.toString(size));
+                                session.update(device);
+                            }
+                        }
+                        session.getTransaction().commit();
+                        session.close();
+                        waitDialog.dispose();
+                        if (!deviceNotConnected) {
+                            if (!fullDevice) {
+                                JOptionPane.showMessageDialog(panel,
+                                        "Photo has been moved",
+                                        "Success",
+                                        JOptionPane.INFORMATION_MESSAGE);
+                                frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
+                            } else {
+                                JOptionPane.showMessageDialog(panel,
+                                        "Your target device is full",
+                                        "Failure",
+                                        JOptionPane.INFORMATION_MESSAGE);
+                                frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
+                            }
+                        } else {
+                            String namesOfDevice = "";
+                            for (String s : devicesToConnect) {
+                                namesOfDevice += s + " ";
+                            }
+                            if (!fullDevice) {
+                                JOptionPane.showMessageDialog(panel,
+                                        "Some devices have not been connected. Connect: " + namesOfDevice,
+                                        "Warning",
+                                        JOptionPane.INFORMATION_MESSAGE);
+                                frame.setPanel(new MovePhotosPanel(frame, notMovedPhotos));
+                            } else {
+                                File file = new File(destination);
+                                JOptionPane.showMessageDialog(panel,
+                                        "Some devices have not been connected. Connect: " + namesOfDevice
+                                        + "\n" + FileSystemView.getFileSystemView().getSystemDisplayName(file) + " is full.",
+                                        "Warning",
+                                        JOptionPane.INFORMATION_MESSAGE);
+                                frame.setPanel(new MovePhotosPanel(frame, notMovedPhotos));
+                            }
+                        }
                     } else {
-                        notMovedPhotos.add(photo);
-                        repeat = true;
+                        waitDialog.dispose();
+                        JOptionPane.showMessageDialog(panel,
+                            "Selected device has been closed earlier. Select other device or add new one.",
+                            "Warning!",
+                            JOptionPane.INFORMATION_MESSAGE);
                     }
                 } else {
-                    sourcePath = photo.getPath();
-                    file = new File(photo.getPath());
-                    proceed = true;
+                    waitDialog.dispose();
+                    JOptionPane.showMessageDialog(panel,
+                            "Device has not been found. Try to plug it in.",
+                            "Warning!",
+                            JOptionPane.INFORMATION_MESSAGE);
                 }
-                if (proceed) { //sprawdzanie, czy Device z ktorego chcemy przeniesc zdjecie jest dostepne
-                    try {
-                        Files.move(Paths.get(sourcePath), Paths.get(destination + file.getName()));///////////////////przenoszenie z literka
-                        photo.setPath(destination + file.getName());
-                        photo.setIsArchivised((byte) 1);
-                        photo.setDevices(devices);
-                        session.update(photo);
-                    } catch (IOException ex) {
-                        ex.getStackTrace();
-                    }
-                }
-
             }
-            session.getTransaction().commit();
-            session.close();
-            if (!repeat) {
-                JOptionPane.showMessageDialog(this,
-                        "Photo has been moved",
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
-                frame.setPanel(new PhotoViewPanel(frame, frame.getCurrentUser()));
-            } else {
-              JOptionPane.showMessageDialog(this,
-                        "Some devices have not been connected. Try Again",
-                        "Success",
-                        JOptionPane.INFORMATION_MESSAGE);
-                frame.setPanel(new MovePhotosPanel(frame, notMovedPhotos));
-            }
-        } else {
-            JOptionPane.showMessageDialog(this,
-                    "Device have not been found. Try to plug it in.",
-                    "Warning!",
-                    JOptionPane.INFORMATION_MESSAGE);
-        }
+        }).start();
+        waitDialog.setVisible(true);
     }//GEN-LAST:event_acceptButtonActionPerformed
 
+    /**
+     * Method for checking if one of used devices is connected
+     *
+     * @param deviceName name of device in database
+     * @return true if device found, false if is not connected
+     */
     private boolean isDeviceConnected(String deviceName) {
         File[] files = File.listRoots();
         String name;
@@ -238,6 +330,12 @@ public class MovePhotosPanel extends javax.swing.JPanel {
         return false;
     }
 
+    /**
+     * Method that returns path to choosen device
+     *
+     * @param deviceName name o device in database
+     * @return string that contains path
+     */
     private String getDeviceAbsolutePath(String deviceName) {
         File[] files = File.listRoots();
         String name;
@@ -274,4 +372,16 @@ public class MovePhotosPanel extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> devicesComboBox;
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
+
+    /**
+     * Method that prepares waitDialog for use
+     */
+    private void prepareDialog() {
+        waitDialog = pleaseWaitPane.createDialog(panel, "Please Wait");
+        waitDialog.setContentPane(pleaseWaitPane);
+        waitDialog.setModal(true);
+        waitDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        waitDialog.pack();
+        waitDialog.setLocationRelativeTo(panel);
+    }
 }

@@ -1,4 +1,3 @@
-
 package com.mycompany.photostorage;
 
 import com.mycompany.photostorage.entity.Photo;
@@ -25,10 +24,13 @@ import com.mycompany.photostorage.entity.User;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import javax.swing.JFileChooser;
 
 /**
- *JPanel used for triggering report generation, based on the report type chosen by user.
+ * JPanel used for triggering report generation, based on the report type chosen
+ * by user.
+ *
  * @author alachman
  */
 public class GenerateReportPanel extends javax.swing.JPanel {
@@ -138,7 +140,7 @@ public class GenerateReportPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_radioBtnDeviceActionPerformed
 
     /**
-     * Method triggers report generation.
+     * Method triggers report generation when a report type is selected.
      *
      * @param evt
      */
@@ -166,6 +168,13 @@ public class GenerateReportPanel extends javax.swing.JPanel {
     private javax.swing.JRadioButton radioBtnDevice;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * Method preparing report content for report based on device.
+     *
+     * @param session
+     * @param document
+     * @throws Exception
+     */
     private void prepareReportForDevice(Session session, Document document) throws Exception {
         PdfPTable tablesup = new PdfPTable(6);
         tablesup.addCell("Lp.");
@@ -280,6 +289,13 @@ public class GenerateReportPanel extends javax.swing.JPanel {
         }
     }
 
+    /**
+     * Method preparing report content for report based on archivisation state.
+     *
+     * @param session
+     * @param document
+     * @throws Exception
+     */
     private void prepareReportArchive(Session session, Document document) throws Exception {
 
         PdfPTable tablesup = new PdfPTable(7);
@@ -368,6 +384,12 @@ public class GenerateReportPanel extends javax.swing.JPanel {
 
     }
 
+    /**
+     * Method preparing main body of report and inserting data specific for
+     * chosen report type.
+     *
+     * @throws Exception
+     */
     private void prepareReport() throws Exception {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -389,7 +411,7 @@ public class GenerateReportPanel extends javax.swing.JPanel {
         paragraph = new Paragraph(new Date().toString());
         paragraph.setAlignment(Element.ALIGN_CENTER);
         document.add(paragraph);
-                paragraph = new Paragraph("\n \n");
+        paragraph = new Paragraph("\n \n");
         paragraph.setAlignment(Element.ALIGN_CENTER);
         document.add(paragraph);
 
@@ -417,6 +439,13 @@ public class GenerateReportPanel extends javax.swing.JPanel {
         session.close();
     }
 
+    /**
+     * Method preparing report content for report based on category.
+     *
+     * @param session
+     * @param document
+     * @throws Exception
+     */
     private void prepareReportForCategory(Session session, Document document) throws Exception {
 
         PdfPTable tablesup = new PdfPTable(6);
@@ -430,8 +459,34 @@ public class GenerateReportPanel extends javax.swing.JPanel {
         Query query = session.createQuery("from Category");
         java.util.List<Category> categories = new ArrayList<>();
         categories = query.list();
+
+        PdfPCell cell = new PdfPCell(new Paragraph("Photos without category"));
+        cell.setColspan(8);
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
+        tablesup.addCell(cell);
+
+        Query queryPhoto = session.createQuery("from Photo where Category_idc = null");
+        List<Photo> photoList = new ArrayList<>();
+        photoList = queryPhoto.list();
+        int photoCount = 0;
+        for (Photo photoEl : photoList) {
+            photoCount++;
+            String v0 = photoCount + ".";
+            String v1 = photoEl.getPath();
+            String v3 = photoEl.getResolution();
+            String v4 = photoEl.getDescription();
+            String v5 = photoEl.getFormat();
+            String v6 = getDevicesNames(photoEl);
+            tablesup.addCell(v0);
+            tablesup.addCell(v1);
+            tablesup.addCell(v3);
+            tablesup.addCell(v4);
+            tablesup.addCell(v5);
+            tablesup.addCell(v6);
+        }
         for (Category category : categories) {
-            PdfPCell cell = new PdfPCell(new Paragraph(category.getName()));
+            cell = new PdfPCell(new Paragraph(category.getName()));
             cell.setColspan(8);
             cell.setHorizontalAlignment(Element.ALIGN_CENTER);
             cell.setBackgroundColor(BaseColor.LIGHT_GRAY);
@@ -463,6 +518,12 @@ public class GenerateReportPanel extends javax.swing.JPanel {
         document.add(tablesup);
     }
 
+    /**
+     * Method handling directory selection.
+     *
+     * @param file
+     * @return
+     */
     private String getFileTargetPath(String file) {
         JFileChooser chooser = new JFileChooser();
         chooser.setCurrentDirectory(new java.io.File("."));
@@ -477,6 +538,12 @@ public class GenerateReportPanel extends javax.swing.JPanel {
         return null;
     }
 
+    /**
+     * Method return string with all devices containing given photo.
+     *
+     * @param photo
+     * @return
+     */
     private String getDevicesNames(Photo photo) {
         Set<Device> devices = photo.getDevices();
         StringBuilder devicesNames = new StringBuilder("");

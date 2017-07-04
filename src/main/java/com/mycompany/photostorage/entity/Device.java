@@ -36,7 +36,7 @@ public class Device  implements java.io.Serializable {
      private String name;
      private String capacity;
      private String freeSpace;
-     private byte isStoring;
+     private byte isClosed;
      private Set<Photo> photos = new HashSet<Photo>(0);
 
     /**
@@ -51,15 +51,15 @@ public class Device  implements java.io.Serializable {
      * @param name name of the device
      * @param capacity capacity of the device
      * @param freeSpace free space left on the device
-     * @param isStoring information if device is storing any photos
+     * @param isClosed information if device is closed and cant storage photos anymore
      */
-    public Device(Typeofdevice typeofdevice, String name, String capacity, String freeSpace, byte isStoring) {
+    public Device(Typeofdevice typeofdevice, String name, String capacity, String freeSpace, byte isClosed) {
        
         this.typeofdevice = typeofdevice;
         this.name = name;
         this.capacity = capacity;
         this.freeSpace = freeSpace;
-        this.isStoring = isStoring;
+        this.isClosed = isClosed;
     }
     
     /**
@@ -68,15 +68,15 @@ public class Device  implements java.io.Serializable {
      * @param name name of the device
      * @param capacity capacity of the device
      * @param freeSpace free space left on the device
-     * @param isStoring information if device is storing any photos
+     * @param isClosed information if device is closed and cant storage photos anymore
      * @param photos stored photos
      */
-    public Device(Typeofdevice typeofdevice, String name, String capacity, String freeSpace, byte isStoring, Set<Photo> photos) {
+    public Device(Typeofdevice typeofdevice, String name, String capacity, String freeSpace, byte isClosed, Set<Photo> photos) {
        this.typeofdevice = typeofdevice;
        this.name = name;
        this.capacity = capacity;
        this.freeSpace = freeSpace;
-       this.isStoring = isStoring;
+       this.isClosed = isClosed;
        this.photos = photos;
     }
    
@@ -133,13 +133,13 @@ public class Device  implements java.io.Serializable {
     }
 
     
-    @Column(name="isStoring", nullable=false)
-    public byte getIsStoring() {
-        return this.isStoring;
+    @Column(name="isClosed", nullable=false)
+    public byte getIsClosed() {
+        return this.isClosed;
     }
     
-    public void setIsStoring(byte isStoring) {
-        this.isStoring = isStoring;
+    public void setIsClosed(byte isClosed) {
+        this.isClosed = isClosed;
     }
 
 @ManyToMany(fetch=FetchType.LAZY)

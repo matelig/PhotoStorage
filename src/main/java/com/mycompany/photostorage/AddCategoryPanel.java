@@ -21,6 +21,7 @@ import org.hibernate.Session;
 public class AddCategoryPanel extends javax.swing.JPanel {
 
     private MainProgramFrame frame;
+    private CurrentUser currentUser;
     
     /**
      * Creates new form AddCategoryPanel
@@ -160,7 +161,6 @@ public class AddCategoryPanel extends javax.swing.JPanel {
         
     }
 
-    CurrentUser currentUser;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddCategory;
     private javax.swing.JComboBox<String> categoryComboBox;
