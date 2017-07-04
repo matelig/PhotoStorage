@@ -166,7 +166,7 @@ public class AddDevicePanel extends javax.swing.JPanel {
         dev.setName(deviceName); 
         dev.setCapacity(Long.toString(currentDevice.getTotalSpace()));
         dev.setFreeSpace(Long.toString(currentDevice.getFreeSpace()));
-        dev.setIsStoring((byte) 0);
+        dev.setIsClosed((byte) 0);
         query = session.createQuery("from Typeofdevice");
         List<Typeofdevice> types = new ArrayList<>();
         types = query.list();
