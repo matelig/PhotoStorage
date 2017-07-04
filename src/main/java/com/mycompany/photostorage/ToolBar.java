@@ -6,9 +6,13 @@
 package com.mycompany.photostorage;
 
 import com.mycompany.photostorage.model.AddPhotoOption;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JToolBar;
 
 /**
@@ -72,6 +76,13 @@ public class ToolBar implements ActionListener {
         button.setActionCommand("Log out");
         button.addActionListener(this);
         toolBar.add(button);
+        
+        URL imgURL = ToolBar.class.getClassLoader().getResource("sheet.gif");
+        ImageIcon helpButtonIcon = new ImageIcon(imgURL);
+        button = new JButton("Help", helpButtonIcon);
+        button.setActionCommand("Help");
+        button.addActionListener(this);
+        toolBar.add(button);
 
         return toolBar;
     }
@@ -108,6 +119,11 @@ public class ToolBar implements ActionListener {
                 break;
             case "Log out":
                 frame.setPanel(new SignIn(frame));
+                break;
+            case "Help":
+                JFrame helpFrame = new net.sourceforge.helpgui.gui.MainFrame("/docs/help/", "java");//"/src/main/java/com/mycompany/photostorage/HelpFolder/","java");
+                helpFrame.setSize(new Dimension(1100, 800));
+                helpFrame.setVisible(true);
                 break;
             default:
                 break;
