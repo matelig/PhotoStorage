@@ -140,7 +140,7 @@ public class ToolBar implements ActionListener {
                 frame.setPanel(new DeleteCategoryPanel(frame.getCurrentUser(), frame));
                 break;
             case "Close device":
-                frame.setPanel(new CloseDevicePanel());
+                frame.setPanel(new CloseDevicePanel(frame));
                 break;
             case "Search":
                 prepareDialog();
